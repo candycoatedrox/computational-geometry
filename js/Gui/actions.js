@@ -1,15 +1,45 @@
 // ─── PREPARE INFRASTRUCTURE FOR ALL CANVASES ───────────────────────────────────────
 
 
-function setColors(){
-    const isLight = document.body.classList.contains('light-theme');
-	GRIDCOLOR = isLight ? COLORS.lightGray : COLORS.gray;	
+function setColors(isLight = document.body.classList.contains('light-theme')) {
+	const colorSet = isLight ? LIGHT : DARK;
+
+    ORIGINCOLOR = colorSet.originColor;
+
+	XAXISCOLOR = colorSet.xAxisColor;
+	YAXISCOLOR = colorSet.yAxisColor;
+
+	GRIDCOLOR = colorSet.gridColor;
+	BOXCOLOR = colorSet.boxColor;
+
+	POINTCOLOR = colorSet.pointColor;
+	POINTLABELCOLOR = colorSet.pointLabelColor;
+
+	EDGECOLOR = colorSet.edgeColor;
+	FACECOLOR = colorSet.faceColor;
+
+	LINECOLOR = colorSet.lineColor;
+	DOTTEDEDGECOLOR = colorSet.dottedEdgeColor;
+	ARROWCOLOR = colorSet.arrowColor;
+}
+
+const ToggleAction = {
+
+	refFrame() {
+		setTimeout(() => {
+			ORIGINAPP.refresh(),
+			ORIGINAXESAPP.refresh(),
+			BOXAPP.refresh(),
+			BOXORAPP.refresh(),
+			BOXAXESAPP.refresh()
+		}, 50);
+	}
+
 }
 
 const ResizeAction = {
 	
 	refFrame(){
-		setColors();
 	    setTimeout(() => {
 			ORIGINAPP.computeAndRefresh(),
 			ORIGINAXESAPP.computeAndRefresh(),
@@ -23,7 +53,6 @@ const ResizeAction = {
 const LoadAction = {
 	
 	refFrame(){
-		setColors();
 	    setTimeout(() => {
 			ORIGINAPP.computeAndRefresh(),
 			ORIGINAXESAPP.computeAndRefresh(),
@@ -37,6 +66,7 @@ const LoadAction = {
 const InitTabApps = {
 	
 	refFrame(){
+		setColors();
 	    setTimeout(() => {
 			ORIGINAPP.computeAndRefresh(),
 			ORIGINAXESAPP.computeAndRefresh(),

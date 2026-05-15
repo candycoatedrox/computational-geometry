@@ -26,6 +26,8 @@
 		
 		<!-- Graphics -->
 		<script src="../../js/Graphics/constants.js"></script>
+		<script src="../../js/Graphics/dark.js"></script>
+		<script src="../../js/Graphics/light.js"></script>
 		<script src="../../js/Graphics/objects.js"></script>
 	
 		<!-- Gui -->
@@ -61,7 +63,7 @@
 		<span class="badge"><a href=../Basics/basics.html>Basics</a></span>
     </div>
   </div>
-  <button class="theme-toggle" onclick="toggleTheme()">
+  <button class="theme-toggle" onclick="toggleTheme(); ToggleAction.refFrame();">
     <span id="theme-icon">☀️</span>
     <span>Light Mode</span>
   </button>  

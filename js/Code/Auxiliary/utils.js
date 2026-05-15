@@ -161,7 +161,7 @@ const Utils = {
 	pointCoordsWToString(ptW) {
 		let xStr = ptW.x.toPrecision(3);
 		let yStr = ptW.y.toPrecision(3);
-		console.log("xStr = " + xStr + ", yStr = " + yStr);
+		// console.log("xStr = " + xStr + ", yStr = " + yStr);
 
 		// cut off trailing zeroes for whole numbers
 		if (xStr.endsWith(".00")) {

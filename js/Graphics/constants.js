@@ -91,53 +91,48 @@ const BLUE = {
 
 //----------------------------------------------------------------       GENERIC: for CANVAS
 // ORIGIN
-const ORIGINCOLOR = COLORS.amber;
+let ORIGINCOLOR; // DARK.originColor;
 const ORIGINSIZE = 6;
 
 // AXES
-const XAXISCOLOR = COLORS.red;
-const YAXISCOLOR = COLORS.blue;
+let XAXISCOLOR;
+let YAXISCOLOR;
 const AXISTHICKNESS = 3;
 
 // GRID
-// const GRIDCOLOR = {
-// 	dark: COLORS.gray,
-// 	light: COLORS.lightGray
-// };
-
-var GRIDCOLOR = COLORS.gray;
+let GRIDCOLOR;
 
 const GRIDTHICKNESS = 1;
 
 // BOX
-const BOXCOLOR = COLORS.amber;
+let BOXCOLOR;
 const BOXTHICKNESS = 4;
 
 //----------------------------------------------------------------       GENERIC: points, labels, edges, faces
 // POINTS
-const POINTCOLOR = COLORS.white;
+let POINTCOLOR;
 const POINTSIZE = 7;
 
 // POINT LABELS
-const POINTLABELCOLOR = COLORS.white;
+let POINTLABELCOLOR;
 
 // EDGES
-const EDGECOLOR = COLORS.white;
+let EDGECOLOR;
 const EDGETHICKNESS = 5;
 
 // FACES
-const FACECOLOR = COLORS.white;
+let FACECOLOR;
 
 // LINE
-const LINECOLOR = COLORS.purple;
+let LINECOLOR;
 const LINETHICKNESS = 3;
 
 // DOTTED EDGE
-const DOTTEDEDGECOLOR = COLORS.purple;
+let DOTTEDEDGECOLOR;
 const DOTTEDEDGETHICKNESS = 3;
 const EDGEDOTTED = [2, 4];
 
 // ARROW
-const ARROWCOLOR = COLORS.amber;
+let ARROWCOLOR;
 const ARROWTHICKNESS = 4;
 const HEADLENGTH = 14;
