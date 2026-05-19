@@ -89,10 +89,14 @@ class BoxOrApp {
 	}
 	// info
 	updateInfo(){
-		const pts = this.dataC.box.pts.concat(this.dataC.origin);
-		const labs = ['boxTopLeft','boxTopRight','boxBotRight','boxBotLeft','origin'];
-		this.infoField.innerHTML = Utils.pointsLabelsToString(this.infoField, pts,labs);		
+		const ptsC = this.dataC.box.pts;	
+		const ptsW = ['-','-','-','-']; 
+		const labs = ['boxTopL','boxTopR','boxBotR','boxBotL'];
+		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
+		
+		this.infoField.innerHTML = res;	
 	}
+	
 	
 	// actions for gui, affecting the view
 	// without dataC/W recalculation

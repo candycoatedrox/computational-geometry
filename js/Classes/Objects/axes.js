@@ -2,20 +2,14 @@ class Axes {
 	
 	
 	constructor(a,b) {		
-		this.xAxis = new Vector(a,0);
-		this.yAxis = new Vector(0,-b);
+		this.xAxis = new Vector(a,0); 	
+		this.yAxis = new Vector(0,b); 
 	}
   
   	set(ax, ay){
   		this.xAxis.set(ax.x,ax.y);
 		this.yAxis.set(ay.x,ay.y);
   	}
-
-	tailC(originC) {
-		const xW = originC.x + this.xAxis.x;
-		const yW = originC.y + this.yAxis.y;
-		return { x:new Point(xW, originC.y), y:new Point(originC.x, yW) };
-	}
 	
 	fromCanvas(canvas){		
 		const r = canvas.getBoundingClientRect();
@@ -30,8 +24,10 @@ class Axes {
 		console.log(message + "[" + JSON.stringify(this.orxAxisigin) + "," + JSON.stringify(this.yAxis) +"]");
 	}
 	
-	draw(ctx, origin){
-		Draw.axes(ctx, origin, this.xAxis, this.yAxis)
+	draw(ctx, origin, color = AXESCOLOR){
+		// console.log("In Axes.draw: AXESCOLOR =" + JSON.stringify(AXESCOLOR));
+		// console.log("In Axes.draw: color =" + JSON.stringify(color));
+		Draw.axes(ctx, origin, this.xAxis, this.yAxis, color);
 	}
  
 }

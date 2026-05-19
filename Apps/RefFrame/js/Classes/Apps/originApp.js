@@ -2,9 +2,9 @@ class OriginApp {
 	// constants: global names of i/o fields 
 	canvas = document.getElementById('canvas-originApp');
 	infoField = document.getElementById('originApp-points');
-	// constants: data
-	originW = new Origin(0,0);
 	
+	originC = new Origin(0,0);
+	originW = new Origin(0,0);
 	
 	// data
 	dataC = null;
@@ -18,20 +18,13 @@ class OriginApp {
 	// view
 	graphics = null;
 	
-	constructor (){
-		// init data
-		// this.origin = new Origin(0,0);
-		// this.origin.fromCanvas(this.canvas);
-		
-		// this.originW = new Origin(0,0);
-		
-		this.originC = new Origin(0,0);
+	constructor (){		
+		// Init data
 		this.originC.fromCanvas(this.canvas);
 
 		this.dataC = {
 			origin: this.originC
 		};
-		// console.log("1. dataC.origin = " + JSON.stringify(this.dataC.origin));
 		
 		this.dataW = {
 			origin: this.originW
@@ -102,7 +95,7 @@ class OriginApp {
 	// with dataC/W recalculations
 	computeAndRefresh(){
 		this.graphics = initCanvasGraphics(this.canvas);	
-		// this.dataC.origin.fromCanvas(this.canvas);
+		this.dataC.origin.fromCanvas(this.canvas);
 		this.scene();
 		this.updateInfo();
 	}

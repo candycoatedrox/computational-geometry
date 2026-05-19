@@ -9,7 +9,8 @@ class Vector extends Point{
 	}
   
 	print(message){
-		console.log(message + "[" + JSON.stringify(this.x) + "," + JSON.stringify(this.y) +"]");
+		// console.log(message + "[" + JSON.stringify(this.x) + "," + JSON.stringify(this.y) +"]");
+		console.log(message + JSON.stringify(this));
 	}
 	
 	draw(ctx, color = ARROWCOLOR, width = ARROWTHICKNESS, headlen = HEADLENGTH){

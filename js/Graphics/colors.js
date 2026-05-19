@@ -2,9 +2,9 @@
 const COLORS = {
 	black: '#000000',
 	white: '#ffffff',
-	lightGray: 'rgba(0,0,0,.2)',
-	darkGray: 'rgba(0,0,0,.07)',
-	gray: 'rgba(0,0,0,.4)',
+	lightGray: 'rgba(204,204,204)',
+	darkGray: 'rgba(63,63,63)',
+	gray: 'rgba(153,153,153)',
 	red: '#FF0000', 
 	green:'#00FF00',
 	blue: '#0000FF', 

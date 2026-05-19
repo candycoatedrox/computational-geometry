@@ -164,18 +164,18 @@ class BoxAxesGridApp {
 		// alert("In computeAndRefresh. dataC.range = " + JSON.stringify(this.dataC.range));
 		
 		let boxPtsC = this.dataC.box.pts;	
-		alert("boxPtsC = "+ JSON.stringify(boxPtsC));
+		console.log("boxPtsC = "+ JSON.stringify(boxPtsC));
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-		alert("boxPtsW = "+ JSON.stringify(boxPtsW));
+		console.log("boxPtsW = "+ JSON.stringify(boxPtsW));
 		
 		// let boxW = new Box(500,500);
 		this.dataW.box.setPoints(boxPtsW); // STUB
 		this.dataW.range.set(boxPtsW[0].x,boxPtsW[1].x,boxPtsW[3].y,boxPtsW[0].y);
 		
-		alert("In computeAndRefresh. dataW.box = " + JSON.stringify(this.dataW.box));
+		console.log("In computeAndRefresh. dataW.box = " + JSON.stringify(this.dataW.box));
 		
 		this.dataW.range.set(this.canvas);
-		alert("In computeAndRefresh. dataW.range = " + JSON.stringify(this.dataW.range));
+		console.log("In computeAndRefresh. dataW.range = " + JSON.stringify(this.dataW.range));
 
 		this.scene();
 		this.updateInfo();

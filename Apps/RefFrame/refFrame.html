@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
-<!-- INCLUDES: GLOBAL LIB: FUNCTIONS -->
+<!-- INCLUDES: GLOBAL LIBS -->
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- <link rel="icon" type="image/x-icon" href="favicon.ico"> -->
 <title>Computational Geometry: Interactive Demos </title>
-<link rel="stylesheet" href="../../css/style3.css">
+<link rel="stylesheet" href="../../css/style4.css">
 
 <!-- .................................................................................................
      JS LIBRARIES: FUNCTION DEFS
@@ -15,45 +15,69 @@
 		<!-- Classes: Objects -->
 		
 		<script src="../../js/Classes/Objects/point.js"></script>
-		<script src="../../js/Classes/Objects/origin.js"></script>
-		<script src="../../js/Classes/Objects/box.js"></script>
-		<script src="../../js/Classes/Objects/axes.js"></script>
 		<script src="../../js/Classes/Objects/vector.js"></script>
+		
+		<script src="../../js/Classes/Objects/origin.js"></script>
+		<script src="../../js/Classes/Objects/axes.js"></script>
+		<script src="../../js/Classes/Objects/box.js"></script>
+		
+		<script src="../../js/Classes/Objects/minMaxRange.js"></script>
+		<script src="../../js/Classes/Objects/range.js"></script>
+		
 		
 		<!-- Code -->
 		<script src="../../js/Code/Auxiliary/utils.js"></script>
 		<!-- <script src="../../js/Code/Math/math.js"></script> -->
 		
 		<!-- Graphics -->
+		<script src="../../js/Graphics/colors.js"></script>
 		<script src="../../js/Graphics/constants.js"></script>
 		<script src="../../js/Graphics/dark.js"></script>
 		<script src="../../js/Graphics/light.js"></script>
+		<script src="../../js/Graphics/setColors.js"></script>
 		<script src="../../js/Graphics/objects.js"></script>
 	
 		<!-- Gui -->
 		<script src="../../js/Gui/canvases.js"></script>
-		<script src="../../js/Gui/tabs.js"></script>
-		<script src="../../js/Gui/toggle.js"></script>	
-		<script src="../../js/Gui/actions.js"></script>
-		
-		<!-- Set up window events for the current big-app (this one)-->
-		<script>
-			// Navigation tabs for Classes mini-apps
-			window.addEventListener('resize', (e) => ResizeAction.refFrame());
-			window.addEventListener('load', (e) => LoadAction.refFrame());
-		</script>
 </head>
 
 <body>
-<div> <!-- INCLUDES: LOCAL LIB: FUNCTIONS -->
+<!-- INCLUDES: LOCAL LIBS -->
+<div> 
+	<script src="js/Gui/toggleLightDark.js"></script>
+	<script src="js/Gui/redrawActiveApp.js"></script>
+			
 	<!-- Mini-apps -->
 	<script src="js/Classes/Apps/originApp.js"></script>
 	<script src="js/Classes/Apps/originAxesApp.js"></script>
 	<script src="js/Classes/Apps/boxApp.js"></script>
 	<script src="js/Classes/Apps/boxOrApp.js"></script>
 	<script src="js/Classes/Apps/boxAxesApp.js"></script>
+	<script src="js/Classes/Apps/boxAxesGridApp.js"></script>
+</div>
+<!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
+<div>
+	<script>	
+		window.addEventListener('load', () => {
+		  const savedTheme = localStorage.getItem('theme');
+		  const button = document.querySelector('.theme-toggle span:last-child');
+		  if (savedTheme === 'light') {
+		    document.body.classList.add('light-theme');
+		    document.getElementById('theme-icon').textContent = '🌙';
+		    if (button) button.textContent = 'Dark Mode';
+		  };
+		  setColors();
+		  redrawActiveApp();
+		});	
+		window.addEventListener('resize', () => {
+			redrawActiveApp();
+		});
+	</script>
 </div>
 
+<!-- ═══════════════════════════════════════════════════===
+	HEADER: TITLE, LINKS TO GROUPED-APPS and THEME TOGGLE
+═══════════════════════════════════════════════════=== -->
 <header>
   <div style="flex: 1;">
     <h1><a href=../../index.html>Computational Geometry</a></h1>
@@ -63,20 +87,23 @@
 		<span class="badge"><a href=../Basics/basics.html>Basics</a></span>
     </div>
   </div>
-  <button class="theme-toggle" onclick="toggleTheme(); ToggleAction.refFrame();">
+  <button class="theme-toggle" onclick="toggleTheme()">
     <span id="theme-icon">☀️</span>
     <span>Light Mode</span>
-  </button>  
+  </button>
 </header>
 
-<nav> <!-- // Navigation tabs -->
-	<button class="active" data-tab="originApp">Origin</button>
+<!-- Navigation app - tabs  -->
+<nav> 
+	<button class="active" data-tab="boxApp">Box</button>
+	<button data-tab="originApp">Origin</button>
 	<button data-tab="originAxesApp">Axes</button>
-	<button data-tab="boxApp">Box</button>
 	<button data-tab="boxOrApp">Box+Or</button>
 	<button data-tab="boxAxesApp">Box+Axes</button>
+	<button data-tab="boxAxesGridApp">Grid</button>
 </nav>
-<div> <!-- Associate actions to Navigation tabs -->
+<!-- Associate actions to all Navigation tabs -->
+<div> 
 	<script>
 		document.querySelectorAll('nav button').forEach(btn => {
 			// add click event listener to each navigation button btn
@@ -87,31 +114,53 @@
 				document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
 				document.querySelectorAll('.demo-container').forEach(d => d.classList.remove('active'));
 				
-				// activate all classes of current btn and all elements with id's starting with tab-
+				// activate all classes of currently clicked btn and all elements with id's starting with tab-
 				btn.classList.add('active');
 				document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-			
-				// init all canvases in the mini-apps (tabApps) of the refFrame big-app; in an asynchronous manner
-				InitTabApps.refFrame();
+				
+				// setColors();
+				redrawActiveApp();
 			});
 		});
+		
 	</script>
 </div>
 
-<!-- Global variables for each mini-app object. Initialization at the bottom, after setting up the html template for each -->	
-<div>		
-	<script>
-		var ORIGINAPP = null;
-		var ORIGINAXESAPP = null;
-		var BOXAPP = null;
-		var BOXORAPP = null;
-		var BOXAXESAPP = null;
-	</script>
-</div>	
+
 <!-- >═══════════════════════════════════════════════════
-     TAB 1 — ORIGIN APP
+     TAB 1 — BOX APP
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container active" id="tab-originApp">
+<div class="demo-container active" id="tab-boxApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-boxApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize the bounding box
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-boxApp" checked> Box</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="boxApp-list" id="boxApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonBox500-boxApp">Fixed 500</button>
+				<button class="pill danger" id="buttonReset-boxApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- >═══════════════════════════════════════════════════
+     TAB 2 — ORIGIN APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container" id="tab-originApp">
 	<div class="canvas-wrap">
 		<canvas id="canvas-originApp" width="300" height="300"></canvas>
 		<div class="canvas-hint">
@@ -139,9 +188,9 @@
 </div>
 
 <!-- >═══════════════════════════════════════════════════
-     TAB 2 — ORIGIN+AXES APP
+     TAB 3 — ORIGIN+AXES APP
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container active" id="tab-originAxesApp">
+<div class="demo-container" id="tab-originAxesApp">
 	<div class="canvas-wrap">
 		<canvas id="canvas-originAxesApp" width="300" height="300"></canvas>
 		<div class="canvas-hint">
@@ -164,36 +213,6 @@
 			<div class="ctrl-row">
 				<button class="pill" id="buttonTopLeft-originAxesApp">Top Left</button>
 				<button class="pill danger" id="buttonReset-originAxesApp">Reset</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- >═══════════════════════════════════════════════════
-     TAB 3 — BOX APP
-═══════════════════════════════════════════════════ -->
-<div class="demo-container" id="tab-boxApp">
-	<div class="canvas-wrap">
-		<canvas id="canvas-boxApp" width="300" height="300"></canvas>
-		<div class="canvas-hint">
-			Visualize the bounding box
-		</div>
-	</div>
-	<div class="side-panel">
-		<div class="panel-section">
-			<h3>SHOW</h3>
-			<label><input type="checkbox" id="showBox-boxApp" checked> Box</label>
-		</div>
-		<div class="panel-section">
-			<h3>Coordinates</h3>
-			<div class="boxApp-list" id="boxApp-points">
-			</div>
-		</div>
-		<div class="panel-section">
-			<h3>EXAMPLES</h3>
-			<div class="ctrl-row">
-				<button class="pill" id="buttonBox500-boxApp">Fixed 500</button>
-				<button class="pill danger" id="buttonReset-boxApp">Reset</button>
 			</div>
 		</div>
 	</div>
@@ -262,33 +281,61 @@
 	</div>
 </div>
 
+<!-- >═══════════════════════════════════════════════════
+     TAB 6 — BOX+AXES+GRID APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container" id="tab-boxAxesGridApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-boxAxesGridApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Drag the origin to translate the reference frame and the grid
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-boxAxesGridApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-boxAxesGridApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-boxAxesGridApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-boxAxesGridApp" checked> Grid</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="boxAxesGridApp-list" id="boxAxesGridApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonBox500-boxAxesGridApp">Fixed 500</button>
+				<button class="pill danger" id="buttonReset-boxAxesGridApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 	
 <!-- .................................................................................................
-     JS: INITIALIZE - START EXECUTION of MINI-APPS 
+     JS: INITIALIZE and START EXECUTION of ACTIVE TAB-APP 
 ...................................................................................................... -->
-
-<!--                                                                                        EXECUTION   -->
-<div>	
-	<!-- Js GLOBAL/COMMON executions for this big app -->
-	<div>		
-		<!-- Initialize each mini-app: global vars, set up gui actions, draw initial scene -->
-		<script>
-		    setTimeout(() => {
-				ORIGINAPP = new OriginApp(),
-				ORIGINAXESAPP = new OriginAxesApp(),
-				BOXAPP = new BoxApp(),
-				BOXORAPP = new BoxOrApp(),
-				BOXAXESAPP = new BoxAxesApp()
-		  	}, 50);	
-		</script>
-	</div>	
-	
-	<script> // Init the mini-apps
-		InitTabApps.refFrame();
+<!-- Initialize global variables for each mini-app object -->	
+<div>
+	<script>
+		var BOXAPP = new BoxApp();
+		var ORIGINAPP = new OriginApp();
+		var ORIGINAXESAPP = new OriginAxesApp();
+		var BOXORAPP = new BoxOrApp();
+		var BOXAXESAPP = new BoxAxesApp();
+		var BOXAXESGRIDAPP = new BoxAxesGridApp();
 	</script>
-	
-</div>
+</div>	
+<!-- Draw active app -->	
+<div>
+	<script>	
+		// setColors();
+		redrawActiveApp();
+	</script>
+</div>	
 
 </body>
 </html>

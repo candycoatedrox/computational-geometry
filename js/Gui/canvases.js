@@ -10,7 +10,6 @@ function setupCanvasInWrapById(id) {
 }
 
 function setupCanvasInWrap(canvas) {
-  // const canvas = document.getElementById(id);
   const wrap = canvas.parentElement;
   if (canvas.width !== wrap.clientWidth || canvas.height !== wrap.clientHeight) {
     canvas.width = wrap.clientWidth;

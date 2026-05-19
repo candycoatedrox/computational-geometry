@@ -33,22 +33,27 @@ class BoxAxesApp {
 		boxC.fromCanvas(this.canvas);
 		let originC = new Origin(0,0);
 		originC.fromCanvas(this.canvas);
-		let axesC = new Axes(100,100);
+		let axesC = new Axes(100,-100);
 
 		this.dataC = {
 			box: boxC,
 			origin: originC,
 			axes: axesC
+		};		
+		
+		let ptsC = boxC.pts;
+		let ptsW = ConvertPoints.canvasToWorldCoords(ptsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		let boxW = new Box(500,500);
+		boxW.setPoints(ptsW);
+		
+		let originW = new Origin(0,0);
+		let axesW = new Axes(1,1);
+		
+		this.dataW = {
+			box: boxW,
+			origin: originW,
+			axes: axesW
 		};
-		console.log("1. dataC.box = " + JSON.stringify(this.dataC.box));
-		console.log("1. dataC.origin = " + JSON.stringify(this.dataC.origin));
-		console.log("1. dataC.axes = " + JSON.stringify(this.dataC.axes));
-		
-		
-		// this would need the originC
-		// this.dataW = {
-		// 	origin: this.originW
-		// };
 		
 		// Show options
 		this.show = {
@@ -97,9 +102,12 @@ class BoxAxesApp {
 	}
 	// info
 	updateInfo(){
-		const axesC = this.dataC.axes.tailC(this.dataC.origin);
-		const ptsC = this.dataC.box.pts.concat(this.dataC.origin, axesC.x, axesC.y);
-		const ptsW = ConvertPoints.canvasToWorldCoords(ptsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis); // WAS PREVIOUSLY USING LENGTH OF VECTOR, NOT END POINT
+		const ptsC = this.dataC.box.pts.concat(this.dataC.origin,this.dataC.axes.xAxis,this.dataC.axes.yAxis);
+		
+		const boxPtsC = this.dataC.box.pts;
+		const boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis); 
+		
+		const ptsW = boxPtsW.concat(this.dataW.origin, this.dataW.axes.xAxis, this.dataW.axes.yAxis); 
 		const labs = ['boxTopL','boxTopR','boxBotR','boxBotL','origin','xAxis', 'yAxis'];
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		

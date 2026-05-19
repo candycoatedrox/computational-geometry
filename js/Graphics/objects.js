@@ -9,40 +9,45 @@ const Draw = {
 		ctx.clearRect(0,0,w,h); 
 	},
 	
-	arrow(ctx, A, B, color = ARROWCOLOR, width = ARROWTHICKNESS, headlen = HEADLENGTH) {
-	
+	// arrow(ctx, A, B, color = ARROWCOLOR, width = ARROWTHICKNESS, headlen = HEADLENGTH) {
+	arrow(ctx, A, B, color, width = ARROWTHICKNESS, headlen = HEADLENGTH) {
+
 		// console.log("In Draw.arrow: A = "+JSON.stringify(A));
 		// console.log("In Draw.arrow: B = "+JSON.stringify(B));
+
+		ctx.strokeStyle = color;
+		ctx.lineWidth = width;
 		
 		const fromx = A.x, fromy = A.y;
 		const tox = B.x, toy = B.y;
-	
-		ctx.beginPath(); 
-	
+
+		ctx.beginPath();
+
 		// var headlen = 10; // length of head in pixels
 		var dx = tox - fromx;
 		var dy = toy - fromy;
 		var angle = Math.atan2(dy, dx);
-		ctx.strokeStyle = color;
-		ctx.lineWidth = width;
-	
+
+
 		ctx.moveTo(fromx, fromy);
 		ctx.lineTo(tox, toy);
-		
+
 		// arrow head
 		ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
 		ctx.moveTo(tox, toy);
 		ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
-  
+
 		ctx.stroke();
 	},
 	
-	axes(ctx, origin, xAxis, yAxis){
+	axes(ctx, origin, xAxis, yAxis, color = AXESCOLOR, width = AXISTHICKNESS, headlen = HEADLENGTH){
+	// axes(ctx, origin, xAxis, yAxis, color, width = AXISTHICKNESS, headlen = HEADLENGTH){
 		const xA = {x: origin.x + xAxis.x, y: origin.y + xAxis.y};		
 		const yA = {x: origin.x + yAxis.x, y: origin.y + yAxis.y};
-		Draw.arrow(ctx, origin, xA);
-		Draw.arrow(ctx, origin, yA);
+		Draw.arrow(ctx, origin, xA, color, width, headlen);
+		Draw.arrow(ctx, origin, yA, color, width, headlen);
 	},
+	
 	axesC(ctx, origin, xAxis, yAxis){
 		const xA = {x: origin.x + xAxis.x, y: origin.y + xAxis.y};		
 		const yA = {x: origin.x + yAxis.x, y: origin.y + yAxis.y};
@@ -79,15 +84,15 @@ const Draw = {
 	},
 	
 	dot(ctx, p, r, color, label='', labelColor=POINTLABELCOLOR) {
-	  ctx.beginPath(); 
-	  ctx.arc(p.x, p.y, r, 0, Math.PI*2);
-	  ctx.fillStyle = color; 
-	  ctx.fill();
-	  if (label) {
-	    ctx.fillStyle = labelColor; 
-		ctx.font = 'bold 13px Syne, sans-serif';
-	    ctx.fillText(label, p.x + r + 5, p.y - r - 2);
-	  }
+		ctx.fillStyle = color; 
+		ctx.beginPath(); 
+		ctx.arc(p.x, p.y, r, 0, Math.PI*2);
+		ctx.fill();
+		if (label) {
+			ctx.fillStyle = labelColor; 
+			ctx.font = 'bold 13px Syne, sans-serif';
+			ctx.fillText(label, p.x + r + 5, p.y - r - 2);
+		}
 	},
 	
 	dots(ctx, pts, r, color, labels=[], labelColor=POINTLABELCOLOR) {
@@ -103,11 +108,11 @@ const Draw = {
 	},
 	
 	edge(ctx, A, B, color = EDGECOLOR, width = EDGETHICKNESS){
+	    ctx.strokeStyle = color; 
+		ctx.lineWidth = width; 
 	    ctx.beginPath(); 
 		ctx.moveTo(A.x,A.y); 
 		ctx.lineTo(B.x,B.y);
-	    ctx.strokeStyle = color; 
-		ctx.lineWidth = width; 
 		ctx.stroke();
 	},
 	

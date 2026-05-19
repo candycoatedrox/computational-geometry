@@ -1,4 +1,5 @@
 class Box {
+	pts = [];
 	edges = [[0,1],[1,2],[2,3],[3,0]];
 
 	constructor(w,h) {
@@ -15,6 +16,12 @@ class Box {
 			{x: xMin , y: yMax}
 		];
 		
+	}
+	
+	setPoints(pts){
+		if (pts.length ==4 ){
+			this.pts = pts
+		} 
 	}
 	
 	set(w,h){

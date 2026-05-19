@@ -25,78 +25,78 @@ const Utils = {
 		const cPts = Transform.worldToCanvasPoints(canvas,wPts);
 		return [cPts, edges];
 	},
-	rangeToBox(range){
-		// {xRange:{xMin:0,xMax:600},yRange:{yMin:0,yMax:600}};
-		
-	    const xmin = range.xRange.xMin;
-	    const xmax = range.xRange.xMax;
-	    const ymin = range.yRange.yMin;
-	   	const ymax = range.yRange.yMax;
-		
-		const boxPts = [
-			{x: xmin , y: ymin},
-			{x: xmax , y: ymin},
-			{x: xmax , y: ymax},
-			{x: xmin , y: ymax}
-		];
-		
-		// console.log("In rangeToBox: boxPts =" + JSON.stringify(boxPts));
-		
-		const boxEdges = [[0,1],[1,2],[2,3],[3,0]];
-		return {pts: boxPts, edges: boxEdges};
-	},
-	boxFromRange(range){
-		
-	    const xmin = range.xRange.xMin;
-	    const xmax = range.xRange.xMax;
-	    const ymin = range.yRange.yMin;
-	   	const ymax = range.yRange.yMax;
-		
-		const boxPts = [
-			{x: xmin , y: ymin},
-			{x: xmax , y: ymin},
-			{x: xmax , y: ymax},
-			{x: xmin , y: ymax}
-		];
-		
-		// console.log("In rangeToBox: boxPts =" + JSON.stringify(boxPts));
-		
-		const boxEdges = [[0,1],[1,2],[2,3],[3,0]];
-		return {pts: boxPts, edges: boxEdges};
-		
-	},
+	// rangeToBox(range){
+	// 	// {xRange:{xMin:0,xMax:600},yRange:{yMin:0,yMax:600}};
+	//
+	//     const xmin = range.xRange.xMin;
+	//     const xmax = range.xRange.xMax;
+	//     const ymin = range.yRange.yMin;
+	//    	const ymax = range.yRange.yMax;
+	//
+	// 	const boxPts = [
+	// 		{x: xmin , y: ymin},
+	// 		{x: xmax , y: ymin},
+	// 		{x: xmax , y: ymax},
+	// 		{x: xmin , y: ymax}
+	// 	];
+	//
+	// 	// console.log("In rangeToBox: boxPts =" + JSON.stringify(boxPts));
+	//
+	// 	const boxEdges = [[0,1],[1,2],[2,3],[3,0]];
+	// 	return {pts: boxPts, edges: boxEdges};
+	// },
+	// boxFromRange(range){
+//
+// 	    const xmin = range.xRange.xMin;
+// 	    const xmax = range.xRange.xMax;
+// 	    const ymin = range.yRange.yMin;
+// 	   	const ymax = range.yRange.yMax;
+//
+// 		const boxPts = [
+// 			{x: xmin , y: ymin},
+// 			{x: xmax , y: ymin},
+// 			{x: xmax , y: ymax},
+// 			{x: xmin , y: ymax}
+// 		];
+//
+// 		// console.log("In rangeToBox: boxPts =" + JSON.stringify(boxPts));
+//
+// 		const boxEdges = [[0,1],[1,2],[2,3],[3,0]];
+// 		return {pts: boxPts, edges: boxEdges};
+//
+// 	},
 	
 	// Range, box from canvas
-	rangeFromCanvas(canvas){
-		const r = canvas.getBoundingClientRect();
-		const w = r.width;
-		const h = r.height;
-		
-		return {xRange:{xMin:0,xMax:w},yRange:{yMin:0,yMax:h}};
-	},
-	boxFromCanvas(canvas){
-		const r = canvas.getBoundingClientRect();
-		const w = r.width;
-		const h = r.height;
-		
-	    const xMin = 0;
-	    const xMax = w;
-	    const yMin = 0;
-	   	const yMax = h;
-		
-		const boxPts = [
-			{x: xMin , y: yMin},
-			{x: xMax , y: yMin},
-			{x: xMax , y: yMax},
-			{x: xMin , y: yMax}
-		];
-		
-		// console.log("In rangeToBox: boxPts =" + JSON.stringify(boxPts));
-		
-		const boxEdges = [[0,1],[1,2],[2,3],[3,0]];
-		return {pts: boxPts, edges: boxEdges};
-		
-	},
+	// rangeFromCanvas(canvas){
+	// 	const r = canvas.getBoundingClientRect();
+	// 	const w = r.width;
+	// 	const h = r.height;
+	//
+	// 	return {xRange:{xMin:0,xMax:w},yRange:{yMin:0,yMax:h}};
+	// },
+	// boxFromCanvas(canvas){
+// 		const r = canvas.getBoundingClientRect();
+// 		const w = r.width;
+// 		const h = r.height;
+//
+// 	    const xMin = 0;
+// 	    const xMax = w;
+// 	    const yMin = 0;
+// 	   	const yMax = h;
+//
+// 		const boxPts = [
+// 			{x: xMin , y: yMin},
+// 			{x: xMax , y: yMin},
+// 			{x: xMax , y: yMax},
+// 			{x: xMin , y: yMax}
+// 		];
+//
+// 		// console.log("In rangeToBox: boxPts =" + JSON.stringify(boxPts));
+//
+// 		const boxEdges = [[0,1],[1,2],[2,3],[3,0]];
+// 		return {pts: boxPts, edges: boxEdges};
+//
+// 	},
 	
 	// Range
 	range(start, stop, step = 1){return Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step);},
@@ -137,13 +137,13 @@ const Utils = {
 	},
 	pointCoordsCWToTdString(ptC, ptW){
 		const strC = `<td><span>(${Math.round(ptC.x)}, ${Math.round(ptC.y)})</span></td>`;
-		const strW = "<td><span>" + this.pointCoordsWToString(ptW) + "</span></td>";
+		const strW = `<td><span>(${this.pointCoordsWToString(ptW)})</span></td>`;
 		return strC + strW;
 	},
 	pointCoordsCWLabToTdString(ptC, ptW, lab){
 		const strL = `<td><span>${lab}</span></td>`;
 		const strC = `<td><span>(${Math.round(ptC.x)}, ${Math.round(ptC.y)})</span></td>`;
-		const strW = "<td><span>" + this.pointCoordsWToString(ptW) + "</span></td>";
+		const strW = (typeof ptW.x !== 'number') ? '<td><span>-</span></td>' : `<td><span>(${this.pointCoordsWToString(ptW)})</span></td>`;
 		return '<tr>' + strL + strC + strW + '</tr>';
 	},
 	// in table format for both C and W coordinates
@@ -251,12 +251,6 @@ const ConvertPoint = {
 		
 		const xW = (ptC.x - originC.x)/xAxisLgC;
 		const yW = (ptC.y - originC.y)/yAxisLgC;
-
-		//console.log("IN canvasToWorldCoords:  xAxisLgC = " + JSON.stringify(xAxisLgC));
-		//console.log("IN canvasToWorldCoords:  yAxisLgC = " + JSON.stringify(yAxisLgC));
-		//console.log("IN canvasToWorldCoords: xW = " + ptC.x + " - " + originC.x + "/ xAxisLgC");
-		//console.log("IN canvasToWorldCoords: yW = " + ptC.y + " - " + originC.y + "/ yAxisLgC");
-
 		return {x:xW, y:yW};
 	},
 	

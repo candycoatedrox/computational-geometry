@@ -2,26 +2,23 @@ class OriginAxesApp {
 	// constants: global names of i/o fields 
 	canvas = document.getElementById('canvas-originAxesApp');
 	infoField = document.getElementById('originAxesApp-points');
-	// show = {
-	// 	box: document.getElementById("showBox-originAxesApp")
-	// };
-	// buttons = {
-	// 	box500: document.getElementById("buttonBox500-originAxesApp"),
-	// 	reset: document.getElementById("buttonReset-originAxesApp")
-	// };
+	show = {
+		origin: document.getElementById("showOrigin-originAxesApp"),
+		axes: document.getElementById("showAxes-originAxesApp")
+	};
+	buttons = {
+		reset: document.getElementById("buttonReset-originAxesApp"),
+		topLeft: document.getElementById("buttonTopLeft-originAxesApp")
+	};
 	
-	
-	// constants: data
-	// boxC = null;
-	// originC = null;
+	// originC = new Origin(0,0);
+	// originW = new Origin(0,0);
 	
 	// data
 	dataC = null;
 	dataW = null;
 	
 	// gui
-	show = null;
-	buttons = null;
 	locatorId = null;
 	
 	// view
@@ -29,42 +26,29 @@ class OriginAxesApp {
 	
 	constructor (){
 		// init data
-		let boxC = new Box(500,500);
-		boxC.fromCanvas(this.canvas);
 		let originC = new Origin(0,0);
 		originC.fromCanvas(this.canvas);
-		let axesC = new Axes(100,100);
+		let originW = new Origin(0,0);
+		let axesC = new Axes(100,-100);
+		let axesW = new Axes(1,1);
 
 		this.dataC = {
 			origin: originC,
 			axes: axesC
 		};
-		console.log("1. dataC.origin = " + JSON.stringify(this.dataC.origin));
-		console.log("1. dataC.axes = " + JSON.stringify(this.dataC.axes));
-		console.log("axes tail points = " + JSON.stringify(this.dataC.axes.tailC(this.dataC.origin)));
-		
-		
-		// this would need the originC
-		// this.dataW = {
-		// 	origin: this.originW
-		// };
+		this.dataW = {
+			origin: originW,
+			axes: axesW
+		};
 		
 		// Show options
-		this.show = {
-			origin: document.getElementById("showOrigin-originAxesApp"),
-			axes: document.getElementById("showAxes-originAxesApp")
-		};
 		this.setupShowEvents();
 		
 		// Buttons
-		this.buttons = {
-			reset: document.getElementById("buttonReset-originAxesApp"),
-			topLeft: document.getElementById("buttonTopLeft-originAxesApp")
-		};
 		this.setupButtonEvents();
 
 		// Mouse events
-		this.locatorId = null;
+		// this.locatorId = null;
 		this.setupMouseEvents();
 		
 		// Init canvas / graphics
@@ -81,20 +65,22 @@ class OriginAxesApp {
 	// view
 	// graphics
 	scene() {
+		// this.graphics = initCanvasGraphics(this.canvas);
 		
 		if (this.show.axes.checked ) { 
-			this.dataC.axes.draw(this.graphics,this.dataC.origin);
+			this.dataC.axes.draw(this.graphics,this.dataC.origin, AXESCOLOR);
 		}
 		
-		if (this.show.origin.checked ) { 
+		if (this.show.origin.checked ) {
 			this.dataC.origin.draw(this.graphics);
 		}
+		
+
 	}
 	// info
 	updateInfo(){
-		const axesC = this.dataC.axes.tailC(this.dataC.origin);
-		const ptsC = [this.dataC.origin, axesC.x, axesC.y];
-		const ptsW = ConvertPoints.canvasToWorldCoords(ptsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis); // WAS PREVIOUSLY USING LENGTH OF VECTOR, NOT END POINT
+		const ptsC = [this.dataC.origin,this.dataC.axes.xAxis,this.dataC.axes.yAxis];
+		const ptsW = [this.dataW.origin,this.dataW.axes.xAxis,this.dataW.axes.yAxis];
 		const labs = ['origin','xAxis', 'yAxis'];
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		

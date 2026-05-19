@@ -31,10 +31,10 @@ class Point {
 	}
 	
 	draw(ctx, color = POINTCOLOR, size = POINTSIZE){
-		ctx.beginPath(); 
-		ctx.fillStyle = color; 
-		ctx.arc(this.x, this.y, size, 0, Math.PI*2);
-		ctx.fill();
+  	  ctx.beginPath(); 
+	  ctx.fillStyle = color; 
+  	  ctx.arc(this.x, this.y, size, 0, Math.PI*2);
+  	  ctx.fill();
 	}
 	
 	translate(vec){
