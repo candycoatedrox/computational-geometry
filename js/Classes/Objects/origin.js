@@ -9,7 +9,7 @@ class Origin extends Point {
 	}
 	
 	draw(ctx){
-		super.draw(ctx,ORIGINCOLOR,ORIGINSIZE);
+		super.draw(ctx,'',ORIGINCOLOR,ORIGINSIZE);
 	}
 
 	fromCanvas(canvas){

@@ -44,11 +44,8 @@ class Point {
 		console.log(message + "[" + JSON.stringify(this.x) + "," + JSON.stringify(this.y) +"]");
 	}
 	
-	draw(ctx, color = POINTCOLOR, size = POINTSIZE){
-  	  ctx.beginPath(); 
-	  ctx.fillStyle = color; 
-  	  ctx.arc(this.x, this.y, size, 0, Math.PI*2);
-  	  ctx.fill();
+	draw(ctx, label = '', color = POINTCOLOR, size = POINTSIZE){
+		Draw.dot(ctx, this, size, color, label);
 	}
 	
 	translate(vec){

@@ -1,8 +1,7 @@
 class Points extends Array {
 	
 	translate(vec){
-		for (let i = 0; i< this.length; i++)
-		{
+		for (let i = 0; i < this.length; i++) {
 			this[i].addTo(vec);
 		}
 	}
@@ -13,11 +12,12 @@ class Points extends Array {
 		}
 	}
 	
-	draw(ctx, color = POINTCOLOR, size = POINTSIZE){
-  	  for (let i = 0; i< this.length; i++)
-	  {
-		  this[i].draw(ctx,color,size);
-	  }
+	draw(ctx, labels = [], color = POINTCOLOR, size = POINTSIZE){
+		const labeled = labels !== [];
+		for (let i = 0; i < this.length; i++) {
+			let lab = labeled ? labels[i] : '';
+			this[i].draw(ctx,lab,color,size);
+		}
 	}
 	
 	//

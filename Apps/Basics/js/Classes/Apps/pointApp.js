@@ -125,6 +125,31 @@ class PointApp {
 	}
 	// mouse
 	setupMouseEvents() {
+		// MOUSE DOWN
+		this.canvas.addEventListener('mousedown', e => {
+			const canvasBounds = this.canvas.getBoundingClientRect();
+			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
+			this.dataC.point.set(mx,my); 
 
+			this.graphics = initCanvasGraphics(this.canvas);
+			this.scene();
+			this.updateInfo();
+			this.locatorId = 0;
+		});
+	
+		// MOUSE MOVE	
+		this.canvas.addEventListener('mousemove', e => {
+			if (this.locatorId === null) return;
+			const canvasBounds=this.canvas.getBoundingClientRect();
+			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
+			this.dataC.point.set(mx,my);  
+
+			this.graphics = initCanvasGraphics(this.canvas);
+			this.scene();
+			this.updateInfo();
+		});
+	
+		// MOUSE UP	
+		this.canvas.addEventListener('mouseup', () => { this.locatorId = null; });
 	}
 }

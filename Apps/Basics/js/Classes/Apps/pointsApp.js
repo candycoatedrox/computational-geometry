@@ -31,10 +31,12 @@ class PointsApp {
 		let originC = new Origin(0,0);
 		originC.fromCanvas(this.canvas);
 		let pointsC = new Points();
+        let labels = [];
 
 		this.dataC = {
 			origin: originC,
-			points: pointsC
+			points: pointsC,
+            labels: labels
 		};
 		
 		// gui: set up actions
@@ -60,19 +62,24 @@ class PointsApp {
 		}
 		
 		if (this.show.points.checked) { 
-			this.dataC.points.draw(this.graphics);
+			this.dataC.points.draw(this.graphics, this.dataC.labels);
 		}
 	}
 
 	// info
 	updateInfo() {
+        /* let debugPoints = 'points array = ';
+		for (let i = 0; i < this.dataC.points.length; i++) {
+			debugPoints += JSON.stringify(this.dataC.points[i]) + ",";
+		}
+		console.log(debugPoints); */
+
         const ptsC = this.dataC.points;
         let ptsW = [];
-        let labs = [];
-        for (let i = 0; i < ptsC.length; i++) {
-            ptsW.push('-');
-            labs.push('point '+(i+1));
-        }
+		for (let i = 0; i < ptsC.length; i++) {
+			ptsW.push('-');
+		}
+        let labs = this.dataC.labels;
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
 		this.infoField.innerHTML = res;
@@ -95,6 +102,11 @@ class PointsApp {
 		this.scene();
 		this.updateInfo();
 	}
+
+    updateLabels() {
+        this.dataC.labels = Utils.stdRange1(this.dataC.points.length);
+        this.dataC.labels = this.dataC.labels.map((n) => { return 'p' + n; });
+    }
 	
 	// set up gui
 	// checkboxes
@@ -107,6 +119,7 @@ class PointsApp {
 		this.buttons.addTopLeft.addEventListener("click", () => {
             this.graphics = initCanvasGraphics(this.canvas);
 			this.dataC.points.push(new Point(0,0));
+            this.updateLabels();
 			this.scene();
 			this.updateInfo();
 		});
@@ -115,6 +128,7 @@ class PointsApp {
             this.graphics = initCanvasGraphics(this.canvas);
             let pt = Utils.makeRandomPoint(this.canvas);
             this.dataC.points.push(new Point(pt.x, pt.y));
+            this.updateLabels();
 			this.scene();
 			this.updateInfo();
 		});
@@ -130,6 +144,7 @@ class PointsApp {
                 this.dataC.points.push(new Point(pts[i].x, pts[i].y));
             }
 
+            this.updateLabels();
 			this.scene();
 			this.updateInfo();
 		});
@@ -137,12 +152,61 @@ class PointsApp {
 		this.buttons.reset.addEventListener("click", () => {
             this.graphics = initCanvasGraphics(this.canvas);
 			this.dataC.points.length = 0;
+            this.updateLabels();
 			this.scene();
 			this.updateInfo();
 		});
 	}
 	// mouse
 	setupMouseEvents() {
+		// MOUSE DOWN
+		this.canvas.addEventListener('mousedown', e => {
+			const canvasBounds = this.canvas.getBoundingClientRect();
+			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
+			
+			// find id of existing nearby point
+			this.locatorId = null;
+			this.dataC.points.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) this.locatorId = i; });
+						
+			if (e.detail === 1) // it was a single click
+			{
+				if (this.locatorId === null) // not near an existing point: insert a new point and label
+				{
+					this.locatorId = this.dataC.points.length;
+					this.dataC.points.push(new Point(mx, my));
+                    this.updateLabels();
+				} 
+				// else, do nothing now - but check the mouse-move-event on the clicked-on point	
+			} 
+			else if (e.detail === 2) // it was a double click
+			{				
+				// if on an existing point, delete the point, else ignore the double click
+				if (this.dataC.points.length >= 1) { 
+					this.dataC.points.splice(this.locatorId,1); 				// delete the point
+                    this.updateLabels();	// relabel all points
+					this.locatorId = null;
+				}
+			};
+			// visualize the effect
+            this.graphics = initCanvasGraphics(this.canvas);
+			this.scene();
+            this.updateInfo();
+		});
 		
+		// MOUSE MOVE
+		this.canvas.addEventListener('mousemove', e => {
+			if (this.locatorId === null) return; 			// no specific point to move - ignore the dragging
+			// else, update the coordinates of the dragged point; do not change the labels
+			const canvasBounds = this.canvas.getBoundingClientRect();
+			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
+			this.dataC.points[this.locatorId].coords = {x:mx,y:my};
+			// visualize the effect
+            this.graphics = initCanvasGraphics(this.canvas);
+			this.scene();
+            this.updateInfo();
+		});
+		
+		// MOUSE UP
+		this.canvas.addEventListener('mouseup', () => { this.locatorId = null; });
 	}
 }
