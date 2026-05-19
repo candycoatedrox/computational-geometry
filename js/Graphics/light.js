@@ -7,9 +7,9 @@ const LIGHT = {
     yAxisColor: COLORS.blue,
     
     gridColor: COLORS.lightGray,
-    boxColor: COLORS.black
+    boxColor: COLORS.black,
 
-    // pointColor: COLORS.black,
+    pointColor: COLORS.black
     // pointLabelColor: COLORS.black,
     //
     // edgeColor: COLORS.black,

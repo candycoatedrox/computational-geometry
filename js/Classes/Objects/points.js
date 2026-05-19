@@ -6,6 +6,12 @@ class Points extends Array {
 			this[i].addTo(vec);
 		}
 	}
+
+	snapToCanvas(canvas) {
+		for (let i = 0; i < this.length; i++) {
+			this[i].snapToCanvas(canvas);
+		}
+	}
 	
 	draw(ctx, color = POINTCOLOR, size = POINTSIZE){
   	  for (let i = 0; i< this.length; i++)

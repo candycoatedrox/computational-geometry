@@ -18,13 +18,27 @@ class Point {
 	}
 	
 	get coords(){
-		return {"x": x, "y": y};
+		return {"x": this.x, "y": this.y};
 	}
   
   	addTo(x,y){
   		this.x = this.x + x;
 		this.y = this.y + y;
   	}
+
+	snapToCanvas(canvas) {
+		// second version of this for world coordinates -- centers around origin instead of (0,0) in canvas coords
+		const r = canvas.getBoundingClientRect();
+		const w = r.width;
+		const h = r.height;
+
+		if (this.x >= w) {
+			this.x = w-1;
+		}
+		if (this.y >= h) {
+			this.y = h-1;
+		}
+	}
 	
 	print(message){
 		console.log(message + "[" + JSON.stringify(this.x) + "," + JSON.stringify(this.y) +"]");

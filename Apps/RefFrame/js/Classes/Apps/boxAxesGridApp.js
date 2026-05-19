@@ -161,7 +161,7 @@ class BoxAxesGridApp {
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
 		// console.log("In computeAndRefresh. dataC.range = " + JSON.stringify(this.dataC.range));
-		// alert("In computeAndRefresh. dataC.range = " + JSON.stringify(this.dataC.range));
+		console.log("In computeAndRefresh. dataC.range = " + JSON.stringify(this.dataC.range));
 		
 		let boxPtsC = this.dataC.box.pts;	
 		console.log("boxPtsC = "+ JSON.stringify(boxPtsC));

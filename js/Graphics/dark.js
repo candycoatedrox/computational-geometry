@@ -7,9 +7,9 @@ const DARK = {
     yAxisColor: COLORS.blue,
     
     gridColor: COLORS.darkGray,
-    boxColor: COLORS.amber
+    boxColor: COLORS.amber,
 
-    // pointColor: COLORS.white,
+    pointColor: COLORS.white
     // pointLabelColor: COLORS.white,
     //
     // edgeColor: COLORS.white,
