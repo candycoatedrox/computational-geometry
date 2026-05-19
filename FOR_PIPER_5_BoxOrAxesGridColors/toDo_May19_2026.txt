@@ -1,0 +1,34 @@
+To do next:
+
+Already done:
+-------------
+
+DONE 1. add Mouse events to originApp, to move the origin by dragging the mouse.
+
+DONE 2. Add axesApp. Keep translation of origin but do not yet change the axes.
+
+DONE 3.  Canvas/world coordinates. Add Info table to show axes and box points in both coord systems.
+
+DONE 4. Add range class. Add grid.
+
+DONE 5. TODO: Change action function for the tab buttons: on click, same function for all (deactivate all, activate clicked one);  init app; Maybe I need to "activate" each app in its window/canvas, otherwise the initialization is incomplete. TODO (pass corresponding canvas to each app when created with new?) Done with DOM selector for active tab.
+
+Plan as of Tu May 19, 2026
+---------------------------
+NEXT: 
+POSTPONE (TO BE DONE SOMETIME THIS WEEK BY ILEANA) Separate general/generic graphics constants (point, line etc.) from link-app dependent ones (refFrame, voronoi etc).
+
+
+NEXT (TO BE DONE BY PIPER): 1. integrate Piper's 2 digit approx of world coords or range, rather than the integer rounding shown in Info. show the canvas/world range in all apps where applicable (in Info) -> In this app. Piper: work on it.
+
+NEXT (TO BE DONE BY PIPER): 2. Add pointApp, with mouse: with add, move and delete points. Canvas and Worlds coords.
+
+NEXT (TO BE DONE BY PIPER): 3. start second big app (Basic): basic geom objects + editors. Point, points. 
+Later: add line, half-line, edge, face, graph
+
+LATER:
+------
+NEXT: third linkApp: basic geom primitives: orientation and intersection
+orientation, turn, intersection
+
+NEXT linkApp: polygon: simple, convex etc.
