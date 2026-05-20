@@ -141,6 +141,7 @@ const Utils = {
 		return strC + strW;
 	},
 	pointCoordsCWLabToTdString(ptC, ptW, lab){
+		// console.log("current ptW: " + JSON.stringify(ptW));
 		const strL = `<td><span>${lab}</span></td>`;
 		const strC = `<td><span>(${Math.round(ptC.x)}, ${Math.round(ptC.y)})</span></td>`;
 		const strW = (typeof ptW.x !== 'number') ? '<td><span>-</span></td>' : `<td><span>(${this.pointCoordsWToString(ptW)})</span></td>`;
@@ -159,8 +160,9 @@ const Utils = {
 	},
 
 	pointCoordsWToString(ptW) {
-		let xStr = ptW.x.toPrecision(3);
-		let yStr = ptW.y.toPrecision(3);
+		// how to get it to be consistently 2 decimals...? even this falls apart at 0.0XX range
+		let xStr = (ptW.x < 1 && ptW.x > -1) ? ptW.x.toPrecision(2) : ptW.x.toPrecision(3);
+		let yStr = (ptW.y < 1 && ptW.y > -1) ? ptW.y.toPrecision(2) : ptW.y.toPrecision(3);
 		// console.log("xStr = " + xStr + ", yStr = " + yStr);
 
 		// cut off trailing zeroes for whole numbers

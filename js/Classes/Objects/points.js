@@ -1,4 +1,10 @@
 class Points extends Array {
+
+	setAll(pts) {
+		for (let i = 0; i < this.length; i++) {
+			this[i].coords = pts[i];
+		}
+	}
 	
 	translate(vec){
 		for (let i = 0; i < this.length; i++) {

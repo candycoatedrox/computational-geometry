@@ -51,6 +51,8 @@
 	<!-- Mini-apps -->
 	<script src="js/Classes/Apps/pointApp.js"></script>
 	<script src="js/Classes/Apps/pointsApp.js"></script>
+	<script src="js/Classes/Apps/pointWorldApp.js"></script>
+	<script src="js/Classes/Apps/pointsWorldApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
 <div>
@@ -94,6 +96,8 @@
 <nav> 
 	<button class="active" data-tab="pointApp">Point</button>
 	<button data-tab="pointsApp">Points</button>
+	<button data-tab="pointWorldApp">Point in World</button>
+	<button data-tab="pointsWorldApp">Points in World</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -185,6 +189,79 @@
 	</div>
 </div>
 
+<!-- >═══════════════════════════════════════════════════
+     TAB 3 — POINT IN WORLD APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container active" id="tab-pointWorldApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-pointWorldApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize and edit a point with world coordinates
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-pointWorldApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-pointWorldApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-pointWorldApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-pointWorldApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showPoint-pointWorldApp" checked> Point</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="pointWorldApp-list" id="pointWorldApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonTopLeft-pointWorldApp">Top Left</button>
+				<button class="pill" id="buttonRandom-pointWorldApp">Random</button>
+				<button class="pill danger" id="buttonReset-pointWorldApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- >═══════════════════════════════════════════════════
+     TAB 4 — POINTS IN WORLD APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container" id="tab-pointsWorldApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-pointsWorldApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize and edit multiple points with world coordinates
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-pointsWorldApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-pointsWorldApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-pointsWorldApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-pointsWorldApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showPoints-pointsWorldApp" checked> Points</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="pointsWorldApp-list" id="pointsWorldApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonAddTopLeft-pointsWorldApp">Add Top Left</button>
+				<button class="pill" id="buttonAddRandom-pointsWorldApp">Add Random</button>
+				<button class="pill" id="buttonRandom-pointsWorldApp">Randomize</button>
+				<button class="pill danger" id="buttonReset-pointsWorldApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 	
 <!-- .................................................................................................
      JS: INITIALIZE and START EXECUTION of ACTIVE TAB-APP 
@@ -194,6 +271,8 @@
 	<script>
 		var POINTAPP = new PointApp();
 		var POINTSAPP = new PointsApp();
+		var POINTWORLDAPP = new PointWorldApp();
+		var POINTSWORLDAPP = new PointsWorldApp();
 	</script>
 </div>	
 <!-- Draw active app -->	
