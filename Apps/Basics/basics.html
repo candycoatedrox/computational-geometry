@@ -53,6 +53,7 @@
 	<script src="js/Classes/Apps/pointsApp.js"></script>
 	<script src="js/Classes/Apps/pointWorldApp.js"></script>
 	<script src="js/Classes/Apps/pointsWorldApp.js"></script>
+	<script src="js/Classes/Apps/edgeApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
 <div>
@@ -98,6 +99,7 @@
 	<button data-tab="pointsApp">Points</button>
 	<button data-tab="pointWorldApp">Point in World</button>
 	<button data-tab="pointsWorldApp">Points in World</button>
+	<button data-tab="edgeApp">Edge</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -182,7 +184,17 @@
 			<div class="ctrl-row">
 				<button class="pill" id="buttonAddTopLeft-pointsApp">Add Top Left</button>
 				<button class="pill" id="buttonAddRandom-pointsApp">Add Random</button>
-				<button class="pill" id="buttonRandom-pointsApp">Randomize</button>
+				<button class="pill" id="buttonRandom-pointsApp">Generate Random</button>
+				<select id="nGenerate-pointsApp" name="nGenerate-pointsApp">
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="15">15</option>
+					<option value="20">20</option>
+				</select>
 				<button class="pill danger" id="buttonReset-pointsApp">Reset</button>
 			</div>
 		</div>
@@ -192,7 +204,7 @@
 <!-- >═══════════════════════════════════════════════════
      TAB 3 — POINT IN WORLD APP
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container active" id="tab-pointWorldApp">
+<div class="demo-container" id="tab-pointWorldApp">
 	<div class="canvas-wrap">
 		<canvas id="canvas-pointWorldApp" width="300" height="300"></canvas>
 		<div class="canvas-hint">
@@ -255,8 +267,64 @@
 			<div class="ctrl-row">
 				<button class="pill" id="buttonAddTopLeft-pointsWorldApp">Add Top Left</button>
 				<button class="pill" id="buttonAddRandom-pointsWorldApp">Add Random</button>
-				<button class="pill" id="buttonRandom-pointsWorldApp">Randomize</button>
+				<button class="pill" id="buttonRandom-pointsWorldApp">Generate Random</button>
+				<select id="nGenerate-pointsWorldApp" name="nGenerate-pointsWorldApp">
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="15">15</option>
+					<option value="20">20</option>
+				</select>
 				<button class="pill danger" id="buttonReset-pointsWorldApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- >═══════════════════════════════════════════════════
+     TAB 5 — EDGE APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container" id="tab-edgeApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-edgeApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize and edit an edge
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-edgeApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-edgeApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-edgeApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-edgeApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showPoints-edgeApp" checked> Points</label>
+			<label><input type="checkbox" id="showEdge-edgeApp" checked> Edge</label>
+		</div>
+		<div class="panel-section">
+			<h3>TYPE</h3>
+			<label><input type="radio" id="typeSegment-edgeApp" name="type-edgeApp" value="segment"> Segment</label>
+			<label><input type="radio" id="typeOriented-edgeApp" name="type-edgeApp" value="oriented"> Oriented Segment</label>
+			<br>
+			<label><input type="radio" id="typeRay-edgeApp" name="type-edgeApp" value="ray"> Ray</label>
+			<label><input type="radio" id="typeLine-edgeApp" name="type-edgeApp" value="line"> Line</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="pointsWorldApp-list" id="edgeApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonAddTopLeft-edgeApp">Add Top Left</button>
+				<button class="pill" id="buttonAddRandom-edgeApp">Add Random</button>
+				<button class="pill" id="buttonRandom-edgeApp">Randomize</button>
+				<button class="pill danger" id="buttonReset-edgeApp">Reset</button>
 			</div>
 		</div>
 	</div>
@@ -273,6 +341,7 @@
 		var POINTSAPP = new PointsApp();
 		var POINTWORLDAPP = new PointWorldApp();
 		var POINTSWORLDAPP = new PointsWorldApp();
+		var EDGEAPP = new EdgeApp();
 	</script>
 </div>	
 <!-- Draw active app -->	

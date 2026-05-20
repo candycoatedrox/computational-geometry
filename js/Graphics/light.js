@@ -9,13 +9,13 @@ const LIGHT = {
     gridColor: COLORS.lightGray,
     boxColor: COLORS.black,
 
-    pointColor: COLORS.black
-    // pointLabelColor: COLORS.black,
-    //
-    // edgeColor: COLORS.black,
+    pointColor: COLORS.black,
+    pointLabelColor: COLORS.black,
+
+    edgeColor: COLORS.black,
     // faceColor: COLORS.black,
-    //
-    // lineColor: COLORS.purple,
+
+    lineColor: COLORS.purple,
     // dottedEdgeColor: COLORS.purple
     // arrowColor: COLORS.blue
 }

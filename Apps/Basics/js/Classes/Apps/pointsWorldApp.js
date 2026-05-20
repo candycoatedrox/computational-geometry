@@ -15,9 +15,11 @@ class PointsWorldApp {
 	buttons = {
 		addTopLeft: document.getElementById("buttonAddTopLeft-pointsWorldApp"),
 		addRandom: document.getElementById("buttonAddRandom-pointsWorldApp"),
-		fullRandom: document.getElementById("buttonRandom-pointsWorldApp"),
+		generate: document.getElementById("buttonRandom-pointsWorldApp"),
 		reset: document.getElementById("buttonReset-pointsWorldApp")
 	};
+
+	nPtsSelect = document.getElementById("nGenerate-pointsWorldApp");
 	
 	// data
 	dataC = null;
@@ -183,7 +185,10 @@ class PointsWorldApp {
 	// set up gui
 	// checkboxes
 	setupShowEvents() {
+		this.show.box.addEventListener("change", () => this.refresh());
 		this.show.origin.addEventListener("change", () => this.refresh());
+		this.show.axes.addEventListener("change", () => this.refresh());
+		this.show.grid.addEventListener("change", () => this.refresh());
 		this.show.points.addEventListener("change", () => this.refresh());
 	}
 	// buttons
@@ -203,10 +208,10 @@ class PointsWorldApp {
 			this.computeAndRefresh();
 		});
 		
-		this.buttons.fullRandom.addEventListener("click", () => {
+		this.buttons.generate.addEventListener("click", () => {
             this.graphics = initCanvasGraphics(this.canvas);
             
-            const nPts = Math.floor(Utils.rand(1,6));
+            const nPts = this.nPtsSelect.value;
             const pts = Utils.makeRandomPoints(this.canvas, nPts);
 
             this.clearPoints();

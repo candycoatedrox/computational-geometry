@@ -9,13 +9,13 @@ const DARK = {
     gridColor: COLORS.darkGray,
     boxColor: COLORS.amber,
 
-    pointColor: COLORS.white
-    // pointLabelColor: COLORS.white,
-    //
-    // edgeColor: COLORS.white,
+    pointColor: COLORS.white,
+    pointLabelColor: COLORS.white,
+
+    edgeColor: COLORS.white,
     // faceColor: COLORS.white,
-    //
-    // lineColor: COLORS.purple,
+
+    lineColor: COLORS.purple,
     // dottedEdgeColor: COLORS.purple
     // arrowColor: COLORS.red
 }

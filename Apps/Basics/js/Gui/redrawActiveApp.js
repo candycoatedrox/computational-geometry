@@ -7,5 +7,6 @@ function redrawActiveApp(){
 		if (activeTab === 'pointsApp') POINTSAPP.computeAndRefresh();
 		if (activeTab === 'pointWorldApp') POINTWORLDAPP.computeAndRefresh();
 		if (activeTab === 'pointsWorldApp') POINTSWORLDAPP.computeAndRefresh();
+		if (activeTab === 'edgeApp') EDGEAPP.computeAndRefresh();
   }, 100);
 }

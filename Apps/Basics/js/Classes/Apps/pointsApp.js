@@ -12,9 +12,11 @@ class PointsApp {
 	buttons = {
 		addTopLeft: document.getElementById("buttonAddTopLeft-pointsApp"),
 		addRandom: document.getElementById("buttonAddRandom-pointsApp"),
-		fullRandom: document.getElementById("buttonRandom-pointsApp"),
+		generate: document.getElementById("buttonRandom-pointsApp"),
 		reset: document.getElementById("buttonReset-pointsApp")
 	};
+
+	nPtsSelect = document.getElementById("nGenerate-pointsApp");
 	
 	// data
 	dataC = null;
@@ -133,10 +135,10 @@ class PointsApp {
 			this.updateInfo();
 		});
 		
-		this.buttons.fullRandom.addEventListener("click", () => {
+		this.buttons.generate.addEventListener("click", () => {
             this.graphics = initCanvasGraphics(this.canvas);
             
-            const nPts = Math.floor(Utils.rand(1,6));
+            const nPts = this.nPtsSelect.value;
             const pts = Utils.makeRandomPoints(this.canvas, nPts);
 
             this.dataC.points.length = 0; // clear existing points

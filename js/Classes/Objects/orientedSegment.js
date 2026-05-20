@@ -1,14 +1,10 @@
-class Segment {
+class OrientedSegment {
 	constructor(p1, p2) {
 		this.tail = p1;
 		this.head = p2;
 	}
 	
 	draw(ctx, color = EDGECOLOR, width = EDGETHICKNESS){
-  	  	Draw.segment(ctx, this.tail, this.head, color, width);
-	}
-	
-	drawVec(ctx, color = EDGECOLOR, width = EDGETHICKNESS){
   	  	Draw.arrow(ctx, this.tail, this.head, color, width);
 	}
 	
@@ -24,6 +20,4 @@ class Segment {
 		const dy = this.head.y - this.tail.y;
 		return dx * dx + dy * dy;
 	}
-  
 }
-
