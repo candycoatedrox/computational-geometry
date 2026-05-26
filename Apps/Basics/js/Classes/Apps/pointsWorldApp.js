@@ -194,14 +194,12 @@ class PointsWorldApp {
 	// buttons
 	setupButtonEvents() {
 		this.buttons.addTopLeft.addEventListener("click", () => {
-            this.graphics = initCanvasGraphics(this.canvas);
 			this.createPoint(0,0);
             this.updateLabels();
 			this.computeAndRefresh();
 		});
 		
 		this.buttons.addRandom.addEventListener("click", () => {
-            this.graphics = initCanvasGraphics(this.canvas);
             let pt = Utils.makeRandomPoint(this.canvas);
 			this.createPoint(pt.x, pt.y);
             this.updateLabels();
@@ -209,8 +207,6 @@ class PointsWorldApp {
 		});
 		
 		this.buttons.generate.addEventListener("click", () => {
-            this.graphics = initCanvasGraphics(this.canvas);
-            
             const nPts = this.nPtsSelect.value;
             const pts = Utils.makeRandomPoints(this.canvas, nPts);
 
@@ -224,7 +220,6 @@ class PointsWorldApp {
 		});
 
 		this.buttons.reset.addEventListener("click", () => {
-            this.graphics = initCanvasGraphics(this.canvas);
 			this.clearPoints();
             this.updateLabels();
 			this.computeAndRefresh();

@@ -27,7 +27,7 @@ class Point {
   	}
 
 	snapToCanvas(canvas) {
-		// second version of this for world coordinates -- centers around origin instead of (0,0) in canvas coords
+		// add a second version of this for world coordinates -- centers around origin instead of (0,0) in canvas coords
 		const r = canvas.getBoundingClientRect();
 		const w = r.width;
 		const h = r.height;

@@ -18,6 +18,11 @@
 		<script src="../../js/Classes/Objects/points.js"></script>
 		<script src="../../js/Classes/Objects/vector.js"></script>
 		
+		<script src="../../js/Classes/Objects/segment.js"></script>
+		<script src="../../js/Classes/Objects/orientedSegment.js"></script>
+		<script src="../../js/Classes/Objects/ray.js"></script>
+		<script src="../../js/Classes/Objects/line.js"></script>
+		
 		<script src="../../js/Classes/Objects/origin.js"></script>
 		<script src="../../js/Classes/Objects/axes.js"></script>
 		<script src="../../js/Classes/Objects/box.js"></script>
@@ -307,7 +312,7 @@
 		</div>
 		<div class="panel-section">
 			<h3>TYPE</h3>
-			<label><input type="radio" id="typeSegment-edgeApp" name="type-edgeApp" value="segment"> Segment</label>
+			<label><input type="radio" id="typeSegment-edgeApp" name="type-edgeApp" value="segment" checked> Segment</label>
 			<label><input type="radio" id="typeOriented-edgeApp" name="type-edgeApp" value="oriented"> Oriented Segment</label>
 			<br>
 			<label><input type="radio" id="typeRay-edgeApp" name="type-edgeApp" value="ray"> Ray</label>
@@ -321,9 +326,9 @@
 		<div class="panel-section">
 			<h3>EXAMPLES</h3>
 			<div class="ctrl-row">
-				<button class="pill" id="buttonAddTopLeft-edgeApp">Add Top Left</button>
-				<button class="pill" id="buttonAddRandom-edgeApp">Add Random</button>
-				<button class="pill" id="buttonRandom-edgeApp">Randomize</button>
+				<button class="pill" id="buttonHead-edgeApp">Randomize Head</button>
+				<button class="pill" id="buttonTail-edgeApp">Randomize Tail</button>
+				<button class="pill" id="buttonRandom-edgeApp">Randomize Edge</button>
 				<button class="pill danger" id="buttonReset-edgeApp">Reset</button>
 			</div>
 		</div>
