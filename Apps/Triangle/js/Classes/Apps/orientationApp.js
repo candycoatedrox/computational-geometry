@@ -71,9 +71,9 @@ class OrientationApp {
 		let originW = new Origin(0,0);
 		let axesW = new Axes(1,1);
 		
-		let aW = ConvertPoint.canvasToWorldCoords(aC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-        let bW = ConvertPoint.canvasToWorldCoords(bC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-        let cW = ConvertPoint.canvasToWorldCoords(cC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		let aW = new Point(0,0);
+        let bW = new Point(0,0);
+        let cW = new Point(0,0);
 		
 		this.dataW = {
 			box: boxW,
@@ -137,9 +137,9 @@ class OrientationApp {
 		}
 		
 		if (this.show.points.checked) {
-			this.dataC.pointA.draw(this.graphics, "A", THEMEAMBER);
-			this.dataC.pointB.draw(this.graphics, "B", THEMEAMBER);
-			this.dataC.pointC.draw(this.graphics, "C", THEMEAMBER);
+			this.dataC.pointA.draw(this.graphics, "A");
+			this.dataC.pointB.draw(this.graphics, "B");
+			this.dataC.pointC.draw(this.graphics, "C");
 		}
 	}
 
@@ -175,7 +175,6 @@ class OrientationApp {
 		this.dataW.box.setPoints(boxPtsW);
 		this.dataW.range.set(this.canvas);
 	
-        // world coordinates not updating??
 		this.dataW.pointA.coords = ConvertPoint.canvasToWorldCoords(this.dataC.pointA, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.pointB.coords = ConvertPoint.canvasToWorldCoords(this.dataC.pointB, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.pointC.coords = ConvertPoint.canvasToWorldCoords(this.dataC.pointC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
@@ -197,38 +196,32 @@ class OrientationApp {
 	}
     // buttons
     setupButtonEvents() {
-        
-        // NOT UPDATED!!!
-
 		this.buttons.leftTurn.addEventListener("click", () => {
-			if (this.dataC.ptsActive === 0) {
-				this.dataC.ptsActive = 1;
-			}
-			this.dataC.head.coords = Utils.makeRandomPoint(this.canvas);
+			this.dataC.pointA.set(375, 250);
+			this.dataC.pointB.set(375, 100);
+			this.dataC.pointC.set(225, 100);
 			this.computeAndRefresh();
 		});
 		
 		this.buttons.rightTurn.addEventListener("click", () => {
-			if (this.dataC.ptsActive === 0) {
-				this.dataC.head.coords = this.dataC.origin;
-			}
-			this.dataC.ptsActive = 2;
-			this.dataC.tail.coords = Utils.makeRandomPoint(this.canvas);
+			this.dataC.pointA.set(375, 250);
+			this.dataC.pointB.set(375, 100);
+			this.dataC.pointC.set(525, 100);
 			this.computeAndRefresh();
 		});
 		
 		this.buttons.random.addEventListener("click", () => {
-			this.dataC.ptsActive = 2;
-			const pts = Utils.makeRandomPoints(this.canvas, 2);
-			this.dataC.head.coords = pts[0];
-			this.dataC.tail.coords = pts[1];
+			const pts = Utils.makeRandomPoints(this.canvas, 3);
+			this.dataC.pointA.coords = pts[0];
+			this.dataC.pointB.coords = pts[1];
+			this.dataC.pointC.coords = pts[2];
 			this.computeAndRefresh();
 		});
 
 		this.buttons.reset.addEventListener("click", () => {
-			this.dataC.pointA.set(400, 100);
-			this.dataC.pointB.set(540, 200);
-			this.dataC.pointC.set(600, 300);
+			this.dataC.pointA.set(540, 275);
+			this.dataC.pointB.set(400, 150);
+			this.dataC.pointC.set(540, 75);
 			this.computeAndRefresh();
 		});
     }
