@@ -1,361 +1,536 @@
 <!DOCTYPE html>
-<html>
-<!-- INCLUDES: GLOBAL LIBS -->
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- <link rel="icon" type="image/x-icon" href="favicon.ico"> -->
-<title>Computational Geometry: Interactive Demos </title>
-<link rel="stylesheet" href="../../css/style4.css">
-
-<!-- .................................................................................................
-     JS LIBRARIES: FUNCTION DEFS
-...................................................................................................... -->
-<!-- Js GLOBAL/COMMON functions: Classes, Code, common Gui                             GLOBAL INCLUDES -->
-		<!-- Classes: Objects -->
-		
-		<script src="../../js/Classes/Objects/point.js"></script>
-		<script src="../../js/Classes/Objects/points.js"></script>
-		<script src="../../js/Classes/Objects/vector.js"></script>
-		
-		<script src="../../js/Classes/Objects/segment.js"></script>
-		<script src="../../js/Classes/Objects/orientedSegment.js"></script>
-		<script src="../../js/Classes/Objects/ray.js"></script>
-		<script src="../../js/Classes/Objects/line.js"></script>
-		
-		<script src="../../js/Classes/Objects/origin.js"></script>
-		<script src="../../js/Classes/Objects/axes.js"></script>
-		<script src="../../js/Classes/Objects/box.js"></script>
-		
-		<script src="../../js/Classes/Objects/minMaxRange.js"></script>
-		<script src="../../js/Classes/Objects/range.js"></script>
-		
-		
-		<!-- Code -->
-		<script src="../../js/Code/Auxiliary/utils.js"></script>
-		<!-- <script src="../../js/Code/Math/math.js"></script> -->
-		
-		<!-- Graphics -->
-		<script src="../../js/Graphics/colors.js"></script>
-		<script src="../../js/Graphics/constants.js"></script>
-		<script src="../../js/Graphics/dark.js"></script>
-		<script src="../../js/Graphics/light.js"></script>
-		<script src="../../js/Graphics/setColors.js"></script>
-		<script src="../../js/Graphics/objects.js"></script>
-	
-		<!-- Gui -->
-		<script src="../../js/Gui/canvases.js"></script>
+<title>geometry.js — basics - interactive demo</title>
+<link rel="stylesheet" href="../../css/style.css">
 </head>
-
 <body>
-<!-- INCLUDES: LOCAL LIBS -->
-<div> 
-	<script src="js/Gui/toggleLightDark.js"></script>
-	<script src="js/Gui/redrawActiveApp.js"></script>
-			
-	<!-- Mini-apps -->
-	<script src="js/Classes/Apps/pointApp.js"></script>
-	<script src="js/Classes/Apps/pointsApp.js"></script>
-	<script src="js/Classes/Apps/pointWorldApp.js"></script>
-	<script src="js/Classes/Apps/pointsWorldApp.js"></script>
-	<script src="js/Classes/Apps/edgeApp.js"></script>
-</div>
-<!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
-<div>
-	<script>	
-		window.addEventListener('load', () => {
-		  const savedTheme = localStorage.getItem('theme');
-		  const button = document.querySelector('.theme-toggle span:last-child');
-		  if (savedTheme === 'light') {
-		    document.body.classList.add('light-theme');
-		    document.getElementById('theme-icon').textContent = '🌙';
-		    if (button) button.textContent = 'Dark Mode';
-		  };
-		  setColors();
-		  redrawActiveApp();
-		});	
-		window.addEventListener('resize', () => {
-			redrawActiveApp();
-		});
-	</script>
-</div>
 
-<!-- ═══════════════════════════════════════════════════===
-	HEADER: TITLE, LINKS TO GROUPED-APPS and THEME TOGGLE
-═══════════════════════════════════════════════════=== -->
 <header>
-  <div style="flex: 1;">
-    <h1><a href=../../index.html>Computational Geometry</a></h1>
-    <p style="margin-top:8px">Interactive Demos</p>
+  <div>
+    <h1><a href=../../index.html>geometry.js</a></h1>
+    <p style="margin-top:8px">Computational geometry library · v1.0</p>
     <div style="margin-top:10px">
-		<span class="badge"><a href=../RefFrame/refFrame.html>Ref Frame</a></span>
-		<span class="badge"><a href=basics.html>BASICS</a></span>
+      <span class="badge"><a href=basics.html>BASICS</a></span>
+	  <span class="badge"><a href=../Editors/editors.html>editors</a></span>
+      <span class="badge"><a href=../Polygons/polygons.html>polygons</a></span>
+      <span class="badge"><a href=../Triangulations/triangulations.html>triangulations</a></span>
+      <span class="badge"><a href=../Voronoi/voronoi.html>voronoi</a></span>
     </div>
   </div>
-  <button class="theme-toggle" onclick="toggleTheme()">
-    <span id="theme-icon">☀️</span>
-    <span>Light Mode</span>
-  </button>
 </header>
 
-<!-- Navigation app - tabs  -->
-<nav> 
-	<button class="active" data-tab="pointApp">Point</button>
-	<button data-tab="pointsApp">Points</button>
-	<button data-tab="pointWorldApp">Point in World</button>
-	<button data-tab="pointsWorldApp">Points in World</button>
-	<button data-tab="edgeApp">Edge</button>
+<nav>
+  <button class="active" data-tab="orientation">Orientation</button>
+  <button data-tab="intersection">Intersection</button>
+  <button data-tab="pointInTriangle">Point-in-triangle</button>
+  <button data-tab="pointedness">Pointedness</button>
+  <button data-tab="ccwAngle">CCW Angle</button>
+  <button data-tab="circumCircle">CircumCircle</button>
 </nav>
-<!-- Associate actions to all Navigation tabs -->
-<div> 
-	<script>
-		document.querySelectorAll('nav button').forEach(btn => {
-			// add click event listener to each navigation button btn
-		
-			btn.addEventListener('click', () => {
-			
-				// deactivate all navigation buttons and demo-containers
-				document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-				document.querySelectorAll('.demo-container').forEach(d => d.classList.remove('active'));
-				
-				// activate all classes of currently clicked btn and all elements with id's starting with tab-
-				btn.classList.add('active');
-				document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-				
-				// setColors();
-				redrawActiveApp();
-			});
-		});
-		
-	</script>
-</div>
 
-
-<!-- >═══════════════════════════════════════════════════
-     TAB 1 — POINT APP
+<!-- ═══════════════════════════════════════════════════
+     TAB 1 — ORIENTATION
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container active" id="tab-pointApp">
+<div class="demo-container active" id="tab-orientation">
 	<div class="canvas-wrap">
-		<canvas id="canvas-pointApp" width="300" height="300"></canvas>
+		<canvas id="canvas-orientation" width="300" height="300"></canvas>
 		<div class="canvas-hint">
-			Visualize and edit a point
+			Click to select a point A, B or C  ·  Drag to move.
 		</div>
 	</div>
 	<div class="side-panel">
 		<div class="panel-section">
-			<h3>SHOW</h3>
-			<label><input type="checkbox" id="showOrigin-pointApp" checked> Origin</label>
-			<label><input type="checkbox" id="showPoint-pointApp" checked> Point</label>
-		</div>
-		<div class="panel-section">
-			<h3>Coordinates</h3>
-			<div class="pointApp-list" id="pointApp-points">
+			<h3>Result</h3>
+			<div class="result-box" id='orientation-result'>
+				<span class="lbl">orientation(A, B, C) = </span>
+				<span class='val' id='orientation-val'>—</span>
+				<br>
+				<span class="lbl">Interpretation: C is </span>
+				<span class='val' id='orientation-interp'> - </span>
+				<span class="lbl"> oriented segment AB</span>
 			</div>
 		</div>
 		<div class="panel-section">
-			<h3>EXAMPLES</h3>
-			<div class="ctrl-row">
-				<button class="pill" id="buttonTopLeft-pointApp">Top Left</button>
-				<button class="pill" id="buttonRandom-pointApp">Random</button>
-				<button class="pill danger" id="buttonReset-pointApp">Reset</button>
+			<h3>Code</h3>
+			<div class="code-block">
+<span class="cm">// cross2D of the 2×2 determinant = </span>
+<span class="cm">// signed area of the oriented triangle A B C</span>
+<span class="kw">function</span> <span class="fn">orientation</span>(a, b, c) {
+  <span class="kw">const</span> v = (b.x-a.x)*(c.y-a.y) - (b.y-a.y)*(c.x-a.x);
+  <span class="kw">if</span> (v > <span class="nm">0</span>) <span class="kw">return</span> <span class="nm">+1</span>; <span class="cm">// left turn</span>
+  <span class="kw">if</span> (v < <span class="nm">0</span>) <span class="kw">return</span> <span class="nm">-1</span>; <span class="cm">// right turn</span> 
+  <span class="kw">return</span> <span class="nm">0</span>; <span class="cm">// collinear</span>
+}
 			</div>
 		</div>
+		<div class="panel-section">
+			<h3>Legend</h3>
+			<div class="legend">
+				<div class="legend-item">
+					<div class="dot" style="background:#7c6af7">
+					</div> Point A (start)
+				</div>
+				<div class="legend-item">
+					<div class="dot" style="background:#4ec9b0">
+					</div> Point B
+				</div>
+				<div class="legend-item">
+					<div class="dot" style="background:#f7c56a">
+					</div> Point C (end)
+				</div>
+			</div>
+		</div>
+	    <div class="panel-section">
+	      <h3>EXAMPLES</h3>
+	      <div class="ctrl-row">
+			  <button class="pill" onclick="ButtonsIO.orientation.loadPreset('left')">Left Turn</button>
+			  <button class="pill" onclick="ButtonsIO.orientation.loadPreset('right')">Right Turn</button>
+			  <button class="pill" onclick="ButtonsIO.orientation.loadPreset('collinear')">Collinear</button>
+			  <button class="pill danger" onclick="ButtonsIO.orientation.reset()">Reset</button>
+		  </div>
+	    </div>
 	</div>
 </div>
 
-<!-- >═══════════════════════════════════════════════════
-     TAB 2 — POINTS APP
+<!-- ═══════════════════════════════════════════════════
+     TAB 2 — INTERSECTION
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container" id="tab-pointsApp">
+<div class="demo-container" id="tab-intersection">
 	<div class="canvas-wrap">
-		<canvas id="canvas-pointsApp" width="300" height="300"></canvas>
+		<canvas id="canvas-intersection" width="300" height="300"></canvas>
 		<div class="canvas-hint">
-			Visualize and edit multiple points
+			Drag the endpoints of segments
 		</div>
 	</div>
 	<div class="side-panel">
 		<div class="panel-section">
-			<h3>SHOW</h3>
-			<label><input type="checkbox" id="showOrigin-pointsApp" checked> Origin</label>
-			<label><input type="checkbox" id="showPoints-pointsApp" checked> Points</label>
-		</div>
-		<div class="panel-section">
-			<h3>Coordinates</h3>
-			<div class="pointsApp-list" id="pointsApp-points">
+			<h3>Result</h3>
+			<div class="result-box" id='isect-result'>
+				<span class="lbl">intersection(A, B, C, D) = </span>
+				<span class='val' id='isect-val'>—</span>
+				<br>
+				<span class="lbl">Interpretation: Segments AB, CD </span>
+				<span class='val' id='isect-interp'> - </span>
+				<!-- <span class="lbl"> segment CD </span> -->
 			</div>
 		</div>
 		<div class="panel-section">
-			<h3>EXAMPLES</h3>
-			<div class="ctrl-row">
-				<button class="pill" id="buttonAddTopLeft-pointsApp">Add Top Left</button>
-				<button class="pill" id="buttonAddRandom-pointsApp">Add Random</button>
-				<button class="pill" id="buttonRandom-pointsApp">Generate Random</button>
-				<select id="nGenerate-pointsApp" name="nGenerate-pointsApp">
-					<option value="5">5</option>
-					<option value="6">6</option>
-					<option value="7">7</option>
-					<option value="8">8</option>
-					<option value="9">9</option>
-					<option value="10">10</option>
-					<option value="15">15</option>
-					<option value="20">20</option>
-				</select>
-				<button class="pill danger" id="buttonReset-pointsApp">Reset</button>
+			<h3>Code</h3>
+			<div class="code-block">
+<span class="kw">function</span> <span class="fn">segmentsIntersect</span>(p1,p2,p3,p4){
+  <span class="kw">const</span> d1=<span class="fn">orientation</span>(p3,p4,p1);
+  <span class="kw">const</span> d2=<span class="fn">orientation</span>(p3,p4,p2);
+  <span class="kw">const</span> d3=<span class="fn">orientation</span>(p1,p2,p3);
+  <span class="kw">const</span> d4=<span class="fn">orientation</span>(p1,p2,p4);
+  <span class="cm">// general case</span>
+  <span class="kw">if</span>(d1*d2&lt;<span class="nm">0</span> && d3*d4&lt;<span class="nm">0</span>) <span class="kw">return true</span>;
+  <span class="cm">// collinear cases ...</span>
+}
 			</div>
 		</div>
+		<div class="panel-section">
+			<h3>Legend</h3>
+			<div class="legend">
+				<div class="legend-item">
+					<div class="dot" style="background:#7c6af7">
+					</div> Segment AB
+				</div>
+				<div class="legend-item">
+					<div class="dot" style="background:#4ec9b0">
+					</div> Segment CD
+				</div>
+				<div class="legend-item">
+					<div class="dot" style="background:#f7c56a">
+					</div> Intersection point
+				</div>
+			</div>
+		</div>
+	    <div class="panel-section">
+	      <h3>EXAMPLES</h3>
+	      <div class="ctrl-row">
+	        <button class="pill" onclick="ButtonsIO.intersection.loadPreset('cross')">Crossing</button>
+	        <button class="pill" onclick="ButtonsIO.intersection.loadPreset('dontCross')">Non-crossing</button>
+			<button class="pill danger" onclick="ButtonsIO.intersection.reset()">Reset</button>
+	      </div>
+	      <!-- <div class="ctrl-row">
+	        <button class="pill danger" onclick="ButtonsIO.intersection.reset()">Reset</button>
+			<button class="pill danger" onclick="ButtonsIO.intersection.clear()">Clear</button>
+	      </div> -->
+	    </div>
 	</div>
 </div>
 
-<!-- >═══════════════════════════════════════════════════
-     TAB 3 — POINT IN WORLD APP
+<!-- ═══════════════════════════════════════════════════
+     TAB 3 — POINT IN TRIANGLE
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container" id="tab-pointWorldApp">
+<div class="demo-container" id="tab-pointInTriangle">
 	<div class="canvas-wrap">
-		<canvas id="canvas-pointWorldApp" width="300" height="300"></canvas>
+		<canvas id="canvas-pointInTriangle" width="300" height="300"></canvas>
 		<div class="canvas-hint">
-			Visualize and edit a point with world coordinates
+			Drag the points
 		</div>
 	</div>
 	<div class="side-panel">
 		<div class="panel-section">
-			<h3>SHOW</h3>
-			<label><input type="checkbox" id="showBox-pointWorldApp" checked> Box</label>
-			<label><input type="checkbox" id="showOrigin-pointWorldApp" checked> Origin</label>
-			<label><input type="checkbox" id="showAxes-pointWorldApp" checked> Axes</label>
-			<label><input type="checkbox" id="showGrid-pointWorldApp" checked> Grid</label>
-			<br>
-			<label><input type="checkbox" id="showPoint-pointWorldApp" checked> Point</label>
-		</div>
-		<div class="panel-section">
-			<h3>Coordinates</h3>
-			<div class="pointWorldApp-list" id="pointWorldApp-points">
+			<h3>Result</h3>
+			<div class="result-box" id='pointInTriangle-result'>
+				<span class="lbl">pointInTriangle(A, B, C, D) = </span>
+				<span class='val' id='pointInTriangle-val'>—</span>
+				<br>
+				<span class="lbl">Interpretation: Point A is </span>
+				<span class='val' id='pointInTriangle-interp'> - </span>
+				<span class="lbl"> in triangle BCD </span>
 			</div>
 		</div>
 		<div class="panel-section">
-			<h3>EXAMPLES</h3>
-			<div class="ctrl-row">
-				<button class="pill" id="buttonTopLeft-pointWorldApp">Top Left</button>
-				<button class="pill" id="buttonRandom-pointWorldApp">Random</button>
-				<button class="pill danger" id="buttonReset-pointWorldApp">Reset</button>
+			<h3>Code</h3>
+			<div class="code-block">
+<span class="kw">function</span> <span class="fn">pointInTriangle</span>(A, B, C, D){
+  <span class="kw">const</span> d1=<span class="fn">orientation</span>(B,C,D);
+  <span class="kw">const</span> d2=<span class="fn">orientation</span>(A,B,C);
+  <span class="kw">const</span> d3=<span class="fn">orientation</span>(A,C,D);
+  <span class="kw">const</span> d4=<span class="fn">orientation</span>(A,D,B);
+  <span class="cm">// general case</span>
+  <span class="kw">if</span> sameSign(d1, d2, d3, d4) then <span class="kw">return true</span>;
+  <span class="cm">// collinear cases ...</span>
+}
 			</div>
 		</div>
+		<!-- <div class="panel-section">
+			<h3>Legend</h3>
+			<div class="legend">
+				<div class="legend-item">
+					<div class="dot" style="background:#7c6af7">
+					</div> Segment AB
+				</div>
+				<div class="legend-item">
+					<div class="dot" style="background:#4ec9b0">
+					</div> Segment CD
+				</div>
+				<div class="legend-item">
+					<div class="dot" style="background:#f7c56a">
+					</div> Intersection point
+				</div>
+			</div>
+		</div> -->
+	    <div class="panel-section">
+	      <h3>EXAMPLES</h3>
+	      <div class="ctrl-row">
+	        <button class="pill" onclick="ButtonsIO.pointInTriangle.loadPreset('inTriangle')">Crossing</button>
+	        <button class="pill" onclick="ButtonsIO.pointInTriangle.loadPreset('outsideTriangle')">Non-crossing</button>
+			<button class="pill danger" onclick="ButtonsIO.pointInTriangle.reset()">Reset</button>
+	      </div>
+	    </div>
 	</div>
 </div>
 
-<!-- >═══════════════════════════════════════════════════
-     TAB 4 — POINTS IN WORLD APP
+<!-- ═══════════════════════════════════════════════════
+     TAB 4 — POINTEDNESS
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container" id="tab-pointsWorldApp">
+<div class="demo-container" id="tab-pointedness">
 	<div class="canvas-wrap">
-		<canvas id="canvas-pointsWorldApp" width="300" height="300"></canvas>
+		<canvas id="canvas-pointedness" width="300" height="300"></canvas>
 		<div class="canvas-hint">
-			Visualize and edit multiple points with world coordinates
+			Drag the points
 		</div>
 	</div>
 	<div class="side-panel">
 		<div class="panel-section">
-			<h3>SHOW</h3>
-			<label><input type="checkbox" id="showBox-pointsWorldApp" checked> Box</label>
-			<label><input type="checkbox" id="showOrigin-pointsWorldApp" checked> Origin</label>
-			<label><input type="checkbox" id="showAxes-pointsWorldApp" checked> Axes</label>
-			<label><input type="checkbox" id="showGrid-pointsWorldApp" checked> Grid</label>
-			<br>
-			<label><input type="checkbox" id="showPoints-pointsWorldApp" checked> Points</label>
-		</div>
-		<div class="panel-section">
-			<h3>Coordinates</h3>
-			<div class="pointsWorldApp-list" id="pointsWorldApp-points">
+			<h3>Result</h3>
+			<div class="result-box" id='pointedness-result'>
+				<span class="lbl">pointedness(A, B, C, D) = </span>
+				<span class='val' id='pointedness-val'>—</span>
+				<br>
+				<span class="lbl">Interpretation: Vectors from A are </span>
+				<span class='val' id='pointedness-interp'> - </span>
+				<span class="lbl"> pointed </span>
 			</div>
 		</div>
 		<div class="panel-section">
-			<h3>EXAMPLES</h3>
-			<div class="ctrl-row">
-				<button class="pill" id="buttonAddTopLeft-pointsWorldApp">Add Top Left</button>
-				<button class="pill" id="buttonAddRandom-pointsWorldApp">Add Random</button>
-				<button class="pill" id="buttonRandom-pointsWorldApp">Generate Random</button>
-				<select id="nGenerate-pointsWorldApp" name="nGenerate-pointsWorldApp">
-					<option value="5">5</option>
-					<option value="6">6</option>
-					<option value="7">7</option>
-					<option value="8">8</option>
-					<option value="9">9</option>
-					<option value="10">10</option>
-					<option value="15">15</option>
-					<option value="20">20</option>
-				</select>
-				<button class="pill danger" id="buttonReset-pointsWorldApp">Reset</button>
+			<h3>Code</h3>
+			<div class="code-block">
+<span class="kw">function</span> <span class="fn">pointedness</span>(A, B, C, D){
+  <span class="kw">if</span> pointInTriangle(A, B, C, D)  <span class="kw">then return false</span>;
+  <span class="kw">                                else return true</span>;
+  <span class="cm">// collinear cases ...</span>
+}
 			</div>
 		</div>
+		<!-- <div class="panel-section">
+			<h3>Legend</h3>
+			<div class="legend">
+				<div class="legend-item">
+					<div class="dot" style="background:#7c6af7">
+					</div> Segment AB
+				</div>
+				<div class="legend-item">
+					<div class="dot" style="background:#4ec9b0">
+					</div> Segment CD
+				</div>
+				<div class="legend-item">
+					<div class="dot" style="background:#f7c56a">
+					</div> Intersection point
+				</div>
+			</div>
+		</div> -->
+	    <div class="panel-section">
+	      <h3>EXAMPLES</h3>
+	      <div class="ctrl-row">
+	        <button class="pill" onclick="ButtonsIO.pointedness.loadPreset('inTriangle')">Crossing</button>
+	        <button class="pill" onclick="ButtonsIO.pointedness.loadPreset('outsideTriangle')">Non-crossing</button>
+			<button class="pill danger" onclick="ButtonsIO.pointedness.reset()">Reset</button>
+	      </div>
+	    </div>
 	</div>
 </div>
 
-<!-- >═══════════════════════════════════════════════════
-     TAB 5 — EDGE APP
+<!-- ═══════════════════════════════════════════════════
+     TAB 5 — CCW ANGLE
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container" id="tab-edgeApp">
+<div class="demo-container" id="tab-ccwAngle">
 	<div class="canvas-wrap">
-		<canvas id="canvas-edgeApp" width="300" height="300"></canvas>
+		<canvas id="canvas-ccwAngle" width="300" height="300"></canvas>
 		<div class="canvas-hint">
-			Visualize and edit an edge
+			Drag the points
 		</div>
 	</div>
 	<div class="side-panel">
 		<div class="panel-section">
-			<h3>SHOW</h3>
-			<label><input type="checkbox" id="showBox-edgeApp" checked> Box</label>
-			<label><input type="checkbox" id="showOrigin-edgeApp" checked> Origin</label>
-			<label><input type="checkbox" id="showAxes-edgeApp" checked> Axes</label>
-			<label><input type="checkbox" id="showGrid-edgeApp" checked> Grid</label>
-			<br>
-			<label><input type="checkbox" id="showPoints-edgeApp" checked> Points</label>
-			<label><input type="checkbox" id="showEdge-edgeApp" checked> Edge</label>
-		</div>
-		<div class="panel-section">
-			<h3>TYPE</h3>
-			<label><input type="radio" id="typeSegment-edgeApp" name="type-edgeApp" value="segment" checked> Segment</label>
-			<label><input type="radio" id="typeOriented-edgeApp" name="type-edgeApp" value="oriented"> Oriented Segment</label>
-			<br>
-			<label><input type="radio" id="typeRay-edgeApp" name="type-edgeApp" value="ray"> Ray</label>
-			<label><input type="radio" id="typeLine-edgeApp" name="type-edgeApp" value="line"> Line</label>
-		</div>
-		<div class="panel-section">
-			<h3>Coordinates</h3>
-			<div class="pointsWorldApp-list" id="edgeApp-points">
+			<h3>Result</h3>
+			<div class="result-box" id='ccwAngle-result'>
+				<span class="lbl">ccwAngle(A, B, C) = </span>
+				<span class='val' id='ccwAngle-val'>—</span>
+				<br>
+				<span class="lbl">Interpretation: Vectors from A are </span>
+				<span class='val' id='ccwAngle-interp'> - </span>
+				<span class="lbl"> pointed </span>
 			</div>
 		</div>
 		<div class="panel-section">
-			<h3>EXAMPLES</h3>
-			<div class="ctrl-row">
-				<button class="pill" id="buttonHead-edgeApp">Randomize Head</button>
-				<button class="pill" id="buttonTail-edgeApp">Randomize Tail</button>
-				<button class="pill" id="buttonRandom-edgeApp">Randomize Edge</button>
-				<button class="pill danger" id="buttonReset-edgeApp">Reset</button>
+			<h3>Code</h3>
+			<div class="code-block">
+<span class="kw">function</span> <span class="fn">ccwAngle</span>(A, B, C, D){
+  <span class="kw">if</span> pointInTriangle(A, B, C, D)  <span class="kw">then return false</span>;
+  <span class="kw">                                else return true</span>;
+  <span class="cm">// collinear cases ...</span>
+}
 			</div>
 		</div>
+		<!-- <div class="panel-section">
+			<h3>Legend</h3>
+			<div class="legend">
+				<div class="legend-item">
+					<div class="dot" style="background:#7c6af7">
+					</div> Segment AB
+				</div>
+				<div class="legend-item">
+					<div class="dot" style="background:#4ec9b0">
+					</div> Segment CD
+				</div>
+				<div class="legend-item">
+					<div class="dot" style="background:#f7c56a">
+					</div> Intersection point
+				</div>
+			</div>
+		</div> -->
+	    <div class="panel-section">
+	      <h3>EXAMPLES</h3>
+	      <div class="ctrl-row">
+	        <button class="pill" onclick="ButtonsIO.ccwAngle.loadPreset('inTriangle')">Crossing</button>
+	        <button class="pill" onclick="ButtonsIO.ccwAngle.loadPreset('outsideTriangle')">Non-crossing</button>
+			<button class="pill danger" onclick="ButtonsIO.ccwAngle.reset()">Reset</button>
+	      </div>
+	    </div>
 	</div>
 </div>
 
-	
+<!-- ═══════════════════════════════════════════════════
+     TAB 6 — CIRCUMCIRCLE TO TRIANGLE
+═══════════════════════════════════════════════════ -->
+<div class="demo-container" id="tab-circumCircle">
+	<div class="canvas-wrap">
+		<canvas id="canvas-circumCircle" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Drag the points
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>Result</h3>
+			<div class="result-box" id='circumCircle-result'>
+				<span class="lbl">circumCircle(A, B, C) = </span>
+				<span class='val' id='circumCircle-val'>—</span>
+				<br>
+				<span class="lbl">Returns circle through A, B, C: (center, radius) </span>
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>Code</h3>
+			<div class="code-block">
+<span class="kw">function</span> <span class="fn">circumCircle</span>(A, B, C){
+  <!-- <span class="kw">const</span> d1=<span class="fn">orientation</span>(B,C,D);
+  <span class="kw">const</span> d2=<span class="fn">orientation</span>(A,B,C);
+  <span class="kw">const</span> d3=<span class="fn">orientation</span>(A,C,D);
+  <span class="kw">const</span> d4=<span class="fn">orientation</span>(A,D,B);
+  <span class="cm">// general case</span>
+  <span class="kw">if</span> sameSign(d1, d2, d3, d4) then <span class="kw">return true</span>;
+  <span class="cm">// collinear cases ...</span> -->
+}
+			</div>
+		</div>
+		<!-- <div class="panel-section">
+			<h3>Legend</h3>
+			<div class="legend">
+				<div class="legend-item">
+					<div class="dot" style="background:#7c6af7">
+					</div> Segment AB
+				</div>
+				<div class="legend-item">
+					<div class="dot" style="background:#4ec9b0">
+					</div> Segment CD
+				</div>
+				<div class="legend-item">
+					<div class="dot" style="background:#f7c56a">
+					</div> Intersection point
+				</div>
+			</div>
+		</div> -->
+	    <div class="panel-section">
+	      <h3>EXAMPLES</h3>
+	      <div class="ctrl-row">
+	        <button class="pill" onclick="ButtonsIO.circumCircle.loadPreset('acute')">Acute</button>
+	        <button class="pill" onclick="ButtonsIO.circumCircle.loadPreset('obtuse')">Obtuse</button>
+			<button class="pill danger" onclick="ButtonsIO.circumCircle.reset()">Reset</button>
+	      </div>
+	    </div>
+	</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB 7 — INCIRCLE TO TRIANGLE
+═══════════════════════════════════════════════════ -->
+<div class="demo-container" id="tab-inCircle">
+	<div class="canvas-wrap">
+		<canvas id="canvas-inCircle" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Drag the points
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>Result</h3>
+			<div class="result-box" id='inCircle-result'>
+				<span class="lbl">inCircle(A, B, C) = </span>
+				<span class='val' id='inCircle-val'>—</span>
+				<br>
+				<span class="lbl">Returns circle through A, B, C: (center, radius) </span>
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>Code</h3>
+			<div class="code-block">
+<span class="kw">function</span> <span class="fn">inCircle</span>(A, B, C){
+  <!-- <span class="kw">const</span> d1=<span class="fn">orientation</span>(B,C,D);
+  <span class="kw">const</span> d2=<span class="fn">orientation</span>(A,B,C);
+  <span class="kw">const</span> d3=<span class="fn">orientation</span>(A,C,D);
+  <span class="kw">const</span> d4=<span class="fn">orientation</span>(A,D,B);
+  <span class="cm">// general case</span>
+  <span class="kw">if</span> sameSign(d1, d2, d3, d4) then <span class="kw">return true</span>;
+  <span class="cm">// collinear cases ...</span> -->
+}
+			</div>
+		</div>
+		<!-- <div class="panel-section">
+			<h3>Legend</h3>
+			<div class="legend">
+				<div class="legend-item">
+					<div class="dot" style="background:#7c6af7">
+					</div> Segment AB
+				</div>
+				<div class="legend-item">
+					<div class="dot" style="background:#4ec9b0">
+					</div> Segment CD
+				</div>
+				<div class="legend-item">
+					<div class="dot" style="background:#f7c56a">
+					</div> Intersection point
+				</div>
+			</div>
+		</div> -->
+	    <div class="panel-section">
+	      <h3>EXAMPLES</h3>
+	      <div class="ctrl-row">
+	        <button class="pill" onclick="ButtonsIO.inCircle.loadPreset('acute')">Acute</button>
+	        <button class="pill" onclick="ButtonsIO.inCircle.loadPreset('obtuse')">Obtuse</button>
+			<button class="pill danger" onclick="ButtonsIO.inCircle.reset()">Reset</button>
+	      </div>
+	    </div>
+	</div>
+</div>
+
 <!-- .................................................................................................
-     JS: INITIALIZE and START EXECUTION of ACTIVE TAB-APP 
+     JS LIBRARIES and MAIN EXECUTION
 ...................................................................................................... -->
-<!-- Initialize global variables for each mini-app object -->	
+
+<div>
+<!-- Js global/COMMON functions: Code -->
+<div>
+	<!-- Code -->
+	<!-- <script src="js/Code/Auxiliary/helpers.js"></script> -->
+	<!-- <script src="js/Code/Combinatorial/xxx.js"></script> -->
+	<script src="../../js/Code/Geometry/geometry.js"></script>
+	<!-- <script src="js/Code/Graph/xxx.js"></script> -->
+	<script src="../../js/Code/Math/math.js"></script>
+	
+	<!-- Gui -->
+	<!-- <script src="../../js/Gui/Tabs/tabs.js"></script> -->
+	<script src="../../js/Gui/Canvases/canvases.js"></script>
+</div>
+
+
+<!-- Js LOCAL functions: app, graphics, gui -->
+<div>
+	<!-- Apps -->
+	<script src="js/Apps/appCompute.js"></script>
+	
+	
+	<!-- Graphics -->
+	<script src="js/Graphics/constants.js"></script>
+	<script src="js/Graphics/objects.js"></script>
+	<script src="js/Graphics/scenes.js"></script>
+	
+	<!-- Gui -->
+	<script src="js/Gui/Buttons/io.js"></script>
+	<script src="js/Gui/Canvases/canvases.js"></script>
+	<script src="js/Gui/Checkboxes/checkboxes.js"></script>
+	<script src="js/Gui/Info/resultsInfo.js"></script>
+		
+	<script src="js/Gui/Tabs/tabs.js"></script>
+</div>
+
+<!-- Js execs: local, app specific -->
+<div>
+	<script src="js/Apps/GlobalVars/basicsAppGlobalVars.js"></script>	
+	<script src="js/Gui/Mouse/mouse.js"></script>  
+	<script src="js/Apps/appFunctions.js"></script>	
+	<!-- Main -->
+	<script src="js/Main/mainBasics.js"></script>
+</div>
+
+<!-- Js execs: general -->
 <div>
 	<script>
-		var POINTAPP = new PointApp();
-		var POINTSAPP = new PointsApp();
-		var POINTWORLDAPP = new PointWorldApp();
-		var POINTSWORLDAPP = new PointsWorldApp();
-		var EDGEAPP = new EdgeApp();
-	</script>
-</div>	
-<!-- Draw active app -->	
-<div>
-	<script>	
-		redrawActiveApp();
-	</script>
-</div>	
+		// ─── CANVAS SETUP: ALL ────────────────────────────────────
+		window.addEventListener('resize', initPrepareComputeDrawUpdateAllCanvasesBasics());
+		window.addEventListener('load', initPrepareComputeDrawUpdateAllCanvasesBasics());
 
+		setUpTabSwitchingBasics();
+	</script>	
+</div>
+
+</div>
 </body>
 </html>
-
