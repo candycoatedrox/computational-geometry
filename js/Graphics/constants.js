@@ -3,7 +3,7 @@
 
 //----------------------------------------------------------------       GENERIC: for CANVAS
 // ORIGIN
-var ORIGINCOLOR; // DARK.originColor;
+var ORIGINCOLOR;
 const ORIGINSIZE = 6;
 
 // AXES
@@ -15,7 +15,6 @@ const AXISTHICKNESS = 3;
 
 // GRID
 var GRIDCOLOR;
-
 const GRIDTHICKNESS = 1;
 
 // BOX
@@ -50,3 +49,16 @@ const EDGEDOTTED = [2, 4];
 var ARROWCOLOR;
 const ARROWTHICKNESS = 4;
 const HEADLENGTH = 14;
+
+// INTERSECTION
+var INTERSECTIONCOLOR;
+
+//----------------------------------------------------------------       GENERIC: positive, negative
+var POSITIVECOLOR;
+var NEGATIVECOLOR;
+var NEUTRALCOLOR;
+
+//----------------------------------------------------------------       GENERIC: general colors
+var THEMEAMBER;
+var THEMEPURPLE;
+var THEMETEAL;

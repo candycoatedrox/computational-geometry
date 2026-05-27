@@ -64,15 +64,15 @@
 <div>
 	<script>	
 		window.addEventListener('load', () => {
-		  const savedTheme = localStorage.getItem('theme');
-		  const button = document.querySelector('.theme-toggle span:last-child');
-		  if (savedTheme === 'light') {
-		    document.body.classList.add('light-theme');
-		    document.getElementById('theme-icon').textContent = '🌙';
-		    if (button) button.textContent = 'Dark Mode';
-		  };
-		  setColors();
-		  redrawActiveApp();
+			const savedTheme = localStorage.getItem('theme');
+			const button = document.querySelector('.theme-toggle span:last-child');
+			if (savedTheme === 'light') {
+				document.body.classList.add('light-theme');
+				document.getElementById('theme-icon').textContent = '🌙';
+				if (button) button.textContent = 'Dark Mode';
+			};
+			setColors();
+			redrawActiveApp();
 		});	
 		window.addEventListener('resize', () => {
 			redrawActiveApp();
@@ -90,6 +90,7 @@
     <div style="margin-top:10px">
 		<span class="badge"><a href=../RefFrame/refFrame.html>Ref Frame</a></span>
 		<span class="badge"><a href=basics.html>BASICS</a></span>
+		<span class="badge"><a href=../Triangle/triangle.html>Triangle</a></span>
     </div>
   </div>
   <button class="theme-toggle" onclick="toggleTheme()">

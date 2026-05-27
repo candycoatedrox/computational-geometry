@@ -45,7 +45,8 @@ class Point {
 	}
 	
 	draw(ctx, label = '', color = POINTCOLOR, size = POINTSIZE){
-		Draw.dot(ctx, this, size, color, label);
+		const labColor = (color === POINTCOLOR) ? POINTLABELCOLOR : color;
+		Draw.dot(ctx, this, size, color, label, labColor);
 	}
 	
 	translate(vec){

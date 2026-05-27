@@ -24,4 +24,14 @@ function setColors() {
 	LINECOLOR = colorSet.lineColor;
 	DOTTEDEDGECOLOR = colorSet.dottedEdgeColor;
 	ARROWCOLOR = colorSet.arrowColor;
+
+	INTERSECTIONCOLOR = colorSet.intersectionColor;
+
+	POSITIVECOLOR = colorSet.positiveColor;
+	NEGATIVECOLOR = colorSet.negativeColor;
+	NEUTRALCOLOR = colorSet.neutralColor;
+	
+	THEMEAMBER = colorSet.themeAmber;
+	THEMEPURPLE = colorSet.themePurple;
+	THEMETEAL = colorSet.themeTeal;
 }

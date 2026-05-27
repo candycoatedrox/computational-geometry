@@ -326,9 +326,6 @@ class EdgeApp {
 			if (this.dataC.ptsActive >= 1) activePts.push(this.dataC.head);
 			if (this.dataC.ptsActive === 2) activePts.push(this.dataC.tail);
 			
-			// TODO: only allow up to 2 points!!!
-
-
 			// find id of existing nearby point
 			this.locatorId = null;
 			activePts.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) this.locatorId = i; });

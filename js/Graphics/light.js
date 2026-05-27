@@ -13,9 +13,19 @@ const LIGHT = {
     pointLabelColor: COLORS.black,
 
     edgeColor: COLORS.black,
-    // faceColor: COLORS.black,
+    faceColor: COLORS.black,
 
     lineColor: COLORS.purple,
-    // dottedEdgeColor: COLORS.purple
-    // arrowColor: COLORS.blue
+    dottedEdgeColor: COLORS.purple,
+    arrowColor: COLORS.blue,
+
+    intersectionColor: COLORS.purple,
+
+    positiveColor: COLORS.emeraldGreen,
+    negativeColor: COLORS.reddish,
+    neutralColor: COLORS.black,
+
+    themeAmber: COLORS.amber,
+    themePurple: COLORS.purple,
+    themeTeal: COLORS.teal,
 }

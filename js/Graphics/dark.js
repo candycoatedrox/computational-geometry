@@ -13,9 +13,19 @@ const DARK = {
     pointLabelColor: COLORS.white,
 
     edgeColor: COLORS.white,
-    // faceColor: COLORS.white,
+    faceColor: COLORS.white,
 
     lineColor: COLORS.purple,
-    // dottedEdgeColor: COLORS.purple
-    // arrowColor: COLORS.red
+    dottedEdgeColor: COLORS.purple,
+    arrowColor: COLORS.red,
+
+    intersectionColor: COLORS.purple,
+
+    positiveColor: COLORS.emeraldGreen,
+    negativeColor: COLORS.reddish,
+    neutralColor: COLORS.white,
+
+    themeAmber: COLORS.amber,
+    themePurple: COLORS.purple,
+    themeTeal: COLORS.teal,
 }

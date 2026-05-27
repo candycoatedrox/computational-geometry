@@ -1,0 +1,264 @@
+class OrientationApp {
+	// constants: global names of i/o fields 
+	canvas = document.getElementById('canvas-orientationApp');
+	infoField = document.getElementById('orientationApp-points');
+
+    // gui
+	show = {
+		box: document.getElementById("showBox-orientationApp"),
+		origin: document.getElementById("showOrigin-orientationApp"),
+		axes: document.getElementById("showAxes-orientationApp"),
+		grid: document.getElementById("showGrid-orientationApp"),
+		points: document.getElementById("showPoints-orientationApp"),
+        segments: document.getElementById("showSegments-orientationApp"),
+        triangle: document.getElementById("showTriangle-orientationApp")
+	};
+	
+	buttons = {
+		leftTurn: document.getElementById("buttonLeft-orientationApp"),
+		rightTurn: document.getElementById("buttonRight-orientationApp"),
+		random: document.getElementById("buttonRandom-orientationApp"),
+		reset: document.getElementById("buttonReset-orientationApp"),
+	};
+	
+	// data
+	dataC = null;
+	dataW = null;
+
+    // mouse
+	locatorId = null;
+	
+	// view
+	graphics = null;
+
+    constructor() {
+        // init data
+		let boxC = new Box(500,500);
+		boxC.fromCanvas(this.canvas);
+		let rangeC = new Range(new MinMaxRange(0,500),new MinMaxRange(0,500));
+		rangeC.fromCanvas(this.canvas);
+		let originC = new Origin(0,0);
+		originC.fromCanvas(this.canvas);
+		let axesC = new Axes(100,-100);
+		
+		let aC = new Point(540, 275);
+        let bC = new Point(400, 150);
+        let cC = new Point(540, 75);    
+		let segABC = new OrientedSegment(aC, bC);
+		let segBCC = new OrientedSegment(bC, cC);
+
+		this.dataC = {
+            box: boxC,
+			origin: originC,
+            axes: axesC,
+            range: rangeC,
+
+			pointA: aC,
+            pointB: bC,
+            pointC: cC,
+            segmentAB: segABC,
+            segmentBC: segBCC
+		};
+
+		let boxPtsC = boxC.pts;	
+		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+        
+		let boxW = new Box(500,500);
+		boxW.setPoints(boxPtsW);
+		let rangeW = new Range(new MinMaxRange(0,1),new MinMaxRange(0,1)); 
+		rangeW.set(boxPtsW[0].x,boxPtsW[1].x,boxPtsW[3].y,boxPtsW[0].y);		
+		
+		let originW = new Origin(0,0);
+		let axesW = new Axes(1,1);
+		
+		let aW = ConvertPoint.canvasToWorldCoords(aC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+        let bW = ConvertPoint.canvasToWorldCoords(bC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+        let cW = ConvertPoint.canvasToWorldCoords(cC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		
+		this.dataW = {
+			box: boxW,
+			origin: originW,
+			axes: axesW,
+			range: rangeW,
+
+			pointA: aW,
+            pointB: bW,
+            pointC: cW
+		};
+		
+		// gui: set up actions
+		this.setupShowEvents();
+		this.setupButtonEvents();
+		this.setupMouseEvents();
+
+		// Init canvas / graphics
+		this.graphics = initCanvasGraphics(this.canvas);
+		//this.scene();
+		// NOTE: If scene() is run here, it runs before the "load" event, meaning setColors() hasn't been called yet.
+		// This appears to ONLY be a problem if scene() calls COLOR.translucent -- which Draw.triangleFilledOriented does -- at which point it draws everything before translucent is called in black, then throws an error and stops functioning completely?
+		// Either way, the "load" event itself runs redrawActiveApp(), so scene() isn't necessary here in the first place.
+
+		// Init/Update info field
+		this.updateInfo();
+    }
+	
+	// computations
+
+	// view
+	// graphics
+	scene() {
+        if (this.show.grid.checked) {
+			this.dataC.range.drawGrid(this.graphics, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		}
+		
+		if (this.show.box.checked) { 
+			this.dataC.box.draw(this.graphics);
+		}
+		
+		if (this.show.axes.checked) { 
+			this.dataC.axes.draw(this.graphics,this.dataC.origin);
+		}
+
+		if (this.show.origin.checked) { 
+			this.dataC.origin.draw(this.graphics);
+		}
+		
+		if (this.show.origin.checked) { 
+			this.dataC.origin.draw(this.graphics);
+		}
+
+		if (this.show.triangle.checked) {
+			Draw.triangleFilledOriented(this.graphics, this.dataC.pointA, this.dataC.pointB, this.dataC.pointC); // wrong orientation...??
+		}
+
+		if (this.show.segments.checked) {
+			this.dataC.segmentAB.draw(this.graphics, THEMETEAL);
+			this.dataC.segmentBC.draw(this.graphics, THEMEPURPLE);
+		}
+		
+		if (this.show.points.checked) {
+			this.dataC.pointA.draw(this.graphics, "A", THEMEAMBER);
+			this.dataC.pointB.draw(this.graphics, "B", THEMEAMBER);
+			this.dataC.pointC.draw(this.graphics, "C", THEMEAMBER);
+		}
+	}
+
+	// info
+	updateInfo() {
+		let ptsC = [this.dataC.pointA, this.dataC.pointB, this.dataC.pointC];
+		let ptsW = [this.dataW.pointA, this.dataW.pointB, this.dataW.pointC];
+		let labs = ["A","B","C"];
+		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
+		
+		this.infoField.innerHTML = res;
+    }
+
+	// actions for gui, affecting the view
+	// without dataC/W recalculation
+	refresh() {
+		this.graphics = initCanvasGraphics(this.canvas);
+		this.scene();
+		this.updateInfo();
+	}
+	// with dataC/W recalculations
+	computeAndRefresh() {
+		this.graphics = initCanvasGraphics(this.canvas);
+		this.dataC.box.fromCanvas(this.canvas);
+		this.dataC.origin.fromCanvas(this.canvas);
+		this.dataC.range.fromCanvas(this.canvas);
+		this.dataC.pointA.snapToCanvas(this.canvas);
+		this.dataC.pointB.snapToCanvas(this.canvas);
+		this.dataC.pointC.snapToCanvas(this.canvas);
+        
+		let boxPtsC = this.dataC.box.pts;	
+		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		this.dataW.box.setPoints(boxPtsW);
+		this.dataW.range.set(this.canvas);
+	
+        // world coordinates not updating??
+		this.dataW.pointA.coords = ConvertPoint.canvasToWorldCoords(this.dataC.pointA, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		this.dataW.pointB.coords = ConvertPoint.canvasToWorldCoords(this.dataC.pointB, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		this.dataW.pointC.coords = ConvertPoint.canvasToWorldCoords(this.dataC.pointC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+
+		this.scene();
+		this.updateInfo();
+	}
+	
+	// set up gui
+	// checkboxes
+	setupShowEvents() {
+		this.show.box.addEventListener("change", () => this.refresh());
+		this.show.origin.addEventListener("change", () => this.refresh());
+		this.show.axes.addEventListener("change", () => this.refresh());
+		this.show.grid.addEventListener("change", () => this.refresh());
+		this.show.points.addEventListener("change", () => this.refresh());
+		this.show.segments.addEventListener("change", () => this.refresh());
+		this.show.triangle.addEventListener("change", () => this.refresh());
+	}
+    // buttons
+    setupButtonEvents() {
+        
+        // NOT UPDATED!!!
+
+		this.buttons.leftTurn.addEventListener("click", () => {
+			if (this.dataC.ptsActive === 0) {
+				this.dataC.ptsActive = 1;
+			}
+			this.dataC.head.coords = Utils.makeRandomPoint(this.canvas);
+			this.computeAndRefresh();
+		});
+		
+		this.buttons.rightTurn.addEventListener("click", () => {
+			if (this.dataC.ptsActive === 0) {
+				this.dataC.head.coords = this.dataC.origin;
+			}
+			this.dataC.ptsActive = 2;
+			this.dataC.tail.coords = Utils.makeRandomPoint(this.canvas);
+			this.computeAndRefresh();
+		});
+		
+		this.buttons.random.addEventListener("click", () => {
+			this.dataC.ptsActive = 2;
+			const pts = Utils.makeRandomPoints(this.canvas, 2);
+			this.dataC.head.coords = pts[0];
+			this.dataC.tail.coords = pts[1];
+			this.computeAndRefresh();
+		});
+
+		this.buttons.reset.addEventListener("click", () => {
+			this.dataC.pointA.set(400, 100);
+			this.dataC.pointB.set(540, 200);
+			this.dataC.pointC.set(600, 300);
+			this.computeAndRefresh();
+		});
+    }
+	// mouse
+	setupMouseEvents() {
+		// MOUSE DOWN
+		this.canvas.addEventListener('mousedown', e => {
+			const canvasBounds = this.canvas.getBoundingClientRect();
+			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
+
+			let pts = [this.dataC.pointA, this.dataC.pointB, this.dataC.pointC];
+
+			// find id of existing nearby point
+			this.locatorId = null;
+			pts.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) this.locatorId = i; });
+		});
+		
+		// MOUSE MOVE
+		this.canvas.addEventListener('mousemove', e => {
+			if (this.locatorId === null) return; 			// no specific point to move - ignore the dragging
+			// else, update the coordinates of the dragged point; do not change the labels
+			const canvasBounds = this.canvas.getBoundingClientRect();
+			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
+            let pts = [this.dataC.pointA, this.dataC.pointB, this.dataC.pointC];
+			pts[this.locatorId].set(mx,my);
+			// visualize the effect
+			this.computeAndRefresh();
+		});
+		
+		// MOUSE UP
+		this.canvas.addEventListener('mouseup', () => { this.locatorId = null; });
+	}
+}

@@ -244,13 +244,14 @@ const Draw = {
 	    ctx.fill();
 	},
 	
-	triangleFilledOriented(ctx, A, B, C, orientation){
+	triangleFilledOriented(ctx, A, B, C, orientation = Orientation.orientation(A,B,C)){
 	    ctx.beginPath(); 
 		ctx.moveTo(A.x,A.y); 
 		ctx.lineTo(B.x,B.y); 
 		ctx.lineTo(C.x,C.y); 
 		ctx.closePath();
-		ctx.fillStyle = orientation === -1 ? COLORS.leftTurn : orientation === 1 ? COLORS.rightTurn : COLORS.white;
+		console.log(`orientation: ${orientation}`);
+		ctx.fillStyle = orientation === -1 ? COLORS.translucent(POSITIVECOLOR) : (orientation === 1 ? COLORS.translucent(NEGATIVECOLOR) : COLORS.translucent(NEUTRALCOLOR));
 	    ctx.fill();
 	}
 	
@@ -278,7 +279,7 @@ const Draw = {
 	// 	ctx.lineTo(B.x,B.y);
 	// 	ctx.lineTo(C.x,C.y);
 	// 	ctx.closePath();
-	// 	ctx.fillStyle = isLeftTurn ? COLORS.leftTurn :  COLORS.rightTurn ;
+	// 	ctx.fillStyle = isLeftTurn ? POSITIVECOLOR :  NEGATIVECOLOR ;
 	//     ctx.fill();
 	// },
 	

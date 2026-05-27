@@ -1,5 +1,18 @@
 // ─── COLORS ──────────────────────────────────────────
 const COLORS = {
+	translucent: (color) => { // returns the given color at 50% opacity
+		//console.log("color: " + color);
+		if (color.startsWith("#")) { // hex code
+			return color.substring(0,7) + "7f";
+		} else if (color.startsWith("rgba(")) { // rgba
+			let valStr = color.slice(5,-1);
+			let vals = valStr.split(",");
+			return `rgba(${vals[0]},${vals[1]},${vals[2]},0.5)`;
+		} else {
+			return color;
+		}
+	},
+
 	black: '#000000',
 	white: '#ffffff',
 	lightGray: 'rgba(204,204,204)',
@@ -8,7 +21,7 @@ const COLORS = {
 	red: '#FF0000', 
 	green:'#00FF00',
 	blue: '#0000FF', 
-	redish: '#f47c7c', 
+	reddish: '#f47c7c', 
 	darkishGreen: '#008000',
 	darkGreen: '#06402B',
 	limeGreen: '#C7EA46',
@@ -26,22 +39,20 @@ const COLORS = {
 	bg: '#111116', 
 	surface: '#1f1f24', 
 	border: '#2e2e38',
-	plus: '#f47c7c', // redish
+	plus: '#f47c7c', // reddish
 	minus: '#50C878', // emeraldGreen
 	yes:  '#50C878', // emeraldGreen
-	no: '#f47c7c', // redish
+	no: '#f47c7c', // reddish
 	undefined: '#7c6af7',
 	simple: '#6ef0a0', 		// simple polygon
-	notSimple: '#f47c7c',	// not simple polygon "redish"
+	notSimple: '#f47c7c',	// not simple polygon "reddish"
 	
 	in:  '#50C878', // emeraldGreen
-	out: '#f47c7c', // redish
+	out: '#f47c7c', // reddish
 	
 	pointed:  '#50C878', // emeraldGreen
-	notPointed: '#f47c7c', // redish
+	notPointed: '#f47c7c', // reddish
 	
-	leftTurn:  '#50C878', // emeraldGreen
-	rightTurn: '#f47c7c', // redish
 	// minus: '#2E8B57' // seaGreen
 	// minus: '#06402B' // darkGreen
 	

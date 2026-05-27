@@ -201,7 +201,7 @@ class PointsApp {
 			// else, update the coordinates of the dragged point; do not change the labels
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
-			this.dataC.points[this.locatorId].coords = {x:mx,y:my};
+			this.dataC.points[this.locatorId].set(mx,my);
 			// visualize the effect
             this.graphics = initCanvasGraphics(this.canvas);
 			this.scene();
