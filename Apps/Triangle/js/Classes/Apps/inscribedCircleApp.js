@@ -1,24 +1,26 @@
-class OrientationApp {
-	// constants: global names of i/o fields 
-	canvas = document.getElementById('canvas-orientationApp');
-	infoField = document.getElementById('orientationApp-points');
+class InscribedCircleApp {
+    // constants: global names of i/o fields 
+	canvas = document.getElementById('canvas-inscribedCircleApp');
+	infoField = document.getElementById('inscribedCircleApp-points');
 
     // gui
 	show = {
-		box: document.getElementById("showBox-orientationApp"),
-		origin: document.getElementById("showOrigin-orientationApp"),
-		axes: document.getElementById("showAxes-orientationApp"),
-		grid: document.getElementById("showGrid-orientationApp"),
-		points: document.getElementById("showPoints-orientationApp"),
-        segments: document.getElementById("showSegments-orientationApp"),
-        fill: document.getElementById("showFill-orientationApp")
+		box: document.getElementById("showBox-inscribedCircleApp"),
+		origin: document.getElementById("showOrigin-inscribedCircleApp"),
+		axes: document.getElementById("showAxes-inscribedCircleApp"),
+		grid: document.getElementById("showGrid-inscribedCircleApp"),
+		vertices: document.getElementById("showVertices-inscribedCircleApp"),
+        segments: document.getElementById("showSegments-inscribedCircleApp"),
+        fill: document.getElementById("showFill-inscribedCircleApp"),
+        bisectors: document.getElementById("showBisectors-inscribedCircleApp"),
+        circle: document.getElementById("showCircle-inscribedCircleApp")
 	};
 	
 	buttons = {
-		leftTurn: document.getElementById("buttonLeft-orientationApp"),
-		rightTurn: document.getElementById("buttonRight-orientationApp"),
-		random: document.getElementById("buttonRandom-orientationApp"),
-		reset: document.getElementById("buttonReset-orientationApp"),
+		leftTurn: document.getElementById("buttonLeft-inscribedCircleApp"),
+		rightTurn: document.getElementById("buttonRight-inscribedCircleApp"),
+		random: document.getElementById("buttonRandom-inscribedCircleApp"),
+		reset: document.getElementById("buttonReset-inscribedCircleApp"),
 	};
 	
 	// data
@@ -44,8 +46,9 @@ class OrientationApp {
 		let aC = new Point(540, 275);
         let bC = new Point(400, 150);
         let cC = new Point(540, 75);
-		let segABC = new OrientedSegment(aC, bC);
-		let segBCC = new OrientedSegment(bC, cC);
+		let segABC = new Segment(aC, bC);
+		let segBCC = new Segment(bC, cC);
+        let segACC = new Segment(aC, cC);
 
 		this.dataC = {
             box: boxC,
@@ -53,11 +56,12 @@ class OrientationApp {
             axes: axesC,
             range: rangeC,
 
-			pointA: aC,
-            pointB: bC,
-            pointC: cC,
+			triangleA: aC,
+            triangleB: bC,
+            triangleC: cC,
             segmentAB: segABC,
-            segmentBC: segBCC
+            segmentBC: segBCC,
+            segmentAC: segACC,
 		};
 
 		let boxPtsC = boxC.pts;	
@@ -74,6 +78,7 @@ class OrientationApp {
 		let aW = new Point(0,0);
         let bW = new Point(0,0);
         let cW = new Point(0,0);
+        let ptW = new Point(0,0);
 		
 		this.dataW = {
 			box: boxW,
@@ -81,9 +86,11 @@ class OrientationApp {
 			axes: axesW,
 			range: rangeW,
 
-			pointA: aW,
-            pointB: bW,
-            pointC: cW
+			triangleA: aW,
+            triangleB: bW,
+            triangleC: cW,
+
+            point: ptW
 		};
 		
 		// gui: set up actions
@@ -127,26 +134,37 @@ class OrientationApp {
 			this.dataC.origin.draw(this.graphics);
 		}
 
+        let triangleColor = POSITIVECOLOR; // calculation here
+
 		if (this.show.fill.checked) {
-			Draw.triangleFilledOriented(this.graphics, this.dataC.pointA, this.dataC.pointB, this.dataC.pointC); // wrong orientation...??
+			Draw.triangleFilled(this.graphics, this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, COLORS.translucent(triangleColor));
 		}
 
 		if (this.show.segments.checked) {
-			this.dataC.segmentAB.draw(this.graphics, THEMETEAL);
-			this.dataC.segmentBC.draw(this.graphics, THEMEPURPLE);
+			this.dataC.segmentAB.draw(this.graphics, triangleColor);
+			this.dataC.segmentBC.draw(this.graphics, triangleColor);
+			this.dataC.segmentAC.draw(this.graphics, triangleColor);
 		}
+
+        if (this.show.bisectors.checked) {
+            
+        }
+
+        if (this.show.circle.checked) {
+            
+        }
 		
-		if (this.show.points.checked) {
-			this.dataC.pointA.draw(this.graphics, "A");
-			this.dataC.pointB.draw(this.graphics, "B");
-			this.dataC.pointC.draw(this.graphics, "C");
+		if (this.show.vertices.checked) {
+			this.dataC.triangleA.draw(this.graphics, "A", triangleColor);
+			this.dataC.triangleB.draw(this.graphics, "B", triangleColor);
+			this.dataC.triangleC.draw(this.graphics, "C", triangleColor);
 		}
 	}
 
 	// info
 	updateInfo() {
-		let ptsC = [this.dataC.pointA, this.dataC.pointB, this.dataC.pointC];
-		let ptsW = [this.dataW.pointA, this.dataW.pointB, this.dataW.pointC];
+		let ptsC = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC];
+		let ptsW = [this.dataW.triangleA, this.dataW.triangleB, this.dataW.triangleC];
 		let labs = ["A","B","C"];
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
@@ -166,18 +184,18 @@ class OrientationApp {
 		this.dataC.box.fromCanvas(this.canvas);
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
-		this.dataC.pointA.snapToCanvas(this.canvas);
-		this.dataC.pointB.snapToCanvas(this.canvas);
-		this.dataC.pointC.snapToCanvas(this.canvas);
+		this.dataC.triangleA.snapToCanvas(this.canvas);
+		this.dataC.triangleB.snapToCanvas(this.canvas);
+		this.dataC.triangleC.snapToCanvas(this.canvas);
         
 		let boxPtsC = this.dataC.box.pts;	
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.box.setPoints(boxPtsW);
 		this.dataW.range.set(this.canvas);
 	
-		this.dataW.pointA.coords = ConvertPoint.canvasToWorldCoords(this.dataC.pointA, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-		this.dataW.pointB.coords = ConvertPoint.canvasToWorldCoords(this.dataC.pointB, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-		this.dataW.pointC.coords = ConvertPoint.canvasToWorldCoords(this.dataC.pointC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		this.dataW.triangleA.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleA, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		this.dataW.triangleB.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleB, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		this.dataW.triangleC.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 
 		this.scene();
 		this.updateInfo();
@@ -190,38 +208,43 @@ class OrientationApp {
 		this.show.origin.addEventListener("change", () => this.refresh());
 		this.show.axes.addEventListener("change", () => this.refresh());
 		this.show.grid.addEventListener("change", () => this.refresh());
-		this.show.points.addEventListener("change", () => this.refresh());
+		this.show.vertices.addEventListener("change", () => this.refresh());
 		this.show.segments.addEventListener("change", () => this.refresh());
 		this.show.fill.addEventListener("change", () => this.refresh());
+		this.show.bisectors.addEventListener("change", () => this.refresh());
+		this.show.circle.addEventListener("change", () => this.refresh());
 	}
     // buttons
     setupButtonEvents() {
+
+        // NOT UPDATED !!!
+
 		this.buttons.leftTurn.addEventListener("click", () => {
-			this.dataC.pointA.set(375, 250);
-			this.dataC.pointB.set(375, 100);
-			this.dataC.pointC.set(225, 100);
+			this.dataC.triangleA.set(375, 250);
+			this.dataC.triangleB.set(375, 100);
+			this.dataC.triangleC.set(225, 100);
 			this.computeAndRefresh();
 		});
 		
 		this.buttons.rightTurn.addEventListener("click", () => {
-			this.dataC.pointA.set(375, 250);
-			this.dataC.pointB.set(375, 100);
-			this.dataC.pointC.set(525, 100);
+			this.dataC.triangleA.set(375, 250);
+			this.dataC.triangleB.set(375, 100);
+			this.dataC.triangleC.set(525, 100);
 			this.computeAndRefresh();
 		});
 		
 		this.buttons.random.addEventListener("click", () => {
 			const pts = Utils.makeRandomPoints(this.canvas, 3);
-			this.dataC.pointA.coords = pts[0];
-			this.dataC.pointB.coords = pts[1];
-			this.dataC.pointC.coords = pts[2];
+			this.dataC.triangleA.coords = pts[0];
+			this.dataC.triangleB.coords = pts[1];
+			this.dataC.triangleC.coords = pts[2];
 			this.computeAndRefresh();
 		});
 
 		this.buttons.reset.addEventListener("click", () => {
-			this.dataC.pointA.set(540, 275);
-			this.dataC.pointB.set(400, 150);
-			this.dataC.pointC.set(540, 75);
+			this.dataC.triangleA.set(540, 275);
+			this.dataC.triangleB.set(400, 150);
+			this.dataC.triangleC.set(540, 75);
 			this.computeAndRefresh();
 		});
     }
@@ -232,7 +255,7 @@ class OrientationApp {
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
 
-			let pts = [this.dataC.pointA, this.dataC.pointB, this.dataC.pointC];
+			let pts = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC];
 
 			// find id of existing nearby point
 			this.locatorId = null;
@@ -245,7 +268,7 @@ class OrientationApp {
 			// else, update the coordinates of the dragged point; do not change the labels
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
-            let pts = [this.dataC.pointA, this.dataC.pointB, this.dataC.pointC];
+            let pts = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC];
 			pts[this.locatorId].set(mx,my);
 			// visualize the effect
 			this.computeAndRefresh();

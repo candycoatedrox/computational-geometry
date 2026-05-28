@@ -57,6 +57,10 @@
 	<!-- Mini-apps -->
 	<script src="js/Classes/Apps/orientationApp.js"></script>
 	<script src="js/Classes/Apps/lineSegIntersectApp.js"></script>
+	<script src="js/Classes/Apps/pointInTriangleApp.js"></script>
+	<script src="js/Classes/Apps/pointednessApp.js"></script>
+	<script src="js/Classes/Apps/inscribedCircleApp.js"></script>
+	<script src="js/Classes/Apps/circumscribedCircleApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
 <div>
@@ -101,6 +105,10 @@
 <nav> 
 	<button class="active" data-tab="orientationApp">Orientation</button>
 	<button data-tab="lineSegIntersectApp">Line Segment Intersection</button>
+	<button data-tab="pointInTriangleApp">Point in Triangle</button>
+	<button data-tab="pointednessApp">Pointedness</button>
+	<button data-tab="inscribedCircleApp">Inscribed Circle</button>
+	<button data-tab="circumscribedCircleApp">Circumscribed Circle</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -147,7 +155,7 @@
 			<br>
 			<label><input type="checkbox" id="showPoints-orientationApp" checked> Points</label>
 			<label><input type="checkbox" id="showSegments-orientationApp" checked> Line Segments</label>
-			<label><input type="checkbox" id="showTriangle-orientationApp" checked> Triangle</label>
+			<label><input type="checkbox" id="showFill-orientationApp" checked> Fill</label>
 		</div>
 		<div class="panel-section">
 			<h3>Coordinates</h3>
@@ -205,6 +213,172 @@
 	</div>
 </div>
 
+<!-- >═══════════════════════════════════════════════════
+     TAB 3 — POINT IN TRIANGLE APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container active" id="tab-pointInTriangleApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-pointInTriangleApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize and edit a point
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-pointInTriangleApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-pointInTriangleApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-pointInTriangleApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-pointInTriangleApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showVertices-pointInTriangleApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showSegments-pointInTriangleApp" checked> Line Segments</label>
+			<label><input type="checkbox" id="showFill-pointInTriangleApp" checked> Fill</label>
+			<br>
+			<label><input type="checkbox" id="showPoint-pointInTriangleApp" checked> Point</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="pointInTriangleApp-list" id="pointInTriangleApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonLeft-pointInTriangleApp">Left Turn</button>
+				<button class="pill" id="buttonRight-pointInTriangleApp">Right Turn</button>
+				<button class="pill" id="buttonRandom-pointInTriangleApp">Generate Random</button>
+				<button class="pill danger" id="buttonReset-pointInTriangleApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- >═══════════════════════════════════════════════════
+     TAB 4 — POINTEDNESS APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container active" id="tab-pointednessApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-pointednessApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize and edit a point
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-pointednessApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-pointednessApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-pointednessApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-pointednessApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showVertices-pointednessApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showSegments-pointednessApp" checked> Line Segments</label>
+			<label><input type="checkbox" id="showFill-pointednessApp" checked> Fill</label>
+			<br>
+			<label><input type="checkbox" id="showPoint-pointednessApp" checked> Point</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="pointednessApp-list" id="pointednessApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonLeft-pointednessApp">Left Turn</button>
+				<button class="pill" id="buttonRight-pointednessApp">Right Turn</button>
+				<button class="pill" id="buttonRandom-pointednessApp">Generate Random</button>
+				<button class="pill danger" id="buttonReset-pointednessApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- >═══════════════════════════════════════════════════
+     TAB 5 — INSCRIBED CIRCLE APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container active" id="tab-inscribedCircleApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-inscribedCircleApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize and edit a point
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-inscribedCircleApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-inscribedCircleApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-inscribedCircleApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-inscribedCircleApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showVertices-inscribedCircleApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showSegments-inscribedCircleApp" checked> Line Segments</label>
+			<label><input type="checkbox" id="showFill-inscribedCircleApp" checked> Fill</label>
+			<br>
+			<label><input type="checkbox" id="showBisectors-inscribedCircleApp" checked> Bisectors</label>
+			<label><input type="checkbox" id="showCircle-inscribedCircleApp" checked> Circle</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="inscribedCircleApp-list" id="inscribedCircleApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonLeft-inscribedCircleApp">Left Turn</button>
+				<button class="pill" id="buttonRight-inscribedCircleApp">Right Turn</button>
+				<button class="pill" id="buttonRandom-inscribedCircleApp">Generate Random</button>
+				<button class="pill danger" id="buttonReset-inscribedCircleApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- >═══════════════════════════════════════════════════
+     TAB 6 — CIRCUMSCRIBED CIRCLE APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container active" id="tab-circumscribedCircleApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-circumscribedCircleApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize and edit a point
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-circumscribedCircleApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-circumscribedCircleApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-circumscribedCircleApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-circumscribedCircleApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showVertices-circumscribedCircleApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showSegments-circumscribedCircleApp" checked> Line Segments</label>
+			<label><input type="checkbox" id="showFill-circumscribedCircleApp" checked> Fill</label>
+			<br>
+			<label><input type="checkbox" id="showBisectors-circumscribedCircleApp" checked> Bisectors</label>
+			<label><input type="checkbox" id="showCircle-circumscribedCircleApp" checked> Circle</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="circumscribedCircleApp-list" id="circumscribedCircleApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonLeft-circumscribedCircleApp">Left Turn</button>
+				<button class="pill" id="buttonRight-circumscribedCircleApp">Right Turn</button>
+				<button class="pill" id="buttonRandom-circumscribedCircleApp">Generate Random</button>
+				<button class="pill danger" id="buttonReset-circumscribedCircleApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 	
 <!-- .................................................................................................
      JS: INITIALIZE and START EXECUTION of ACTIVE TAB-APP 
@@ -214,6 +388,10 @@
 	<script>
 		var ORIENTATIONAPP = new OrientationApp();
 		var LINESEGINTERSECTAPP = new LineSegIntersectionApp();
+		var POINTINTRIANGLEAPP = new PointInTriangleApp();
+		var POINTEDNESSAPP = new PointednessApp();
+		var INSCRIBEDCIRCLEAPP = new InscribedCircleApp();
+		var CIRCUMSCRIBEDCIRCLEAPP = new CircumscribedCircleApp();
 	</script>
 </div>	
 <!-- Draw active app -->	

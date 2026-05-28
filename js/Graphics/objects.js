@@ -6,7 +6,7 @@ const Draw = {
 	clearCanvas(cv){
 		const ctx = cv.getContext('2d');
 		const w = cv.width, h = cv.height;
-		ctx.clearRect(0,0,w,h); 
+		ctx.clearRect(0,0,w,h);
 	},
 	
 	// arrow(ctx, A, B, color = ARROWCOLOR, width = ARROWTHICKNESS, headlen = HEADLENGTH) {
@@ -63,33 +63,34 @@ const Draw = {
 		Draw.edges(ctx, bx.pts, bx.edges, color, width);
 	},
 	
-	circle(ctx, p, r, color = COLORS.white) {
-	  ctx.beginPath(); 
+	circle(ctx, p, r, color = COLORS.white, width = EDGETHICKNESS) {
+	  ctx.beginPath();
 	  ctx.setLineDash([]);
-	  ctx.strokeStyle = color; 
+	  ctx.strokeStyle = color;
+	  ctx.lineWidth = width;
 	  ctx.arc(p.x, p.y, r, 0, Math.PI*2);
 	  ctx.stroke();
 	},
 	
 	disk(ctx, p, r, color = COLORS.white, label='') {
-	  ctx.beginPath(); 
+	  ctx.beginPath();
 	  ctx.arc(p.x, p.y, r, 0, Math.PI*2);
-	  ctx.fillStyle = color; 
+	  ctx.fillStyle = color;
 	  ctx.fill();
 	  if (label) {
-	    ctx.fillStyle = color; 
+	    ctx.fillStyle = color;
 		ctx.font = 'bold 13px Syne, sans-serif';
 	    ctx.fillText(label, p.x + r + 5, p.y - r - 2);
 	  }
 	},
 	
 	dot(ctx, p, r, color, label='', labelColor=POINTLABELCOLOR) {
-		ctx.fillStyle = color; 
-		ctx.beginPath(); 
+		ctx.fillStyle = color;
+		ctx.beginPath();
 		ctx.arc(p.x, p.y, r, 0, Math.PI*2);
 		ctx.fill();
 		if (label) {
-			ctx.fillStyle = labelColor; 
+			ctx.fillStyle = labelColor;
 			ctx.font = 'bold 13px Syne, sans-serif';
 			ctx.fillText(label, p.x + r + 5, p.y - r - 2);
 		}
@@ -108,10 +109,10 @@ const Draw = {
 	},
 	
 	edge(ctx, A, B, color = EDGECOLOR, width = EDGETHICKNESS){
-	    ctx.strokeStyle = color; 
-		ctx.lineWidth = width; 
-	    ctx.beginPath(); 
-		ctx.moveTo(A.x,A.y); 
+	    ctx.strokeStyle = color;
+		ctx.lineWidth = width;
+	    ctx.beginPath();
+		ctx.moveTo(A.x,A.y);
 		ctx.lineTo(B.x,B.y);
 		ctx.stroke();
 	},
@@ -125,18 +126,18 @@ const Draw = {
 	},
 	
 	edgeDotted(ctx, A, B, color = DOTTEDEDGECOLOR, width = DOTTEDEDGETHICKNESS, dotted = EDGEDOTTED){
-	    ctx.beginPath(); 
-		ctx.moveTo(A.x,A.y); 
+	    ctx.beginPath();
+		ctx.moveTo(A.x,A.y);
 		ctx.lineTo(B.x,B.y);
-	    ctx.strokeStyle = color; 
-		ctx.setLineDash(dotted); // 2px dots, 4px gaps
-		ctx.lineWidth = width; 
+	    ctx.strokeStyle = color;
+		ctx.setLineDash(dotted);// 2px dots, 4px gaps
+		ctx.lineWidth = width;
 		ctx.stroke();
 		ctx.setLineDash([]);
 	},
 	
 	face(ctx, pts, face, color = FACECOLOR){
-	    ctx.beginPath(); 
+	    ctx.beginPath();
 		const n = face.length;
 		ctx.fillStyle = color;
 		// ctx.lineWidth = 3;
@@ -169,31 +170,31 @@ const Draw = {
 		ctx.lineWidth = GRIDTHICKNESS;
 		
 		for (let i = origin.x ; i < range.xRange.xMax; i += xAxis.x) { 
-			ctx.beginPath(); 
+			ctx.beginPath();
 			ctx.moveTo(i, range.yRange.yMin);
 			ctx.lineTo(i, range.yRange.yMax);
-			ctx.stroke(); 
+			ctx.stroke();
 		}
 		
 		for (let i = origin.x ; i > range.xRange.xMin; i -= xAxis.x) { 
-			ctx.beginPath(); 
+			ctx.beginPath();
 			ctx.moveTo(i, range.yRange.yMin);
 			ctx.lineTo(i, range.yRange.yMax);
-			ctx.stroke(); 
+			ctx.stroke();
 		}
 		
 		for (let i = origin.y ; i < range.yRange.yMax; i += yAxis.y) { 
-			ctx.beginPath(); 
+			ctx.beginPath();
 			ctx.moveTo(range.xRange.xMin, i);
 			ctx.lineTo(range.xRange.xMax, i);
-			ctx.stroke(); 
+			ctx.stroke();
 		}
 		
 		for (let i = origin.y ; i > range.yRange.yMin; i -= yAxis.y) { 
-			ctx.beginPath(); 
+			ctx.beginPath();
 			ctx.moveTo(range.xRange.xMin, i);
 			ctx.lineTo(range.xRange.xMax, i);
-			ctx.stroke(); 
+			ctx.stroke();
 		}
 	},
 	
@@ -204,21 +205,21 @@ const Draw = {
 	    ctx.beginPath();
 	    ctx.moveTo(A.x - dx/len*400, A.y - dy/len*400);
 	    ctx.lineTo(B.x + dx/len*400, B.y + dy/len*400);
-		ctx.strokeStyle = color; 
-		ctx.lineWidth = width; 
+		ctx.strokeStyle = color;
+		ctx.lineWidth = width;
 		ctx.setLineDash([4,4]);
-	    ctx.stroke(); 
+	    ctx.stroke();
 		ctx.setLineDash([3,3]);
 	},
 	
 	sector(ctx, p, r, angleStart, angleEnd, color = COLORS.white, label='') {
-  	  ctx.beginPath(); 
+  	  ctx.beginPath();
   	  ctx.setLineDash([]);
-  	  ctx.strokeStyle = color; 
+  	  ctx.strokeStyle = color;
   	  ctx.arc(p.x, p.y, r, angleStart, angleEnd);
   	  ctx.stroke();
 	  if (label) {
-	    ctx.fillStyle = color; 
+	    ctx.fillStyle = color;
 		ctx.font = 'bold 13px Syne, sans-serif';
 	    ctx.fillText(label, p.x + r + 5, p.y - r - 2);
 	  }
@@ -226,29 +227,29 @@ const Draw = {
 	
 	// currently, same as edge
 	segment(ctx, A, B, color = EDGECOLOR, width = EDGETHICKNESS){
-	    ctx.beginPath(); 
-		ctx.moveTo(A.x,A.y); 
+	    ctx.beginPath();
+		ctx.moveTo(A.x,A.y);
 		ctx.lineTo(B.x,B.y);
-	    ctx.strokeStyle = color; 
-		ctx.lineWidth = width; 
+	    ctx.strokeStyle = color;
+		ctx.lineWidth = width;
 		ctx.stroke();
 	},
 	
-	triangleFilled(ctx, A, B, C, color){
-	    ctx.beginPath(); 
-		ctx.moveTo(A.x,A.y); 
-		ctx.lineTo(B.x,B.y); 
-		ctx.lineTo(C.x,C.y); 
+	triangleFilled(ctx, A, B, C, color = COLORS.white){
+	    ctx.beginPath();
+		ctx.moveTo(A.x,A.y);
+		ctx.lineTo(B.x,B.y);
+		ctx.lineTo(C.x,C.y);
 		ctx.closePath();
 		ctx.fillStyle = color;
 	    ctx.fill();
 	},
 	
 	triangleFilledOriented(ctx, A, B, C, orientation = Orientation.orientation(A,B,C)){
-	    ctx.beginPath(); 
-		ctx.moveTo(A.x,A.y); 
-		ctx.lineTo(B.x,B.y); 
-		ctx.lineTo(C.x,C.y); 
+	    ctx.beginPath();
+		ctx.moveTo(A.x,A.y);
+		ctx.lineTo(B.x,B.y);
+		ctx.lineTo(C.x,C.y);
 		ctx.closePath();
 		console.log(`orientation: ${orientation}`);
 		ctx.fillStyle = orientation === -1 ? COLORS.translucent(POSITIVECOLOR) : (orientation === 1 ? COLORS.translucent(NEGATIVECOLOR) : COLORS.translucent(NEUTRALCOLOR));
