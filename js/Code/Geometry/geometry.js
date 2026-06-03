@@ -65,6 +65,16 @@ const Orientation = {
 };
 
 const Geometry1 = {
+
+  angleBisector(A, B, C) {
+    let uCoords = A.distanceToCoords(B);
+    let vCoords = A.distanceToCoords(C);
+    let uVec = new Vector(uCoords.x, uCoords.y);
+    let vVec = new Vector(vCoords.x, vCoords.y);
+
+    let result = vVec.multiply(uVec.vectorLength()).add(uVec.multiply(vVec.vectorLength()));
+    return result;
+  },
 	
 	ccwAngle(A, B, C) {	  
 		const a2 = this.distanceSq(B,C);
@@ -121,6 +131,19 @@ const Geometry1 = {
 		const dxy = dx * dx + dy * dy;
 		return dxy;
 	},
+
+  inscribedCircleRadius(A,B,C) {
+    const a = this.distance(B,C);
+    const b = this.distance(A,C);
+    const c = this.distance(A,B);
+    const s = (a+b+c)/2;
+
+    let angleA = this.ccwAngle(A,B,C);
+    if (angleA > Math.PI) angleA = 2*Math.PI - angleA; // get the smallest angle between them
+
+    const r = (s-a) * Math.tan(angleA/2); // HM. THIS IS WRONG.
+    return r;
+  },
 	
 	isPerpendicular(seg, edgeVec) {
       const ux = seg.bx - seg.ax, uy = seg.by - seg.ay;

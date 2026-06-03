@@ -293,3 +293,18 @@ const ConvertPoints = {
 		return res;
 	}
 }
+
+const ConvertLength = {
+
+	// maybe edit this later -- currently works under the assumption that x and y axes MUST be of equal length
+
+	canvasToWorldLength(lengthC, xAxisC, yAxisC) {
+		return lengthC / xAxisC.x;
+	},
+
+	// NOT TESTED
+	worldToCanvasLength(lengthW, xAxisLgC, yAxisLgC) {
+		return lengthW * xAxisLgC;
+	}
+
+}

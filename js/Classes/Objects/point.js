@@ -26,6 +26,11 @@ class Point {
 		this.y = this.y + y;
   	}
 
+	addToVec(vec) {
+		this.x = this.x + vec.x;
+		this.y = this.y + vec.y;
+	}
+
 	snapToCanvas(canvas) {
 		// add a second version of this for world coordinates -- centers around origin instead of (0,0) in canvas coords
 		const r = canvas.getBoundingClientRect();

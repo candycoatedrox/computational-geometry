@@ -41,6 +41,15 @@ class Vector extends Point{
 		super.x = super.x + vec.x;
 		super.y = super.y + vec.y;
 	}
+
+	multiply(c) {
+		return new Vector(this.x * c, this.y * c);
+	}
+
+	multiplyBy(c) {
+		this.x *= c;
+		this.y *= c;
+	}
 	
 	static fromPairPoints(a, b) {
 		const dx = b.x - a.x;

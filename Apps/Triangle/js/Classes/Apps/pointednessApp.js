@@ -257,9 +257,6 @@ class PointednessApp {
 	}
     // buttons
     setupButtonEvents() {
-
-        // NOT UPDATED !!!
-
 		this.buttons.pointed.addEventListener("click", () => {
 			this.dataC.triangleA.set(375, 225);
 			this.dataC.triangleB.set(200, 175);

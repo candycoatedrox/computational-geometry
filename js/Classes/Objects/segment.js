@@ -3,6 +3,12 @@ class Segment {
 		this.tail = p1;
 		this.head = p2;
 	}
+
+	getVector() {
+		let dx = this.head.x - this.tail.x;
+		let dy = this.head.y - this.tail.y;
+		return new Vector(dx, dy);
+	}
 	
 	draw(ctx, color = EDGECOLOR, width = EDGETHICKNESS){
   	  	Draw.segment(ctx, this.tail, this.head, color, width);

@@ -11,14 +11,11 @@ class CircumscribedCircleApp {
 		grid: document.getElementById("showGrid-circumscribedCircleApp"),
 		vertices: document.getElementById("showVertices-circumscribedCircleApp"),
         segments: document.getElementById("showSegments-circumscribedCircleApp"),
-        fill: document.getElementById("showFill-circumscribedCircleApp"),
         bisectors: document.getElementById("showBisectors-circumscribedCircleApp"),
         circle: document.getElementById("showCircle-circumscribedCircleApp")
 	};
 	
 	buttons = {
-		leftTurn: document.getElementById("buttonLeft-circumscribedCircleApp"),
-		rightTurn: document.getElementById("buttonRight-circumscribedCircleApp"),
 		random: document.getElementById("buttonRandom-circumscribedCircleApp"),
 		reset: document.getElementById("buttonReset-circumscribedCircleApp"),
 	};
@@ -78,7 +75,6 @@ class CircumscribedCircleApp {
 		let aW = new Point(0,0);
         let bW = new Point(0,0);
         let cW = new Point(0,0);
-        let ptW = new Point(0,0);
 		
 		this.dataW = {
 			box: boxW,
@@ -88,9 +84,7 @@ class CircumscribedCircleApp {
 
 			triangleA: aW,
             triangleB: bW,
-            triangleC: cW,
-
-            point: ptW
+            triangleC: cW
 		};
 		
 		// gui: set up actions
@@ -135,10 +129,6 @@ class CircumscribedCircleApp {
 		}
 
         let triangleColor = POSITIVECOLOR; // calculation here
-
-		if (this.show.fill.checked) {
-			Draw.triangleFilled(this.graphics, this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, COLORS.translucent(triangleColor));
-		}
 
 		if (this.show.segments.checked) {
 			this.dataC.segmentAB.draw(this.graphics, triangleColor);
@@ -210,29 +200,11 @@ class CircumscribedCircleApp {
 		this.show.grid.addEventListener("change", () => this.refresh());
 		this.show.vertices.addEventListener("change", () => this.refresh());
 		this.show.segments.addEventListener("change", () => this.refresh());
-		this.show.fill.addEventListener("change", () => this.refresh());
 		this.show.bisectors.addEventListener("change", () => this.refresh());
 		this.show.circle.addEventListener("change", () => this.refresh());
 	}
     // buttons
     setupButtonEvents() {
-
-        // NOT UPDATED !!!
-
-		this.buttons.leftTurn.addEventListener("click", () => {
-			this.dataC.triangleA.set(375, 250);
-			this.dataC.triangleB.set(375, 100);
-			this.dataC.triangleC.set(225, 100);
-			this.computeAndRefresh();
-		});
-		
-		this.buttons.rightTurn.addEventListener("click", () => {
-			this.dataC.triangleA.set(375, 250);
-			this.dataC.triangleB.set(375, 100);
-			this.dataC.triangleC.set(525, 100);
-			this.computeAndRefresh();
-		});
-		
 		this.buttons.random.addEventListener("click", () => {
 			const pts = Utils.makeRandomPoints(this.canvas, 3);
 			this.dataC.triangleA.coords = pts[0];

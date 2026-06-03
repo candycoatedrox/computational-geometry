@@ -229,9 +229,6 @@ class PointInTriangleApp {
 	}
     // buttons
     setupButtonEvents() {
-
-        // NOT UPDATED !!!
-
 		this.buttons.inside.addEventListener("click", () => {
 			this.dataC.triangleA.set(250, 100);
 			this.dataC.triangleB.set(400, 175);

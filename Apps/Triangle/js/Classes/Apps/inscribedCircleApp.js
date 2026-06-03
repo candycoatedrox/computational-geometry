@@ -11,14 +11,12 @@ class InscribedCircleApp {
 		grid: document.getElementById("showGrid-inscribedCircleApp"),
 		vertices: document.getElementById("showVertices-inscribedCircleApp"),
         segments: document.getElementById("showSegments-inscribedCircleApp"),
-        fill: document.getElementById("showFill-inscribedCircleApp"),
         bisectors: document.getElementById("showBisectors-inscribedCircleApp"),
+        center: document.getElementById("showCenter-inscribedCircleApp"),
         circle: document.getElementById("showCircle-inscribedCircleApp")
 	};
 	
 	buttons = {
-		leftTurn: document.getElementById("buttonLeft-inscribedCircleApp"),
-		rightTurn: document.getElementById("buttonRight-inscribedCircleApp"),
 		random: document.getElementById("buttonRandom-inscribedCircleApp"),
 		reset: document.getElementById("buttonReset-inscribedCircleApp"),
 	};
@@ -50,6 +48,11 @@ class InscribedCircleApp {
 		let segBCC = new Segment(bC, cC);
         let segACC = new Segment(aC, cC);
 
+		let bisectAC = new Segment(aC, new Point(0,0));
+		let bisectBC = new Segment(bC, new Point(0,0));
+		let bisectCC = new Segment(cC, new Point(0,0));
+		let centerC = new Point(0,0);
+
 		this.dataC = {
             box: boxC,
 			origin: originC,
@@ -62,6 +65,12 @@ class InscribedCircleApp {
             segmentAB: segABC,
             segmentBC: segBCC,
             segmentAC: segACC,
+
+			bisectorA: bisectAC,
+			bisectorB: bisectBC,
+			bisectorC: bisectCC,
+			center: centerC,
+			radius: 50
 		};
 
 		let boxPtsC = boxC.pts;	
@@ -78,7 +87,7 @@ class InscribedCircleApp {
 		let aW = new Point(0,0);
         let bW = new Point(0,0);
         let cW = new Point(0,0);
-        let ptW = new Point(0,0);
+		let centerW = new Point(0,0);
 		
 		this.dataW = {
 			box: boxW,
@@ -90,7 +99,8 @@ class InscribedCircleApp {
             triangleB: bW,
             triangleC: cW,
 
-            point: ptW
+			center: centerW,
+			radius: 50
 		};
 		
 		// gui: set up actions
@@ -134,38 +144,39 @@ class InscribedCircleApp {
 			this.dataC.origin.draw(this.graphics);
 		}
 
-        let triangleColor = POSITIVECOLOR; // calculation here
-
-		if (this.show.fill.checked) {
-			Draw.triangleFilled(this.graphics, this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, COLORS.translucent(triangleColor));
-		}
-
-		if (this.show.segments.checked) {
-			this.dataC.segmentAB.draw(this.graphics, triangleColor);
-			this.dataC.segmentBC.draw(this.graphics, triangleColor);
-			this.dataC.segmentAC.draw(this.graphics, triangleColor);
-		}
-
         if (this.show.bisectors.checked) {
-            
+            this.dataC.bisectorA.draw(this.graphics, THEMEPURPLE, EDGETHICKNESS-1);
+            this.dataC.bisectorB.draw(this.graphics, THEMEPURPLE, EDGETHICKNESS-1);
+            this.dataC.bisectorC.draw(this.graphics, THEMEPURPLE, EDGETHICKNESS-1);
         }
+
+		if (this.show.center.checked) {
+			this.dataC.center.draw(this.graphics, '', THEMETEAL);
+		}
 
         if (this.show.circle.checked) {
-            
+            Draw.circle(this.graphics, this.dataC.center, this.dataC.radius, THEMETEAL);
         }
+
+		if (this.show.segments.checked) {
+			this.dataC.segmentAB.draw(this.graphics);
+			this.dataC.segmentBC.draw(this.graphics);
+			this.dataC.segmentAC.draw(this.graphics);
+		}
 		
 		if (this.show.vertices.checked) {
-			this.dataC.triangleA.draw(this.graphics, "A", triangleColor);
-			this.dataC.triangleB.draw(this.graphics, "B", triangleColor);
-			this.dataC.triangleC.draw(this.graphics, "C", triangleColor);
+			this.dataC.triangleA.draw(this.graphics, "A");
+			this.dataC.triangleB.draw(this.graphics, "B");
+			this.dataC.triangleC.draw(this.graphics, "C");
 		}
 	}
 
 	// info
 	updateInfo() {
-		let ptsC = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC];
-		let ptsW = [this.dataW.triangleA, this.dataW.triangleB, this.dataW.triangleC];
-		let labs = ["A","B","C"];
+		// how do I get the radius to display in the table alongside points?
+		let ptsC = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.center];
+		let ptsW = [this.dataW.triangleA, this.dataW.triangleB, this.dataW.triangleC, this.dataW.center];
+		let labs = ["A","B","C","center"];
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
 		this.infoField.innerHTML = res;
@@ -187,6 +198,27 @@ class InscribedCircleApp {
 		this.dataC.triangleA.snapToCanvas(this.canvas);
 		this.dataC.triangleB.snapToCanvas(this.canvas);
 		this.dataC.triangleC.snapToCanvas(this.canvas);
+
+		// this is the most efficient method I could think of...
+		let bisectAVec = Geometry1.angleBisector(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
+		bisectAVec.multiplyBy(1/1000); // otherwise we end up with MASSIVE vectors...
+		this.dataC.bisectorA.head.coords = this.dataC.bisectorA.tail.coords;
+		this.dataC.bisectorA.head.addToVec(bisectAVec);
+		this.dataC.bisectorA.head.coords = this.dataC.bisectorA.nearestEdgePoint(this.canvas, false);
+
+		let bisectBVec = Geometry1.angleBisector(this.dataC.triangleB, this.dataC.triangleA, this.dataC.triangleC);
+		bisectBVec.multiplyBy(1/1000); // otherwise we end up with MASSIVE vectors...
+		this.dataC.bisectorB.head.coords = this.dataC.bisectorB.tail.coords;
+		this.dataC.bisectorB.head.addToVec(bisectBVec);
+		this.dataC.bisectorB.head.coords = this.dataC.bisectorB.nearestEdgePoint(this.canvas, false);
+
+		let bisectIntersect = Geometry1.lineSegIntersection(this.dataC.triangleA, this.dataC.bisectorA.head, this.dataC.triangleB, this.dataC.bisectorB.head);
+		this.dataC.center.coords = bisectIntersect.X;
+		this.dataC.bisectorA.head.coords = bisectIntersect.X;
+		this.dataC.bisectorB.head.coords = bisectIntersect.X;
+		this.dataC.bisectorC.head.coords = bisectIntersect.X;
+
+		this.dataC.radius = Geometry1.inscribedCircleRadius(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
         
 		let boxPtsC = this.dataC.box.pts;	
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
@@ -196,6 +228,8 @@ class InscribedCircleApp {
 		this.dataW.triangleA.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleA, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.triangleB.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleB, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.triangleC.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		this.dataW.center.coords = ConvertPoint.canvasToWorldCoords(this.dataC.center, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		this.dataW.radius = ConvertLength.canvasToWorldLength(this.dataC.radius, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 
 		this.scene();
 		this.updateInfo();
@@ -210,29 +244,12 @@ class InscribedCircleApp {
 		this.show.grid.addEventListener("change", () => this.refresh());
 		this.show.vertices.addEventListener("change", () => this.refresh());
 		this.show.segments.addEventListener("change", () => this.refresh());
-		this.show.fill.addEventListener("change", () => this.refresh());
 		this.show.bisectors.addEventListener("change", () => this.refresh());
+		this.show.center.addEventListener("change", () => this.refresh());
 		this.show.circle.addEventListener("change", () => this.refresh());
 	}
     // buttons
     setupButtonEvents() {
-
-        // NOT UPDATED !!!
-
-		this.buttons.leftTurn.addEventListener("click", () => {
-			this.dataC.triangleA.set(375, 250);
-			this.dataC.triangleB.set(375, 100);
-			this.dataC.triangleC.set(225, 100);
-			this.computeAndRefresh();
-		});
-		
-		this.buttons.rightTurn.addEventListener("click", () => {
-			this.dataC.triangleA.set(375, 250);
-			this.dataC.triangleB.set(375, 100);
-			this.dataC.triangleC.set(525, 100);
-			this.computeAndRefresh();
-		});
-		
 		this.buttons.random.addEventListener("click", () => {
 			const pts = Utils.makeRandomPoints(this.canvas, 3);
 			this.dataC.triangleA.coords = pts[0];
