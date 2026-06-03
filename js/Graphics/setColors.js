@@ -28,8 +28,11 @@ function setColors() {
 	INTERSECTIONCOLOR = colorSet.intersectionColor;
 
 	POSITIVECOLOR = colorSet.positiveColor;
+	POSITIVECOLOR2 = colorSet.positiveColor2;
 	NEGATIVECOLOR = colorSet.negativeColor;
+	NEGATIVECOLOR2 = colorSet.negativeColor2;
 	NEUTRALCOLOR = colorSet.neutralColor;
+	NEUTRALCOLOR2 = colorSet.neutralColor2;
 	
 	THEMEAMBER = colorSet.themeAmber;
 	THEMEPURPLE = colorSet.themePurple;

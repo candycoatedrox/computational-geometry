@@ -16,8 +16,8 @@ class PointInTriangleApp {
 	};
 	
 	buttons = {
-		leftTurn: document.getElementById("buttonLeft-pointInTriangleApp"),
-		rightTurn: document.getElementById("buttonRight-pointInTriangleApp"),
+		inside: document.getElementById("buttonInside-pointInTriangleApp"),
+		outside: document.getElementById("buttonOutside-pointInTriangleApp"),
 		random: document.getElementById("buttonRandom-pointInTriangleApp"),
 		reset: document.getElementById("buttonReset-pointInTriangleApp"),
 	};
@@ -113,6 +113,19 @@ class PointInTriangleApp {
     }
 	
 	// computations
+	get pointInsideTriangle() {
+		let signAB = Area2D.signedTriangleDoubleArea(this.dataC.point, this.dataC.triangleA, this.dataC.triangleB);
+		let signBC = Area2D.signedTriangleDoubleArea(this.dataC.point, this.dataC.triangleB, this.dataC.triangleC);
+		let signCA = Area2D.signedTriangleDoubleArea(this.dataC.point, this.dataC.triangleC, this.dataC.triangleA);
+		
+		if (signAB > 0) {
+			return signBC > 0 && signCA > 0;
+		} else if (signAB < 0) {
+			return signBC < 0 && signCA < 0;
+		} else {
+			return false;
+		}
+	}
 
 	// view
 	// graphics
@@ -137,7 +150,7 @@ class PointInTriangleApp {
 			this.dataC.origin.draw(this.graphics);
 		}
 
-        let triangleColor = POSITIVECOLOR; // calculation here
+        let triangleColor = this.pointInsideTriangle ? POSITIVECOLOR : NEGATIVECOLOR;
 
 		if (this.show.fill.checked) {
 			Draw.triangleFilled(this.graphics, this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, COLORS.translucent(triangleColor));
@@ -156,7 +169,7 @@ class PointInTriangleApp {
 		}
 
         if (this.show.point.checked) {
-            this.dataC.point.draw(this.graphics, "D");
+            this.dataC.point.draw(this.graphics, "P");
         }
 	}
 
@@ -164,7 +177,7 @@ class PointInTriangleApp {
 	updateInfo() {
 		let ptsC = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.point];
 		let ptsW = [this.dataW.triangleA, this.dataW.triangleB, this.dataW.triangleC, this.dataW.point];
-		let labs = ["A","B","C","D"];
+		let labs = ["A","B","C","P"];
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
 		this.infoField.innerHTML = res;
@@ -219,25 +232,28 @@ class PointInTriangleApp {
 
         // NOT UPDATED !!!
 
-		this.buttons.leftTurn.addEventListener("click", () => {
-			this.dataC.triangleA.set(375, 250);
-			this.dataC.triangleB.set(375, 100);
-			this.dataC.triangleC.set(225, 100);
+		this.buttons.inside.addEventListener("click", () => {
+			this.dataC.triangleA.set(250, 100);
+			this.dataC.triangleB.set(400, 175);
+			this.dataC.triangleC.set(150, 325);
+			this.dataC.point.set(250, 200);
 			this.computeAndRefresh();
 		});
 		
-		this.buttons.rightTurn.addEventListener("click", () => {
-			this.dataC.triangleA.set(375, 250);
-			this.dataC.triangleB.set(375, 100);
-			this.dataC.triangleC.set(525, 100);
+		this.buttons.outside.addEventListener("click", () => {
+			this.dataC.triangleA.set(250, 100);
+			this.dataC.triangleB.set(400, 175);
+			this.dataC.triangleC.set(150, 325);
+			this.dataC.point.set(125, 175);
 			this.computeAndRefresh();
 		});
 		
 		this.buttons.random.addEventListener("click", () => {
-			const pts = Utils.makeRandomPoints(this.canvas, 3);
+			const pts = Utils.makeRandomPoints(this.canvas, 4);
 			this.dataC.triangleA.coords = pts[0];
 			this.dataC.triangleB.coords = pts[1];
 			this.dataC.triangleC.coords = pts[2];
+			this.dataC.point.coords = pts[3];
 			this.computeAndRefresh();
 		});
 

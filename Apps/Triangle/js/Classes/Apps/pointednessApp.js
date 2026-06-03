@@ -12,12 +12,13 @@ class PointednessApp {
 		vertices: document.getElementById("showVertices-pointednessApp"),
         segments: document.getElementById("showSegments-pointednessApp"),
         fill: document.getElementById("showFill-pointednessApp"),
-        point: document.getElementById("showPoint-pointednessApp")
+        point: document.getElementById("showPoint-pointednessApp"),
+        vectors: document.getElementById("showVectors-pointednessApp")
 	};
 	
 	buttons = {
-		leftTurn: document.getElementById("buttonLeft-pointednessApp"),
-		rightTurn: document.getElementById("buttonRight-pointednessApp"),
+		pointed: document.getElementById("buttonPointed-pointednessApp"),
+		nonPointed: document.getElementById("buttonNonPointed-pointednessApp"),
 		random: document.getElementById("buttonRandom-pointednessApp"),
 		reset: document.getElementById("buttonReset-pointednessApp"),
 	};
@@ -49,7 +50,10 @@ class PointednessApp {
 		let segBCC = new Segment(bC, cC);
         let segACC = new Segment(aC, cC);
 
-        let ptC = new Point(200, 200);
+        let pC = new Point(200, 200);
+		let vecPAC = new OrientedSegment(pC, aC);
+		let vecPBC = new OrientedSegment(pC, bC);
+		let vecPCC = new OrientedSegment(pC, cC);
 
 		this.dataC = {
             box: boxC,
@@ -64,7 +68,10 @@ class PointednessApp {
             segmentBC: segBCC,
             segmentAC: segACC,
 
-            point: ptC
+            point: pC,
+			vectorPA: vecPAC,
+			vectorPB: vecPBC,
+			vectorPC: vecPCC
 		};
 
 		let boxPtsC = boxC.pts;	
@@ -81,7 +88,7 @@ class PointednessApp {
 		let aW = new Point(0,0);
         let bW = new Point(0,0);
         let cW = new Point(0,0);
-        let ptW = new Point(0,0);
+        let pW = new Point(0,0);
 		
 		this.dataW = {
 			box: boxW,
@@ -93,7 +100,7 @@ class PointednessApp {
             triangleB: bW,
             triangleC: cW,
 
-            point: ptW
+            point: pW
 		};
 		
 		// gui: set up actions
@@ -113,6 +120,32 @@ class PointednessApp {
     }
 	
 	// computations
+	get isPointed() {
+		let PA = this.dataW.point.distanceToCoords(this.dataW.triangleA);
+		let PB = this.dataW.point.distanceToCoords(this.dataW.triangleB);
+		let PC = this.dataW.point.distanceToCoords(this.dataW.triangleC);
+
+		// formula for angles with x-axis
+		/* let anglePA = Geometry1.ccwAngleBetweenVectors(PA, this.dataW.axes.xAxis);
+		let anglePB = Geometry1.ccwAngleBetweenVectors(PB, this.dataW.axes.xAxis);
+		let anglePC = Geometry1.ccwAngleBetweenVectors(PC, this.dataW.axes.xAxis);
+
+		return anglePA >= Math.PI || anglePB >= Math.PI || anglePC >= Math.PI; */
+
+		// also point out the weirdness in drawing arrows
+
+		/* is this the correct formula?
+		I'm going off the definition I wrote down during our meeting:
+		"out of 3 angles, none larger than pi = non-pointed; otherwise pointed"
+		I'm *guessing* that means the angles between the vectors themselves, but I could be wrong
+		and looking up pointedness in math has been extremely unhelpful in finding a definition... :(
+		*/
+		let anglePAPB = Geometry1.ccwAngleBetweenVectors(PA, PB);
+		let anglePBPC = Geometry1.ccwAngleBetweenVectors(PB, PC);
+		let anglePCPA = Geometry1.ccwAngleBetweenVectors(PC, PA);
+
+		return anglePAPB >= Math.PI || anglePBPC >= Math.PI || anglePCPA >= Math.PI;
+	}
 
 	// view
 	// graphics
@@ -137,7 +170,8 @@ class PointednessApp {
 			this.dataC.origin.draw(this.graphics);
 		}
 
-        let triangleColor = POSITIVECOLOR; // calculation here
+        let triangleColor = this.isPointed ? POSITIVECOLOR2 : NEGATIVECOLOR2;
+		let vectorsColor = this.isPointed ? POSITIVECOLOR : NEGATIVECOLOR;
 
 		if (this.show.fill.checked) {
 			Draw.triangleFilled(this.graphics, this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, COLORS.translucent(triangleColor));
@@ -155,8 +189,14 @@ class PointednessApp {
 			this.dataC.triangleC.draw(this.graphics, "C", triangleColor);
 		}
 
+		if (this.show.vectors.checked) {
+			this.dataC.vectorPA.draw(this.graphics, vectorsColor);
+			this.dataC.vectorPB.draw(this.graphics, vectorsColor);
+			this.dataC.vectorPC.draw(this.graphics, vectorsColor);
+		}
+
         if (this.show.point.checked) {
-            this.dataC.point.draw(this.graphics, "D");
+            this.dataC.point.draw(this.graphics, "P");
         }
 	}
 
@@ -164,7 +204,7 @@ class PointednessApp {
 	updateInfo() {
 		let ptsC = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.point];
 		let ptsW = [this.dataW.triangleA, this.dataW.triangleB, this.dataW.triangleC, this.dataW.point];
-		let labs = ["A","B","C","D"];
+		let labs = ["A","B","C","P"];
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
 		this.infoField.innerHTML = res;
@@ -213,31 +253,35 @@ class PointednessApp {
 		this.show.segments.addEventListener("change", () => this.refresh());
 		this.show.fill.addEventListener("change", () => this.refresh());
 		this.show.point.addEventListener("change", () => this.refresh());
+		this.show.vectors.addEventListener("change", () => this.refresh());
 	}
     // buttons
     setupButtonEvents() {
 
         // NOT UPDATED !!!
 
-		this.buttons.leftTurn.addEventListener("click", () => {
-			this.dataC.triangleA.set(375, 250);
-			this.dataC.triangleB.set(375, 100);
-			this.dataC.triangleC.set(225, 100);
+		this.buttons.pointed.addEventListener("click", () => {
+			this.dataC.triangleA.set(375, 225);
+			this.dataC.triangleB.set(200, 175);
+			this.dataC.triangleC.set(350, 75);
+			this.dataC.point.set(325, 150);
 			this.computeAndRefresh();
 		});
 		
-		this.buttons.rightTurn.addEventListener("click", () => {
-			this.dataC.triangleA.set(375, 250);
-			this.dataC.triangleB.set(375, 100);
-			this.dataC.triangleC.set(525, 100);
+		this.buttons.nonPointed.addEventListener("click", () => {
+			this.dataC.triangleA.set(375, 225);
+			this.dataC.triangleB.set(200, 175);
+			this.dataC.triangleC.set(350, 75);
+			this.dataC.point.set(150, 50);
 			this.computeAndRefresh();
 		});
 		
 		this.buttons.random.addEventListener("click", () => {
-			const pts = Utils.makeRandomPoints(this.canvas, 3);
+			const pts = Utils.makeRandomPoints(this.canvas, 4);
 			this.dataC.triangleA.coords = pts[0];
 			this.dataC.triangleB.coords = pts[1];
 			this.dataC.triangleC.coords = pts[2];
+			this.dataC.point.coords = pts[3];
 			this.computeAndRefresh();
 		});
 

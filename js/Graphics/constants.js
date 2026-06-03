@@ -55,8 +55,11 @@ var INTERSECTIONCOLOR;
 
 //----------------------------------------------------------------       GENERIC: positive, negative
 var POSITIVECOLOR;
+var POSITIVECOLOR2;
 var NEGATIVECOLOR;
+var NEGATIVECOLOR2;
 var NEUTRALCOLOR;
+var NEUTRALCOLOR2;
 
 //----------------------------------------------------------------       GENERIC: general colors
 var THEMEAMBER;

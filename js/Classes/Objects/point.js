@@ -66,6 +66,12 @@ class Point {
 		const dy = this.y - a.y;
 		return dx * dx + dy * dy;
 	}
+
+	distanceToCoords(a) {
+		const dx = a.x - this.x;
+		const dy = a.y - this.y;
+		return {x:dx, y:dy};
+	}
   
 }
 

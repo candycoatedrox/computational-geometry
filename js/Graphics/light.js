@@ -22,8 +22,11 @@ const LIGHT = {
     intersectionColor: COLORS.purple,
 
     positiveColor: COLORS.emeraldGreen,
+    positiveColor2: COLORS.seaGreen,
     negativeColor: COLORS.reddish,
+    negativeColor2: COLORS.darkReddish,
     neutralColor: COLORS.black,
+    neutralColor2: COLORS.darkGray,
 
     themeAmber: COLORS.amber,
     themePurple: COLORS.purple,
