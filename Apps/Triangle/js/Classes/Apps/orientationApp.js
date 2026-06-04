@@ -122,10 +122,6 @@ class OrientationApp {
 		if (this.show.origin.checked) { 
 			this.dataC.origin.draw(this.graphics);
 		}
-		
-		if (this.show.origin.checked) { 
-			this.dataC.origin.draw(this.graphics);
-		}
 
 		if (this.show.fill.checked) {
 			Draw.triangleFilledOriented(this.graphics, this.dataC.pointA, this.dataC.pointB, this.dataC.pointC); // wrong orientation...??

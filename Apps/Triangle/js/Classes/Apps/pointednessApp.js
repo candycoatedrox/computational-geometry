@@ -165,10 +165,6 @@ class PointednessApp {
 		if (this.show.origin.checked) { 
 			this.dataC.origin.draw(this.graphics);
 		}
-		
-		if (this.show.origin.checked) { 
-			this.dataC.origin.draw(this.graphics);
-		}
 
         let triangleColor = this.isPointed ? POSITIVECOLOR2 : NEGATIVECOLOR2;
 		let vectorsColor = this.isPointed ? POSITIVECOLOR : NEGATIVECOLOR;

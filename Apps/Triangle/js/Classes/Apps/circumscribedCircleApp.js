@@ -11,7 +11,9 @@ class CircumscribedCircleApp {
 		grid: document.getElementById("showGrid-circumscribedCircleApp"),
 		vertices: document.getElementById("showVertices-circumscribedCircleApp"),
         segments: document.getElementById("showSegments-circumscribedCircleApp"),
+        midpoints: document.getElementById("showMidpoints-circumscribedCircleApp"),
         bisectors: document.getElementById("showBisectors-circumscribedCircleApp"),
+        center: document.getElementById("showCenter-circumscribedCircleApp"),
         circle: document.getElementById("showCircle-circumscribedCircleApp")
 	};
 	
@@ -40,12 +42,20 @@ class CircumscribedCircleApp {
 		originC.fromCanvas(this.canvas);
 		let axesC = new Axes(100,-100);
 		
-		let aC = new Point(540, 275);
-        let bC = new Point(400, 150);
-        let cC = new Point(540, 75);
+		let aC = new Point(425, 350);
+        let bC = new Point(450, 100);
+        let cC = new Point(575, 175);
 		let segABC = new Segment(aC, bC);
 		let segBCC = new Segment(bC, cC);
         let segACC = new Segment(aC, cC);
+
+		let midABC = new Point(0,0);
+		let midBCC = new Point(0,0);
+		let midACC = new Point(0,0);
+		let bisectABC = new Segment(new Point(0,0), new Point(0,0));
+		let bisectBCC = new Segment(new Point(0,0), new Point(0,0));
+		let bisectACC = new Segment(new Point(0,0), new Point(0,0));
+		let centerC = new Point(0,0);
 
 		this.dataC = {
             box: boxC,
@@ -59,6 +69,15 @@ class CircumscribedCircleApp {
             segmentAB: segABC,
             segmentBC: segBCC,
             segmentAC: segACC,
+			midpointAB: midABC,
+			midpointBC: midBCC,
+			midpointAC: midACC,
+
+			bisectorAB: bisectABC,
+			bisectorBC: bisectBCC,
+			bisectorAC: bisectACC,
+			center: centerC,
+			radius: 50
 		};
 
 		let boxPtsC = boxC.pts;	
@@ -75,6 +94,7 @@ class CircumscribedCircleApp {
 		let aW = new Point(0,0);
         let bW = new Point(0,0);
         let cW = new Point(0,0);
+		let centerW = new Point(0,0);
 		
 		this.dataW = {
 			box: boxW,
@@ -84,7 +104,10 @@ class CircumscribedCircleApp {
 
 			triangleA: aW,
             triangleB: bW,
-            triangleC: cW
+            triangleC: cW,
+
+			center: centerW,
+			radius: 50
 		};
 		
 		// gui: set up actions
@@ -94,10 +117,6 @@ class CircumscribedCircleApp {
 
 		// Init canvas / graphics
 		this.graphics = initCanvasGraphics(this.canvas);
-		//this.scene();
-		// NOTE: If scene() is run here, it runs before the "load" event, meaning setColors() hasn't been called yet.
-		// This appears to ONLY be a problem if scene() calls COLOR.translucent -- which Draw.triangleFilledOriented does -- at which point it draws everything before translucent is called in black, then throws an error and stops functioning completely?
-		// Either way, the "load" event itself runs redrawActiveApp(), so scene() isn't necessary here in the first place.
 
 		// Init/Update info field
 		this.updateInfo();
@@ -123,39 +142,45 @@ class CircumscribedCircleApp {
 		if (this.show.origin.checked) { 
 			this.dataC.origin.draw(this.graphics);
 		}
-		
-		if (this.show.origin.checked) { 
-			this.dataC.origin.draw(this.graphics);
-		}
-
-        let triangleColor = POSITIVECOLOR; // calculation here
-
-		if (this.show.segments.checked) {
-			this.dataC.segmentAB.draw(this.graphics, triangleColor);
-			this.dataC.segmentBC.draw(this.graphics, triangleColor);
-			this.dataC.segmentAC.draw(this.graphics, triangleColor);
-		}
 
         if (this.show.bisectors.checked) {
-            
+            this.dataC.bisectorAB.draw(this.graphics, THEMEPURPLE, EDGETHICKNESS-1);
+            this.dataC.bisectorBC.draw(this.graphics, THEMEPURPLE, EDGETHICKNESS-1);
+            this.dataC.bisectorAC.draw(this.graphics, THEMEPURPLE, EDGETHICKNESS-1);
         }
 
+		if (this.show.center.checked) {
+			this.dataC.center.draw(this.graphics, '', THEMETEAL);
+		}
+
         if (this.show.circle.checked) {
-            
+            Draw.circle(this.graphics, this.dataC.center, this.dataC.radius, THEMETEAL);
         }
+
+		if (this.show.segments.checked) {
+			this.dataC.segmentAB.draw(this.graphics);
+			this.dataC.segmentBC.draw(this.graphics);
+			this.dataC.segmentAC.draw(this.graphics);
+		}
+
+		if (this.show.midpoints.checked) {
+			this.dataC.midpointAB.draw(this.graphics, '', POINTCOLOR, POINTSIZE - 2);
+			this.dataC.midpointBC.draw(this.graphics, '', POINTCOLOR, POINTSIZE - 2);
+			this.dataC.midpointAC.draw(this.graphics, '', POINTCOLOR, POINTSIZE - 2);
+		}
 		
 		if (this.show.vertices.checked) {
-			this.dataC.triangleA.draw(this.graphics, "A", triangleColor);
-			this.dataC.triangleB.draw(this.graphics, "B", triangleColor);
-			this.dataC.triangleC.draw(this.graphics, "C", triangleColor);
+			this.dataC.triangleA.draw(this.graphics, "A");
+			this.dataC.triangleB.draw(this.graphics, "B");
+			this.dataC.triangleC.draw(this.graphics, "C");
 		}
 	}
 
 	// info
 	updateInfo() {
-		let ptsC = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC];
-		let ptsW = [this.dataW.triangleA, this.dataW.triangleB, this.dataW.triangleC];
-		let labs = ["A","B","C"];
+		let ptsC = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.center, this.dataC.radius];
+		let ptsW = [this.dataW.triangleA, this.dataW.triangleB, this.dataW.triangleC, this.dataW.center, this.dataW.radius];
+		let labs = ["A","B","C","center","radius"];
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
 		this.infoField.innerHTML = res;
@@ -177,7 +202,33 @@ class CircumscribedCircleApp {
 		this.dataC.triangleA.snapToCanvas(this.canvas);
 		this.dataC.triangleB.snapToCanvas(this.canvas);
 		this.dataC.triangleC.snapToCanvas(this.canvas);
-        
+
+		this.dataC.midpointAB.coords = this.dataC.segmentAB.midpoint();
+		this.dataC.midpointBC.coords = this.dataC.segmentBC.midpoint();
+		this.dataC.midpointAC.coords = this.dataC.segmentAC.midpoint();
+		this.dataC.center.coords = Geometry1.circumcenter(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
+		this.dataC.radius = Geometry1.circumradius(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
+
+		this.dataC.bisectorAB.tail.coords = this.dataC.midpointAB.coords;
+		this.dataC.bisectorAB.head.coords = this.dataC.center.coords;
+		let angleBisectAB = Geometry1.ccwAngleBetweenVectors(this.dataC.bisectorAB.getVector(), this.dataC.axes.xAxis);
+		let extCoordsAB = Geometry1.vectorCoordinates(75, angleBisectAB);
+		this.dataC.bisectorAB.tail.addTo(extCoordsAB.x * -1, extCoordsAB.y * -1); // extend tail by 50 distance in canvas coordinates
+
+		this.dataC.bisectorBC.tail.coords = this.dataC.midpointBC.coords;
+		this.dataC.bisectorBC.head.coords = this.dataC.center.coords;
+		let angleBisectBC = Geometry1.ccwAngleBetweenVectors(this.dataC.bisectorBC.getVector(), this.dataC.axes.xAxis);
+		let extCoordsBC = Geometry1.vectorCoordinates(75, angleBisectBC);
+		this.dataC.bisectorBC.tail.addTo(extCoordsBC.x * -1, extCoordsBC.y * -1); // extend tail by 50 distance in canvas coordinates
+
+		this.dataC.bisectorAC.tail.coords = this.dataC.midpointAC.coords;
+		this.dataC.bisectorAC.head.coords = this.dataC.center.coords;
+		let angleBisectAC = Geometry1.ccwAngleBetweenVectors(this.dataC.bisectorAC.getVector(), this.dataC.axes.xAxis);
+		let extCoordsAC = Geometry1.vectorCoordinates(75, angleBisectAC);
+		this.dataC.bisectorAC.tail.addTo(extCoordsAC.x * -1, extCoordsAC.y * -1); // extend tail by 50 distance in canvas coordinates
+
+		// FIX: there is something up with the bisectors thru AC only in the reset position from Orientation??? (but if you rotate the points, it's ONLY an issue when the right side is AC or AB, *not* BC??)
+
 		let boxPtsC = this.dataC.box.pts;	
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.box.setPoints(boxPtsW);
@@ -186,6 +237,8 @@ class CircumscribedCircleApp {
 		this.dataW.triangleA.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleA, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.triangleB.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleB, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.triangleC.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		this.dataW.center.coords = ConvertPoint.canvasToWorldCoords(this.dataC.center, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		this.dataW.radius = ConvertLength.canvasToWorldLength(this.dataC.radius, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 
 		this.scene();
 		this.updateInfo();
@@ -200,7 +253,9 @@ class CircumscribedCircleApp {
 		this.show.grid.addEventListener("change", () => this.refresh());
 		this.show.vertices.addEventListener("change", () => this.refresh());
 		this.show.segments.addEventListener("change", () => this.refresh());
+		this.show.midpoints.addEventListener("change", () => this.refresh());
 		this.show.bisectors.addEventListener("change", () => this.refresh());
+		this.show.center.addEventListener("change", () => this.refresh());
 		this.show.circle.addEventListener("change", () => this.refresh());
 	}
     // buttons
@@ -214,9 +269,9 @@ class CircumscribedCircleApp {
 		});
 
 		this.buttons.reset.addEventListener("click", () => {
-			this.dataC.triangleA.set(540, 275);
-			this.dataC.triangleB.set(400, 150);
-			this.dataC.triangleC.set(540, 75);
+			this.dataC.triangleA.set(425, 350);
+			this.dataC.triangleB.set(450, 100);
+			this.dataC.triangleC.set(575, 175);
 			this.computeAndRefresh();
 		});
     }

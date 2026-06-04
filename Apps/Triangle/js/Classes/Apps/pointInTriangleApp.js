@@ -145,10 +145,6 @@ class PointInTriangleApp {
 		if (this.show.origin.checked) { 
 			this.dataC.origin.draw(this.graphics);
 		}
-		
-		if (this.show.origin.checked) { 
-			this.dataC.origin.draw(this.graphics);
-		}
 
         let triangleColor = this.pointInsideTriangle ? POSITIVECOLOR : NEGATIVECOLOR;
 

@@ -41,9 +41,9 @@ class InscribedCircleApp {
 		originC.fromCanvas(this.canvas);
 		let axesC = new Axes(100,-100);
 		
-		let aC = new Point(540, 275);
-        let bC = new Point(400, 150);
-        let cC = new Point(540, 75);
+		let aC = new Point(425, 475);
+        let bC = new Point(200, 200);
+        let cC = new Point(475, 75);
 		let segABC = new Segment(aC, bC);
 		let segBCC = new Segment(bC, cC);
         let segACC = new Segment(aC, cC);
@@ -135,10 +135,6 @@ class InscribedCircleApp {
 		if (this.show.origin.checked) { 
 			this.dataC.origin.draw(this.graphics);
 		}
-		
-		if (this.show.origin.checked) { 
-			this.dataC.origin.draw(this.graphics);
-		}
 
         if (this.show.bisectors.checked) {
             this.dataC.bisectorA.draw(this.graphics, THEMEPURPLE, EDGETHICKNESS-1);
@@ -213,7 +209,7 @@ class InscribedCircleApp {
 		this.dataC.bisectorB.head.coords = bisectIntersect.X;
 		this.dataC.bisectorC.head.coords = bisectIntersect.X;
 
-		this.dataC.radius = Geometry1.inscribedCircleRadius(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
+		this.dataC.radius = Geometry1.inradius(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
         
 		let boxPtsC = this.dataC.box.pts;	
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
@@ -254,9 +250,9 @@ class InscribedCircleApp {
 		});
 
 		this.buttons.reset.addEventListener("click", () => {
-			this.dataC.triangleA.set(540, 275);
-			this.dataC.triangleB.set(400, 150);
-			this.dataC.triangleC.set(540, 75);
+			this.dataC.triangleA.set(425, 475);
+			this.dataC.triangleB.set(200, 200);
+			this.dataC.triangleC.set(475, 75);
 			this.computeAndRefresh();
 		});
     }

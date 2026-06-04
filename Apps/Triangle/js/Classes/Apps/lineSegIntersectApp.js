@@ -130,10 +130,6 @@ class LineSegIntersectionApp {
 		if (this.show.axes.checked) { 
 			this.dataC.axes.draw(this.graphics,this.dataC.origin);
 		}
-
-		if (this.show.origin.checked) { 
-			this.dataC.origin.draw(this.graphics);
-		}
 		
 		if (this.show.origin.checked) { 
 			this.dataC.origin.draw(this.graphics);

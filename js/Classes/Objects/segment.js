@@ -71,6 +71,10 @@ class Segment {
 		return {"x":this.solveForX(y), "y":y};
 	}
 
+	midpoint() {
+		return Geometry1.midpoint(this.tail, this.head);
+	}
+
 	nearestEdgePoint(canvas, fromTail) {
 		const r = canvas.getBoundingClientRect();
 		const w = r.width;

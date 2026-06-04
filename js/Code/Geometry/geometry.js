@@ -116,6 +116,25 @@ const Geometry1 = {
   	  const orig = {x:0, y:0};
   	  return this.ccwAngle(A,orig,B);
     },
+
+  circumcenter(A,B,C) {
+    const angleA = this.smallestAngle(B,A,C);
+    const angleB = this.smallestAngle(A,B,C);
+    const angleC = this.smallestAngle(A,C,B);
+    
+    const cx = (A.x*Math.sin(2*angleA) + B.x*Math.sin(2*angleB) + C.x*Math.sin(2*angleC)) / (Math.sin(2*angleA) + Math.sin(2*angleB) + Math.sin(2*angleC));
+    const cy = (A.y*Math.sin(2*angleA) + B.y*Math.sin(2*angleB) + C.y*Math.sin(2*angleC)) / (Math.sin(2*angleA) + Math.sin(2*angleB) + Math.sin(2*angleC));
+
+    return {x:cx, y:cy};
+  },
+
+  circumradius(A,B,C) {
+    const a = this.distance(B,C);
+    const angleA = this.smallestAngle(B,A,C);
+    const r = (a / Math.sin(angleA)) / 2;
+
+    return r;
+  },
 	
 	distance(a, b) {
 		const dx = b.x - a.x;
@@ -132,13 +151,8 @@ const Geometry1 = {
 		return dxy;
 	},
 
-  inscribedCircleRadius(A,B,C) {
-    const a = this.distance(B,C);
-    const b = this.distance(A,C);
-    const c = this.distance(A,B);
-    const s = (a+b+c)/2;
-
-    return Area2D.triangleArea(A,B,C) / s;
+  inradius(A,B,C) {
+    return Area2D.triangleArea(A,B,C) / this.semiperimeter(A,B,C);
   },
 	
 	isPerpendicular(seg, edgeVec) {
@@ -195,8 +209,8 @@ const Geometry1 = {
 
 	midpoint(i, j) {
       return {
-        x: (state.pts[i].x + state.pts[j].x) / 2,
-        y: (state.pts[i].y + state.pts[j].y) / 2
+        x: (i.x + j.x) / 2,
+        y: (i.y + j.y) / 2
       };
     },
 	
@@ -266,6 +280,13 @@ const Geometry1 = {
 		return t>1e-4 && t<1-1e-4 && u>1e-4 && u<1-1e-4;
 	},
 
+  semiperimeter(A,B,C) {
+    const a = this.distance(B,C);
+    const b = this.distance(A,C);
+    const c = this.distance(A,B);
+    return (a+b+c)/2;
+  },
+
 	signedArea(poly) {
 		let A = 0;
 		for (let i = 0; i < poly.length; i++) {
@@ -274,6 +295,20 @@ const Geometry1 = {
 		}
 		return 0.5 * A;
 	},
+
+  smallestAngle(A,B,C) { // either CW or CCW, whichever is smaller
+    let theta = this.ccwAngle(A,B,C);
+    if (theta > Math.PI) theta = 2*Math.PI - theta;
+    return theta;
+  },
+
+  vectorCoordinates(r, theta) {
+    let rx = r*Math.cos(theta);
+    let ry = r*Math.sin(theta);
+    if (rx < 1e-10 && rx > -1e-10) rx = 0;
+    if (ry < 1e-10 && ry > -1e-10) ry = 0;
+    return {x:rx, y:ry};
+  },
   
 	vectorLength(a) {
 		const dx = a.x;
