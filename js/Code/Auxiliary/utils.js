@@ -143,8 +143,16 @@ const Utils = {
 	pointCoordsCWLabToTdString(ptC, ptW, lab){
 		// console.log("current ptW: " + JSON.stringify(ptW));
 		const strL = `<td><span>${lab}</span></td>`;
-		const strC = `<td><span>(${Math.round(ptC.x)}, ${Math.round(ptC.y)})</span></td>`;
-		const strW = (typeof ptW.x !== 'number') ? '<td><span>-</span></td>' : `<td><span>(${this.pointCoordsWToString(ptW)})</span></td>`;
+		let strC;
+		let strW;
+		
+		if (typeof ptC === 'number') {
+			strC = `<td><span>${Math.round(ptC)}</span></td>`;
+			strW = (typeof ptW !== 'number') ? '<td><span>-</span></td>' : `<td><span>${this.roundNumToString(ptW)}</span></td>`;
+		} else {
+			strC = `<td><span>(${Math.round(ptC.x)}, ${Math.round(ptC.y)})</span></td>`;
+			strW = (typeof ptW.x !== 'number') ? '<td><span>-</span></td>' : `<td><span>(${this.pointCoordsWToString(ptW)})</span></td>`;
+		}
 		return '<tr>' + strL + strC + strW + '</tr>';
 	},
 	// in table format for both C and W coordinates
@@ -160,20 +168,17 @@ const Utils = {
 	},
 
 	pointCoordsWToString(ptW) {
+		return this.roundNumToString(ptW.x) + ", " + this.roundNumToString(ptW.y);
+	},
+
+	roundNumToString(n, nDec = 2) {
 		// how to get it to be consistently 2 decimals...? even this falls apart at 0.0XX range
-		let xStr = (ptW.x < 1 && ptW.x > -1) ? ptW.x.toPrecision(2) : ptW.x.toPrecision(3);
-		let yStr = (ptW.y < 1 && ptW.y > -1) ? ptW.y.toPrecision(2) : ptW.y.toPrecision(3);
-		// console.log("xStr = " + xStr + ", yStr = " + yStr);
-
-		// cut off trailing zeroes for whole numbers
-		if (xStr.endsWith(".00")) {
-			xStr = Math.round(ptW.x);
-		}
-		if (yStr.endsWith(".00")) {
-			yStr = Math.round(ptW.y);
+		let str = (n < 1 && n > -1) ? n.toPrecision(nDec) : n.toPrecision(nDec + 1);
+		if (str.endsWith(".00")) {
+			str = Math.round(n); // cut off trailing zeroes for whole numbers
 		}
 
-		return xStr + ", " + yStr;
+		return str;
 	},
 	
 	// Polygon

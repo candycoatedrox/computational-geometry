@@ -110,10 +110,6 @@ class InscribedCircleApp {
 
 		// Init canvas / graphics
 		this.graphics = initCanvasGraphics(this.canvas);
-		//this.scene();
-		// NOTE: If scene() is run here, it runs before the "load" event, meaning setColors() hasn't been called yet.
-		// This appears to ONLY be a problem if scene() calls COLOR.translucent -- which Draw.triangleFilledOriented does -- at which point it draws everything before translucent is called in black, then throws an error and stops functioning completely?
-		// Either way, the "load" event itself runs redrawActiveApp(), so scene() isn't necessary here in the first place.
 
 		// Init/Update info field
 		this.updateInfo();
@@ -173,10 +169,9 @@ class InscribedCircleApp {
 
 	// info
 	updateInfo() {
-		// how do I get the radius to display in the table alongside points?
-		let ptsC = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.center];
-		let ptsW = [this.dataW.triangleA, this.dataW.triangleB, this.dataW.triangleC, this.dataW.center];
-		let labs = ["A","B","C","center"];
+		let ptsC = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.center, this.dataC.radius];
+		let ptsW = [this.dataW.triangleA, this.dataW.triangleB, this.dataW.triangleC, this.dataW.center, this.dataW.radius];
+		let labs = ["A","B","C","center","radius"];
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
 		this.infoField.innerHTML = res;

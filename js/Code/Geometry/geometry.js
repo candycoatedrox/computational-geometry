@@ -24,10 +24,10 @@ const Area2D = {
 	},
   
 	triangleArea(a, b, c){
-		const sArea = signedTriangleArea(a, b, c);
-		if (sArea < 0) {
+		const sArea = this.signedTriangleArea(a, b, c);
+		if (sArea > 0) {
 			area = sArea;
-		  } else if (sArea > 0)
+		  } else if (sArea < 0)
 		  {
 			  area = - sArea;
 		  } else
@@ -138,11 +138,7 @@ const Geometry1 = {
     const c = this.distance(A,B);
     const s = (a+b+c)/2;
 
-    let angleA = this.ccwAngle(A,B,C);
-    if (angleA > Math.PI) angleA = 2*Math.PI - angleA; // get the smallest angle between them
-
-    const r = (s-a) * Math.tan(angleA/2); // HM. THIS IS WRONG.
-    return r;
+    return Area2D.triangleArea(A,B,C) / s;
   },
 	
 	isPerpendicular(seg, edgeVec) {
