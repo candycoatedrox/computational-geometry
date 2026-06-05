@@ -1,24 +1,26 @@
 class InscribedCircleApp {
     // constants: global names of i/o fields 
-	canvas = document.getElementById('canvas-inscribedCircleApp');
-	infoField = document.getElementById('inscribedCircleApp-points');
+	canvas = document.getElementById('canvas-incircleApp');
+	infoField = document.getElementById('incircleApp-points');
 
     // gui
 	show = {
-		box: document.getElementById("showBox-inscribedCircleApp"),
-		origin: document.getElementById("showOrigin-inscribedCircleApp"),
-		axes: document.getElementById("showAxes-inscribedCircleApp"),
-		grid: document.getElementById("showGrid-inscribedCircleApp"),
-		vertices: document.getElementById("showVertices-inscribedCircleApp"),
-        segments: document.getElementById("showSegments-inscribedCircleApp"),
-        bisectors: document.getElementById("showBisectors-inscribedCircleApp"),
-        center: document.getElementById("showCenter-inscribedCircleApp"),
-        circle: document.getElementById("showCircle-inscribedCircleApp")
+		box: document.getElementById("showBox-incircleApp"),
+		origin: document.getElementById("showOrigin-incircleApp"),
+		axes: document.getElementById("showAxes-incircleApp"),
+		grid: document.getElementById("showGrid-incircleApp"),
+
+		vertices: document.getElementById("showVertices-incircleApp"),
+        segments: document.getElementById("showSegments-incircleApp"),
+
+        bisectors: document.getElementById("showBisectors-incircleApp"),
+        center: document.getElementById("showCenter-incircleApp"),
+        circle: document.getElementById("showCircle-incircleApp")
 	};
 	
 	buttons = {
-		random: document.getElementById("buttonRandom-inscribedCircleApp"),
-		reset: document.getElementById("buttonReset-inscribedCircleApp"),
+		random: document.getElementById("buttonRandom-incircleApp"),
+		reset: document.getElementById("buttonReset-incircleApp"),
 	};
 	
 	// data
@@ -137,9 +139,9 @@ class InscribedCircleApp {
 		}
 
         if (this.show.bisectors.checked) {
-            this.dataC.bisectorA.draw(this.graphics, THEMEPURPLE, EDGETHICKNESS-1);
-            this.dataC.bisectorB.draw(this.graphics, THEMEPURPLE, EDGETHICKNESS-1);
-            this.dataC.bisectorC.draw(this.graphics, THEMEPURPLE, EDGETHICKNESS-1);
+            this.dataC.bisectorA.draw(this.graphics, THEMEPURPLE, LINETHICKNESS);
+            this.dataC.bisectorB.draw(this.graphics, THEMEPURPLE, LINETHICKNESS);
+            this.dataC.bisectorC.draw(this.graphics, THEMEPURPLE, LINETHICKNESS);
         }
 
 		if (this.show.center.checked) {
@@ -192,13 +194,11 @@ class InscribedCircleApp {
 
 		// this is the most efficient method I could think of...
 		let bisectAVec = Geometry1.angleBisector(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
-		bisectAVec.multiplyBy(1/1000); // otherwise we end up with MASSIVE vectors...
 		this.dataC.bisectorA.head.coords = this.dataC.bisectorA.tail.coords;
 		this.dataC.bisectorA.head.addToVec(bisectAVec);
 		this.dataC.bisectorA.head.coords = this.dataC.bisectorA.nearestEdgePoint(this.canvas, false);
 
 		let bisectBVec = Geometry1.angleBisector(this.dataC.triangleB, this.dataC.triangleA, this.dataC.triangleC);
-		bisectBVec.multiplyBy(1/1000); // otherwise we end up with MASSIVE vectors...
 		this.dataC.bisectorB.head.coords = this.dataC.bisectorB.tail.coords;
 		this.dataC.bisectorB.head.addToVec(bisectBVec);
 		this.dataC.bisectorB.head.coords = this.dataC.bisectorB.nearestEdgePoint(this.canvas, false);
@@ -233,8 +233,10 @@ class InscribedCircleApp {
 		this.show.origin.addEventListener("change", () => this.refresh());
 		this.show.axes.addEventListener("change", () => this.refresh());
 		this.show.grid.addEventListener("change", () => this.refresh());
+
 		this.show.vertices.addEventListener("change", () => this.refresh());
 		this.show.segments.addEventListener("change", () => this.refresh());
+
 		this.show.bisectors.addEventListener("change", () => this.refresh());
 		this.show.center.addEventListener("change", () => this.refresh());
 		this.show.circle.addEventListener("change", () => this.refresh());

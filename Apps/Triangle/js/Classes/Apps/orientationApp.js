@@ -95,7 +95,7 @@ class OrientationApp {
 		this.graphics = initCanvasGraphics(this.canvas);
 		//this.scene();
 		// NOTE: If scene() is run here, it runs before the "load" event, meaning setColors() hasn't been called yet.
-		// This appears to ONLY be a problem if scene() calls COLOR.translucent -- which Draw.triangleFilledOriented does -- at which point it draws everything before translucent is called in black, then throws an error and stops functioning completely?
+		// This appears to ONLY be a problem if scene() calls COLOR.setAlpha -- which Draw.triangleFilledOriented does -- at which point it draws everything before setAlpha is called in black, then throws an error and stops functioning completely?
 		// Either way, the "load" event itself runs redrawActiveApp(), so scene() isn't necessary here in the first place.
 
 		// Init/Update info field

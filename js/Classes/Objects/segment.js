@@ -13,6 +13,10 @@ class Segment {
 	draw(ctx, color = EDGECOLOR, width = EDGETHICKNESS){
   	  	Draw.segment(ctx, this.tail, this.head, color, width);
 	}
+
+	drawExtended(ctx, extTail, extHead = extTail, color = EDGECOLOR, width = EDGETHICKNESS) {
+  	  	Draw.segment(ctx, this.pointExtendedByDistance(extTail), this.pointExtendedByDistance(extHead, false), color, width);
+	}
 	
 	drawVec(ctx, color = EDGECOLOR, width = EDGETHICKNESS){
   	  	Draw.arrow(ctx, this.tail, this.head, color, width);
@@ -75,7 +79,28 @@ class Segment {
 		return Geometry1.midpoint(this.tail, this.head);
 	}
 
-	nearestEdgePoint(canvas, fromTail) {
+	pointExtendedByDistance(d, fromTail = true) {
+		const end = fromTail ? this.tail : this.head;
+
+		if (d === 0) {
+			return {
+				x:end.x,
+				y:end.y
+			};
+		}
+
+		const xAxis = {x:1, y:0};
+		const angle = Geometry1.ccwAngleBetweenVectors(this.getVector(), xAxis);
+		const extCoords = Geometry1.vectorCoordinates(d, angle);
+
+		return {
+			x:end.x - extCoords.x,
+			y:end.y - extCoords.y
+		};
+	}
+
+	nearestEdgePoint(canvas, fromTail = true) {
+		// update this so it works even if the given point is OUTSIDE the canvas
 		const r = canvas.getBoundingClientRect();
 		const w = r.width;
 		const h = r.height;

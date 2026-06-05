@@ -252,7 +252,7 @@ const Draw = {
 		ctx.lineTo(C.x,C.y);
 		ctx.closePath();
 		console.log(`orientation: ${orientation}`);
-		ctx.fillStyle = orientation === -1 ? COLORS.translucent(POSITIVECOLOR) : (orientation === 1 ? COLORS.translucent(NEGATIVECOLOR) : COLORS.translucent(NEUTRALCOLOR));
+		ctx.fillStyle = orientation === -1 ? COLORS.setAlpha(POSITIVECOLOR) : (orientation === 1 ? COLORS.setAlpha(NEGATIVECOLOR) : COLORS.setAlpha(NEUTRALCOLOR));
 	    ctx.fill();
 	}
 	

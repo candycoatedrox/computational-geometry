@@ -27,8 +27,7 @@ class Point {
   	}
 
 	addToVec(vec) {
-		this.x = this.x + vec.x;
-		this.y = this.y + vec.y;
+		this.addTo(vec.x, vec.y);
 	}
 
 	snapToCanvas(canvas) {

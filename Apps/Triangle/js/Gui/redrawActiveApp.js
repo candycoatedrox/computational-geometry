@@ -7,7 +7,8 @@ function redrawActiveApp(){
 		if (activeTab === 'lineSegIntersectApp') LINESEGINTERSECTAPP.computeAndRefresh();
 		if (activeTab === 'pointInTriangleApp') POINTINTRIANGLEAPP.computeAndRefresh();
 		if (activeTab === 'pointednessApp') POINTEDNESSAPP.computeAndRefresh();
-		if (activeTab === 'inscribedCircleApp') INSCRIBEDCIRCLEAPP.computeAndRefresh();
-		if (activeTab === 'circumscribedCircleApp') CIRCUMSCRIBEDCIRCLEAPP.computeAndRefresh();
+		if (activeTab === 'incircleApp') INCIRCLEAPP.computeAndRefresh();
+		if (activeTab === 'circumcircleApp') CIRCUMCIRCLEAPP.computeAndRefresh();
+		if (activeTab === 'excirclesApp') EXCIRCLESAPP.computeAndRefresh();
   }, 100);
 }

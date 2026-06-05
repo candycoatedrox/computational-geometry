@@ -1,25 +1,28 @@
 class CircumscribedCircleApp {
     // constants: global names of i/o fields 
-	canvas = document.getElementById('canvas-circumscribedCircleApp');
-	infoField = document.getElementById('circumscribedCircleApp-points');
+	canvas = document.getElementById('canvas-circumcircleApp');
+	infoField = document.getElementById('circumcircleApp-points');
 
     // gui
 	show = {
-		box: document.getElementById("showBox-circumscribedCircleApp"),
-		origin: document.getElementById("showOrigin-circumscribedCircleApp"),
-		axes: document.getElementById("showAxes-circumscribedCircleApp"),
-		grid: document.getElementById("showGrid-circumscribedCircleApp"),
-		vertices: document.getElementById("showVertices-circumscribedCircleApp"),
-        segments: document.getElementById("showSegments-circumscribedCircleApp"),
-        midpoints: document.getElementById("showMidpoints-circumscribedCircleApp"),
-        bisectors: document.getElementById("showBisectors-circumscribedCircleApp"),
-        center: document.getElementById("showCenter-circumscribedCircleApp"),
-        circle: document.getElementById("showCircle-circumscribedCircleApp")
+		box: document.getElementById("showBox-circumcircleApp"),
+		origin: document.getElementById("showOrigin-circumcircleApp"),
+		axes: document.getElementById("showAxes-circumcircleApp"),
+		grid: document.getElementById("showGrid-circumcircleApp"),
+
+		vertices: document.getElementById("showVertices-circumcircleApp"),
+        segments: document.getElementById("showSegments-circumcircleApp"),
+
+        midpoints: document.getElementById("showMidpoints-circumcircleApp"),
+        bisectors: document.getElementById("showBisectors-circumcircleApp"),
+
+        center: document.getElementById("showCenter-circumcircleApp"),
+        circle: document.getElementById("showCircle-circumcircleApp")
 	};
 	
 	buttons = {
-		random: document.getElementById("buttonRandom-circumscribedCircleApp"),
-		reset: document.getElementById("buttonReset-circumscribedCircleApp"),
+		random: document.getElementById("buttonRandom-circumcircleApp"),
+		reset: document.getElementById("buttonReset-circumcircleApp"),
 	};
 	
 	// data
@@ -52,10 +55,10 @@ class CircumscribedCircleApp {
 		let midABC = new Point(0,0);
 		let midBCC = new Point(0,0);
 		let midACC = new Point(0,0);
-		let bisectABC = new Segment(new Point(0,0), new Point(0,0));
-		let bisectBCC = new Segment(new Point(0,0), new Point(0,0));
-		let bisectACC = new Segment(new Point(0,0), new Point(0,0));
 		let centerC = new Point(0,0);
+		let bisectABC = new Segment(midABC, centerC);
+		let bisectBCC = new Segment(midBCC, centerC);
+		let bisectACC = new Segment(midACC, centerC);
 
 		this.dataC = {
             box: boxC,
@@ -144,9 +147,9 @@ class CircumscribedCircleApp {
 		}
 
         if (this.show.bisectors.checked) {
-            this.dataC.bisectorAB.draw(this.graphics, THEMEPURPLE, EDGETHICKNESS-1);
-            this.dataC.bisectorBC.draw(this.graphics, THEMEPURPLE, EDGETHICKNESS-1);
-            this.dataC.bisectorAC.draw(this.graphics, THEMEPURPLE, EDGETHICKNESS-1);
+            this.dataC.bisectorAB.drawExtended(this.graphics, 75, 0, THEMEPURPLE, LINETHICKNESS);
+            this.dataC.bisectorBC.drawExtended(this.graphics, 75, 0, THEMEPURPLE, LINETHICKNESS);
+            this.dataC.bisectorAC.drawExtended(this.graphics, 75, 0, THEMEPURPLE, LINETHICKNESS);
         }
 
 		if (this.show.center.checked) {
@@ -209,24 +212,6 @@ class CircumscribedCircleApp {
 		this.dataC.center.coords = Geometry1.circumcenter(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
 		this.dataC.radius = Geometry1.circumradius(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
 
-		this.dataC.bisectorAB.tail.coords = this.dataC.midpointAB.coords;
-		this.dataC.bisectorAB.head.coords = this.dataC.center.coords;
-		let angleBisectAB = Geometry1.ccwAngleBetweenVectors(this.dataC.bisectorAB.getVector(), this.dataC.axes.xAxis);
-		let extCoordsAB = Geometry1.vectorCoordinates(75, angleBisectAB);
-		this.dataC.bisectorAB.tail.addTo(extCoordsAB.x * -1, extCoordsAB.y * -1); // extend tail by 50 distance in canvas coordinates
-
-		this.dataC.bisectorBC.tail.coords = this.dataC.midpointBC.coords;
-		this.dataC.bisectorBC.head.coords = this.dataC.center.coords;
-		let angleBisectBC = Geometry1.ccwAngleBetweenVectors(this.dataC.bisectorBC.getVector(), this.dataC.axes.xAxis);
-		let extCoordsBC = Geometry1.vectorCoordinates(75, angleBisectBC);
-		this.dataC.bisectorBC.tail.addTo(extCoordsBC.x * -1, extCoordsBC.y * -1); // extend tail by 50 distance in canvas coordinates
-
-		this.dataC.bisectorAC.tail.coords = this.dataC.midpointAC.coords;
-		this.dataC.bisectorAC.head.coords = this.dataC.center.coords;
-		let angleBisectAC = Geometry1.ccwAngleBetweenVectors(this.dataC.bisectorAC.getVector(), this.dataC.axes.xAxis);
-		let extCoordsAC = Geometry1.vectorCoordinates(75, angleBisectAC);
-		this.dataC.bisectorAC.tail.addTo(extCoordsAC.x * -1, extCoordsAC.y * -1); // extend tail by 50 distance in canvas coordinates
-
 		// FIX: there is something up with the bisectors thru AC only in the reset position from Orientation??? (but if you rotate the points, it's ONLY an issue when the right side is AC or AB, *not* BC??)
 
 		let boxPtsC = this.dataC.box.pts;	
@@ -251,10 +236,13 @@ class CircumscribedCircleApp {
 		this.show.origin.addEventListener("change", () => this.refresh());
 		this.show.axes.addEventListener("change", () => this.refresh());
 		this.show.grid.addEventListener("change", () => this.refresh());
+
 		this.show.vertices.addEventListener("change", () => this.refresh());
 		this.show.segments.addEventListener("change", () => this.refresh());
+
 		this.show.midpoints.addEventListener("change", () => this.refresh());
 		this.show.bisectors.addEventListener("change", () => this.refresh());
+
 		this.show.center.addEventListener("change", () => this.refresh());
 		this.show.circle.addEventListener("change", () => this.refresh());
 	}

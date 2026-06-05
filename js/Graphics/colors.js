@@ -1,13 +1,19 @@
 // ─── COLORS ──────────────────────────────────────────
 const COLORS = {
-	translucent: (color) => { // returns the given color at 50% opacity
-		//console.log("color: " + color);
+	setAlpha: (color, alpha = 0.5) => { // returns the given color at the given opacity (0.5 by default)
+		if (alpha < 0) {
+			alpha = 0;
+		} else if (alpha > 1) {
+			alpha = 1;
+		}
+
 		if (color.startsWith("#")) { // hex code
-			return color.substring(0,7) + "7f";
+			const alphaHex = Math.round(alpha * 255);
+			return color.substring(0,7) + alphaHex.toString(16);
 		} else if (color.startsWith("rgba(")) { // rgba
 			let valStr = color.slice(5,-1);
 			let vals = valStr.split(",");
-			return `rgba(${vals[0]},${vals[1]},${vals[2]},0.5)`;
+			return `rgba(${vals[0]},${vals[1]},${vals[2]},${alpha})`;
 		} else {
 			return color;
 		}

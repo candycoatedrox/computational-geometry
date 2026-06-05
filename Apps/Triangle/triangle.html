@@ -61,6 +61,7 @@
 	<script src="js/Classes/Apps/pointednessApp.js"></script>
 	<script src="js/Classes/Apps/inscribedCircleApp.js"></script>
 	<script src="js/Classes/Apps/circumscribedCircleApp.js"></script>
+	<script src="js/Classes/Apps/escribedCirclesApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
 <div>
@@ -107,8 +108,9 @@
 	<button data-tab="lineSegIntersectApp">Line Segment Intersection</button>
 	<button data-tab="pointInTriangleApp">Point in Triangle</button>
 	<button data-tab="pointednessApp">Pointedness</button>
-	<button data-tab="inscribedCircleApp">Inscribed Circle</button>
-	<button data-tab="circumscribedCircleApp">Circumscribed Circle</button>
+	<button data-tab="incircleApp">Inscribed Circle</button>
+	<button data-tab="circumcircleApp">Circumscribed Circle</button>
+	<button data-tab="excirclesApp">Escribed Circles</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -299,38 +301,38 @@
 <!-- >═══════════════════════════════════════════════════
      TAB 5 — INSCRIBED CIRCLE APP
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container active" id="tab-inscribedCircleApp">
+<div class="demo-container active" id="tab-incircleApp">
 	<div class="canvas-wrap">
-		<canvas id="canvas-inscribedCircleApp" width="300" height="300"></canvas>
+		<canvas id="canvas-incircleApp" width="300" height="300"></canvas>
 		<div class="canvas-hint">
-			Visualize an inscribed circle
+			Visualize the inscribed circle (incircle) of a triangle
 		</div>
 	</div>
 	<div class="side-panel">
 		<div class="panel-section">
 			<h3>SHOW</h3>
-			<label><input type="checkbox" id="showBox-inscribedCircleApp" checked> Box</label>
-			<label><input type="checkbox" id="showOrigin-inscribedCircleApp" checked> Origin</label>
-			<label><input type="checkbox" id="showAxes-inscribedCircleApp" checked> Axes</label>
-			<label><input type="checkbox" id="showGrid-inscribedCircleApp" checked> Grid</label>
+			<label><input type="checkbox" id="showBox-incircleApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-incircleApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-incircleApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-incircleApp" checked> Grid</label>
 			<br>
-			<label><input type="checkbox" id="showVertices-inscribedCircleApp" checked> Vertices</label>
-			<label><input type="checkbox" id="showSegments-inscribedCircleApp" checked> Line Segments</label>
+			<label><input type="checkbox" id="showVertices-incircleApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showSegments-incircleApp" checked> Line Segments</label>
 			<br>
-			<label><input type="checkbox" id="showBisectors-inscribedCircleApp" checked> Bisectors</label>
-			<label><input type="checkbox" id="showCenter-inscribedCircleApp" checked> Center Point</label>
-			<label><input type="checkbox" id="showCircle-inscribedCircleApp" checked> Circle</label>
+			<label><input type="checkbox" id="showBisectors-incircleApp" checked> Angle Bisectors</label>
+			<label><input type="checkbox" id="showCenter-incircleApp" checked> Center</label>
+			<label><input type="checkbox" id="showCircle-incircleApp" checked> Circle</label>
 		</div>
 		<div class="panel-section">
 			<h3>Coordinates</h3>
-			<div class="inscribedCircleApp-list" id="inscribedCircleApp-points">
+			<div class="incircleApp-list" id="incircleApp-points">
 			</div>
 		</div>
 		<div class="panel-section">
 			<h3>EXAMPLES</h3>
 			<div class="ctrl-row">
-				<button class="pill" id="buttonRandom-inscribedCircleApp">Generate Random</button>
-				<button class="pill danger" id="buttonReset-inscribedCircleApp">Reset</button>
+				<button class="pill" id="buttonRandom-incircleApp">Generate Random</button>
+				<button class="pill danger" id="buttonReset-incircleApp">Reset</button>
 			</div>
 		</div>
 	</div>
@@ -339,40 +341,101 @@
 <!-- >═══════════════════════════════════════════════════
      TAB 6 — CIRCUMSCRIBED CIRCLE APP
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container active" id="tab-circumscribedCircleApp">
+<div class="demo-container active" id="tab-circumcircleApp">
 	<div class="canvas-wrap">
-		<canvas id="canvas-circumscribedCircleApp" width="300" height="300"></canvas>
+		<canvas id="canvas-circumcircleApp" width="300" height="300"></canvas>
 		<div class="canvas-hint">
-			Visualize a circumscribed circle
+			Visualize the circumscribed circle (circumcircle) of a triangle
 		</div>
 	</div>
 	<div class="side-panel">
 		<div class="panel-section">
 			<h3>SHOW</h3>
-			<label><input type="checkbox" id="showBox-circumscribedCircleApp" checked> Box</label>
-			<label><input type="checkbox" id="showOrigin-circumscribedCircleApp" checked> Origin</label>
-			<label><input type="checkbox" id="showAxes-circumscribedCircleApp" checked> Axes</label>
-			<label><input type="checkbox" id="showGrid-circumscribedCircleApp" checked> Grid</label>
+			<label><input type="checkbox" id="showBox-circumcircleApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-circumcircleApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-circumcircleApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-circumcircleApp" checked> Grid</label>
 			<br>
-			<label><input type="checkbox" id="showVertices-circumscribedCircleApp" checked> Vertices</label>
-			<label><input type="checkbox" id="showSegments-circumscribedCircleApp" checked> Line Segments</label>
+			<label><input type="checkbox" id="showVertices-circumcircleApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showSegments-circumcircleApp" checked> Line Segments</label>
 			<br>
-			<label><input type="checkbox" id="showMidpoints-circumscribedCircleApp" checked> Midpoints</label>
+			<label><input type="checkbox" id="showMidpoints-circumcircleApp" checked> Midpoints</label>
 			<br>
-			<label><input type="checkbox" id="showBisectors-circumscribedCircleApp" checked> Bisectors</label>
-			<label><input type="checkbox" id="showCenter-circumscribedCircleApp" checked> Center Point</label>
-			<label><input type="checkbox" id="showCircle-circumscribedCircleApp" checked> Circle</label>
+			<label><input type="checkbox" id="showBisectors-circumcircleApp" checked> Perpendicular Bisectors</label>
+			<label><input type="checkbox" id="showCenter-circumcircleApp" checked> Center</label>
+			<label><input type="checkbox" id="showCircle-circumcircleApp" checked> Circle</label>
 		</div>
 		<div class="panel-section">
 			<h3>Coordinates</h3>
-			<div class="circumscribedCircleApp-list" id="circumscribedCircleApp-points">
+			<div class="circumcircleApp-list" id="circumcircleApp-points">
 			</div>
 		</div>
 		<div class="panel-section">
 			<h3>EXAMPLES</h3>
 			<div class="ctrl-row">
-				<button class="pill" id="buttonRandom-circumscribedCircleApp">Generate Random</button>
-				<button class="pill danger" id="buttonReset-circumscribedCircleApp">Reset</button>
+				<button class="pill" id="buttonRandom-circumcircleApp">Generate Random</button>
+				<button class="pill danger" id="buttonReset-circumcircleApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- >═══════════════════════════════════════════════════
+     TAB 7 — ESCRIBED CIRCLES APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container active" id="tab-excirclesApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-excirclesApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize the escribed circles (excircles) of a triangle
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-excirclesApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-excirclesApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-excirclesApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-excirclesApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showVertices-excirclesApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showSegments-excirclesApp" checked> Line Segments</label>
+
+			<br>
+			<label><input type="checkbox" id="showExtended-excirclesApp" checked> Extended Lines</label>
+			<br>
+			<label><input type="checkbox" id="showIntBisectors-excirclesApp" checked> Internal Angle Bisectors</label>
+			<br>
+			<label><input type="checkbox" id="showExtBisectors-excirclesApp" checked> External Angle Bisectors</label>
+
+			<br>
+			<b>AB: </b>
+			<label><input type="checkbox" id="showCenterAB-excirclesApp" checked> Center</label>
+			<label><input type="checkbox" id="showCircleAB-excirclesApp" checked> Circle</label>
+			<label><input type="checkbox" id="showFillAB-excirclesApp" checked> Fill</label>
+
+			<br>
+			<b>BC: </b>
+			<label><input type="checkbox" id="showCenterBC-excirclesApp" checked> Center</label>
+			<label><input type="checkbox" id="showCircleBC-excirclesApp" checked> Circle</label>
+			<label><input type="checkbox" id="showFillBC-excirclesApp" checked> Fill</label>
+
+			<br>
+			<b>AC: </b>
+			<label><input type="checkbox" id="showCenterAC-excirclesApp" checked> Center</label>
+			<label><input type="checkbox" id="showCircleAC-excirclesApp" checked> Circle</label>
+			<label><input type="checkbox" id="showFillAC-excirclesApp" checked> Fill</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="excirclesApp-list" id="excirclesApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonRandom-excirclesApp">Generate Random</button>
+				<button class="pill danger" id="buttonReset-excirclesApp">Reset</button>
 			</div>
 		</div>
 	</div>
@@ -389,8 +452,9 @@
 		var LINESEGINTERSECTAPP = new LineSegIntersectionApp();
 		var POINTINTRIANGLEAPP = new PointInTriangleApp();
 		var POINTEDNESSAPP = new PointednessApp();
-		var INSCRIBEDCIRCLEAPP = new InscribedCircleApp();
-		var CIRCUMSCRIBEDCIRCLEAPP = new CircumscribedCircleApp();
+		var INCIRCLEAPP = new InscribedCircleApp();
+		var CIRCUMCIRCLEAPP = new CircumscribedCircleApp();
+		var EXCIRCLESAPP = new EscribedCirclesApp();
 	</script>
 </div>	
 <!-- Draw active app -->	
