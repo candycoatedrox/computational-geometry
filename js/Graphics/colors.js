@@ -24,10 +24,10 @@ const COLORS = {
 	lightGray: 'rgba(204,204,204)',
 	darkGray: 'rgba(63,63,63)',
 	gray: 'rgba(153,153,153)',
-	red: '#FF0000', 
+	red: '#FF0000',
 	green:'#00FF00',
-	blue: '#0000FF', 
-	reddish: '#f47c7c', 
+	blue: '#0000FF',
+	reddish: '#f47c7c',
 	darkReddish: '#af4d4d',
 	darkishGreen: '#008000',
 	darkGreen: '#06402B',
@@ -35,16 +35,17 @@ const COLORS = {
 	emeraldGreen: '#50C878',
 	seaGreen: '#2E8B57',
 	purple: '#7c6af7', 
-	teal: '#4ec9b0', 
+	teal: '#4ec9b0',
 	amber: '#f7c56a',
+	scarlet: '#e8482b',
 	
 	
-	muted: '#3a3a45', 
+	muted: '#3a3a45',
 	
 	
 	text: '#e8e6f0',
-	bg: '#111116', 
-	surface: '#1f1f24', 
+	bg: '#111116',
+	surface: '#1f1f24',
 	border: '#2e2e38',
 	plus: '#f47c7c', // reddish
 	minus: '#50C878', // emeraldGreen
@@ -77,7 +78,7 @@ const RED = {
 	'7': 'rgba(255,0,0,0.7)',
 	'8': 'rgba(255,0,0,0.8)',
 	'9': 'rgba(255,0,0,0.9)',
-	'10': 'rgba(255,0,0)',	
+	'10': 'rgba(255,0,0)',
 };
 const GREEN = {
 	'1': 'rgba(0,255,0,0.1)',
@@ -89,7 +90,7 @@ const GREEN = {
 	'7': 'rgba(0,255,0,0.7)',
 	'8': 'rgba(0,255,0,0.8)',
 	'9': 'rgba(0,255,0,0.9)',
-	'10': 'rgba(0,255,0)',	
+	'10': 'rgba(0,255,0)',
 };
 const BLUE = {
 	'1': 'rgba(0,0,255,0.1)',
@@ -101,5 +102,5 @@ const BLUE = {
 	'7': 'rgba(0,0,255,0.7)',
 	'8': 'rgba(0,0,255,0.8)',
 	'9': 'rgba(0,0,255,0.9)',
-	'10': 'rgba(0,0,255)',	
+	'10': 'rgba(0,0,255)',
 };

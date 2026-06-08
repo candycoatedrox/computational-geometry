@@ -14,4 +14,9 @@ class Line extends Segment {
 		//console.log("trueHead: " + JSON.stringify(this.trueHead) + "; trueTail: " + JSON.stringify(this.trueTail))
   	  	Draw.segment(ctx, this.trueTail, this.trueHead, color, width);
 	}
+
+	// extending does nothing
+	drawExtended(ctx, extTail, extHead, color = EDGECOLOR, width = EDGETHICKNESS) {
+		this.draw(ctx, color, width);
+	}
 }

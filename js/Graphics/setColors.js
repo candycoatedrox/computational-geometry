@@ -37,4 +37,5 @@ function setColors() {
 	THEMEAMBER = colorSet.themeAmber;
 	THEMEPURPLE = colorSet.themePurple;
 	THEMETEAL = colorSet.themeTeal;
+	THEMESCARLET = colorSet.themeScarlet;
 }

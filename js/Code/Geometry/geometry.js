@@ -129,9 +129,9 @@ const Geometry1 = {
   },
 
   circumradius(A,B,C) {
-    const a = this.distance(B,C);
+    const sides = this.sideLengths(A,B,C);
     const angleA = this.smallestAngle(B,A,C);
-    const r = (a / Math.sin(angleA)) / 2;
+    const r = (sides.a / Math.sin(angleA)) / 2;
 
     return r;
   },
@@ -150,6 +150,23 @@ const Geometry1 = {
 		const dxy = dx * dx + dy * dy;
 		return dxy;
 	},
+
+  excenter(A,B,C) { // finds the excenter opposite to the first vertex A
+    const sides = this.sideLengths(A,B,C);
+
+    const cx = (-sides.a*A.x + sides.b*B.x + sides.c*C.x) / (-sides.a + sides.b + sides.c);
+    const cy = (-sides.a*A.y + sides.b*B.y + sides.c*C.y) / (-sides.a + sides.b + sides.c);
+
+    return {x:cx, y:cy};
+  },
+
+  exradius(A,B,C) { // finds the radius of the excircle opposite to the first vertex A
+    const sides = this.sideLengths(A,B,C);
+    const s = this.semiperimeter(A,B,C);
+    
+    const r = Area2D.triangleArea(A,B,C) / (s - sides.a);
+    return r;
+  },
 
   inradius(A,B,C) {
     return Area2D.triangleArea(A,B,C) / this.semiperimeter(A,B,C);
@@ -281,10 +298,16 @@ const Geometry1 = {
 	},
 
   semiperimeter(A,B,C) {
+    const sides = this.sideLengths(A,B,C);
+    return (sides.a + sides.b + sides.c)/2;
+  },
+
+  sideLengths(A,B,C) {
     const a = this.distance(B,C);
     const b = this.distance(A,C);
     const c = this.distance(A,B);
-    return (a+b+c)/2;
+    
+    return {a:a, b:b, c:c};
   },
 
 	signedArea(poly) {

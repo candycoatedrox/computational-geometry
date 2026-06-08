@@ -12,4 +12,9 @@ class Ray extends OrientedSegment {
 		//console.log("trueHead: " + JSON.stringify(this.trueHead))
   	  	Draw.arrow(ctx, this.tail, this.trueHead, color, width);
 	}
+
+	// can only extend tail
+	drawExtended(ctx, extTail, color = EDGECOLOR, width = EDGETHICKNESS) {
+		Draw.segment(ctx, this.pointExtendedByDistance(extTail), this.trueHead, color, width);
+	}
 }

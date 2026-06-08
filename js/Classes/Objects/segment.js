@@ -79,6 +79,7 @@ class Segment {
 		return Geometry1.midpoint(this.tail, this.head);
 	}
 
+	// this only sort of works, figure out why?
 	pointExtendedByDistance(d, fromTail = true) {
 		const end = fromTail ? this.tail : this.head;
 

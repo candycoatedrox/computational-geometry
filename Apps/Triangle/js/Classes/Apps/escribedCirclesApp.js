@@ -66,17 +66,18 @@ class EscribedCirclesApp {
 		let extBC = new Line(bC, cC);
 		let extAC = new Line(aC, cC);
 
-		let bisectAC = new Segment(aC, new Point(0,0));
-		let bisectBC = new Segment(bC, new Point(0,0));
-		let bisectCC = new Segment(cC, new Point(0,0));
+		// interior and exterior angle bisectors are TEMPORARILY set to lines instead of segments until I can get segment.drawExtended() functioning properly...
+		let bisectAC = new Line(aC, new Point(0,0));
+		let bisectBC = new Line(bC, new Point(0,0));
+		let bisectCC = new Line(cC, new Point(0,0));
 
 		let centerAC = new Point(0,0);
 		let centerBC = new Point(0,0);
 		let centerCC = new Point(0,0);
 
-		let exBiA = new Segment(centerBC, centerCC);
-		let exBiB = new Segment(centerAC, centerCC);
-		let exBiC = new Segment(centerAC, centerBC);
+		let exBiA = new Line(centerBC, centerCC);
+		let exBiB = new Line(centerAC, centerCC);
+		let exBiC = new Line(centerAC, centerBC);
 
 		this.dataC = {
             box: boxC,
@@ -182,62 +183,72 @@ class EscribedCirclesApp {
 			this.dataC.origin.draw(this.graphics);
 		}
 
+		if (this.show.fillAB.checked) {
+			Draw.disk(this.graphics, this.dataC.centerC, this.dataC.radiusC, COLORS.setAlpha(THEMESCARLET));
+		}
+
+		if (this.show.fillBC.checked) {
+			Draw.disk(this.graphics, this.dataC.centerA, this.dataC.radiusA, COLORS.setAlpha(THEMESCARLET));
+		}
+
+		if (this.show.fillAC.checked) {
+			Draw.disk(this.graphics, this.dataC.centerB, this.dataC.radiusB, COLORS.setAlpha(THEMESCARLET));
+		}
+
+        if (this.show.circleAB.checked) {
+            Draw.circle(this.graphics, this.dataC.centerC, this.dataC.radiusC, THEMESCARLET);
+        }
+
+        if (this.show.circleBC.checked) {
+            Draw.circle(this.graphics, this.dataC.centerA, this.dataC.radiusA, THEMESCARLET);
+        }
+
+        if (this.show.circleAC.checked) {
+            Draw.circle(this.graphics, this.dataC.centerB, this.dataC.radiusB, THEMESCARLET);
+        }
+
 		if (this.show.extended.checked) {
 			this.dataC.extendedAB.draw(this.graphics, EDGECOLOR);
 			this.dataC.extendedBC.draw(this.graphics, EDGECOLOR);
 			this.dataC.extendedAC.draw(this.graphics, EDGECOLOR);
 		}
 
-		// make ext. bisectors THEMETEAL and excircles some kind of reddish orange...
-
 		if (this.show.extBisectors.checked) {
-            this.dataC.extBisectorA.drawExtended(this.graphics, 50, 50, POSITIVECOLOR);
-            this.dataC.extBisectorB.drawExtended(this.graphics, 50, 50, POSITIVECOLOR);
-            this.dataC.extBisectorC.drawExtended(this.graphics, 50, 50, POSITIVECOLOR);
+			/*
+            this.dataC.extBisectorA.drawExtended(this.graphics, 50, 50, THEMETEAL, LINETHICKNESS);
+            this.dataC.extBisectorB.drawExtended(this.graphics, 50, 50, THEMETEAL, LINETHICKNESS);
+            this.dataC.extBisectorC.drawExtended(this.graphics, 50, 50, THEMETEAL, LINETHICKNESS);
+			*/
+
+            this.dataC.extBisectorA.draw(this.graphics, THEMETEAL);
+            this.dataC.extBisectorB.draw(this.graphics, THEMETEAL);
+            this.dataC.extBisectorC.draw(this.graphics, THEMETEAL);
 		}
 
         if (this.show.intBisectors.checked) {
+			/*
 			// what is wrong here. why is the larger number ONLY ever applying to the external line
             this.dataC.intBisectorA.drawExtended(this.graphics, 500, 50, THEMEPURPLE, LINETHICKNESS);
             this.dataC.intBisectorB.drawExtended(this.graphics, 500, 50, THEMEPURPLE, LINETHICKNESS);
             this.dataC.intBisectorC.drawExtended(this.graphics, 500, 50, THEMEPURPLE, LINETHICKNESS);
-		}
-
-		if (this.show.fillAB.checked) {
-			Draw.disk(this.graphics, this.dataC.centerC, this.dataC.radiusC, COLORS.setAlpha(THEMETEAL));
+			*/
+			
+            this.dataC.intBisectorA.draw(this.graphics, THEMEPURPLE);
+            this.dataC.intBisectorB.draw(this.graphics, THEMEPURPLE);
+            this.dataC.intBisectorC.draw(this.graphics, THEMEPURPLE);
 		}
 
 		if (this.show.centerAB.checked) {
-			this.dataC.centerC.draw(this.graphics, 'E.C', THEMETEAL); // not sure how to do subscripts but this works? I guess?
-		}
-
-        if (this.show.circleAB.checked) {
-            Draw.circle(this.graphics, this.dataC.centerC, this.dataC.radiusC, THEMETEAL);
-        }
-
-		if (this.show.fillBC.checked) {
-			Draw.disk(this.graphics, this.dataC.centerA, this.dataC.radiusA, COLORS.setAlpha(THEMETEAL));
+			this.dataC.centerC.draw(this.graphics, 'Ec', THEMESCARLET); // not sure how to do subscripts but this works? I guess?
 		}
 
 		if (this.show.centerBC.checked) {
-			this.dataC.centerA.draw(this.graphics, 'E.A', THEMETEAL);
-		}
-
-        if (this.show.circleBC.checked) {
-            Draw.circle(this.graphics, this.dataC.centerA, this.dataC.radiusA, THEMETEAL);
-        }
-
-		if (this.show.fillAC.checked) {
-			Draw.disk(this.graphics, this.dataC.centerB, this.dataC.radiusB, COLORS.setAlpha(THEMETEAL));
+			this.dataC.centerA.draw(this.graphics, 'Ea', THEMESCARLET);
 		}
 
 		if (this.show.centerAC.checked) {
-			this.dataC.centerB.draw(this.graphics, 'E.B', THEMETEAL);
+			this.dataC.centerB.draw(this.graphics, 'Eb', THEMESCARLET);
 		}
-
-        if (this.show.circleAC.checked) {
-            Draw.circle(this.graphics, this.dataC.centerB, this.dataC.radiusB, THEMETEAL);
-        }
 
 		if (this.show.segments.checked) {
 			this.dataC.segmentAB.draw(this.graphics);
@@ -301,7 +312,20 @@ class EscribedCirclesApp {
 
 		// radius, ext angle bisectors, excenters
 
+		this.dataC.centerA.coords = Geometry1.excenter(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
+		this.dataC.centerB.coords = Geometry1.excenter(this.dataC.triangleB, this.dataC.triangleA, this.dataC.triangleC);
+		this.dataC.centerC.coords = Geometry1.excenter(this.dataC.triangleC, this.dataC.triangleA, this.dataC.triangleB);
 
+		this.dataC.radiusA = Geometry1.exradius(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
+		this.dataC.radiusB = Geometry1.exradius(this.dataC.triangleB, this.dataC.triangleA, this.dataC.triangleC);
+		this.dataC.radiusC = Geometry1.exradius(this.dataC.triangleC, this.dataC.triangleA, this.dataC.triangleB);
+
+		this.dataC.intBisectorA.fromCanvas(this.canvas);
+		this.dataC.intBisectorB.fromCanvas(this.canvas);
+		this.dataC.intBisectorC.fromCanvas(this.canvas);
+		this.dataC.extBisectorA.fromCanvas(this.canvas);
+		this.dataC.extBisectorB.fromCanvas(this.canvas);
+		this.dataC.extBisectorC.fromCanvas(this.canvas);
         
 		let boxPtsC = this.dataC.box.pts;	
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
