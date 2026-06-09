@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<!-- INCLUDES: GLOBAL LIBS -->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- <link rel="icon" type="image/x-icon" href="favicon.ico"> -->
+<title>Computational Geometry: Interactive Demos </title>
+<link rel="stylesheet" href="../../css/style4.css">
+
+<!-- .................................................................................................
+     JS LIBRARIES: FUNCTION DEFS
+...................................................................................................... -->
+<!-- Js GLOBAL/COMMON functions: Classes, Code, common Gui                             GLOBAL INCLUDES -->
+		<!-- Classes: Objects -->
+		
+		<script src="../../js/Classes/Objects/point.js"></script>
+		<script src="../../js/Classes/Objects/points.js"></script>
+		<script src="../../js/Classes/Objects/vector.js"></script>
+		
+		<script src="../../js/Classes/Objects/segment.js"></script>
+		<script src="../../js/Classes/Objects/orientedSegment.js"></script>
+		<script src="../../js/Classes/Objects/ray.js"></script>
+		<script src="../../js/Classes/Objects/line.js"></script>
+		
+		<script src="../../js/Classes/Objects/origin.js"></script>
+		<script src="../../js/Classes/Objects/axes.js"></script>
+		<script src="../../js/Classes/Objects/box.js"></script>
+		
+		<script src="../../js/Classes/Objects/minMaxRange.js"></script>
+		<script src="../../js/Classes/Objects/range.js"></script>
+		
+		
+		<!-- Code -->
+		<script src="../../js/Code/Auxiliary/utils.js"></script>
+		<script src="../../js/Code/Geometry/geometry.js"></script>
+		<script src="../../js/Code/Math/math.js"></script>
+		
+		<!-- Graphics -->
+		<script src="../../js/Graphics/colors.js"></script>
+		<script src="../../js/Graphics/constants.js"></script>
+		<script src="../../js/Graphics/dark.js"></script>
+		<script src="../../js/Graphics/light.js"></script>
+		<script src="../../js/Graphics/setColors.js"></script>
+		<script src="../../js/Graphics/objects.js"></script>
+	
+		<!-- Gui -->
+		<script src="../../js/Gui/canvases.js"></script>
+</head>
+
+<body>
+<!-- INCLUDES: LOCAL LIBS -->
+<div> 
+	<script src="js/Gui/toggleLightDark.js"></script>
+	<script src="js/Gui/redrawActiveApp.js"></script>
+			
+	<!-- Mini-apps -->
+	<script src="js/Classes/Apps/selfIntersectionApp.js"></script>
+</div>
+<!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
+<div>
+	<script>	
+		window.addEventListener('load', () => {
+			const savedTheme = localStorage.getItem('theme');
+			const button = document.querySelector('.theme-toggle span:last-child');
+			if (savedTheme === 'light') {
+				document.body.classList.add('light-theme');
+				document.getElementById('theme-icon').textContent = '🌙';
+				if (button) button.textContent = 'Dark Mode';
+			};
+			setColors();
+			redrawActiveApp();
+		});	
+		window.addEventListener('resize', () => {
+			redrawActiveApp();
+		});
+	</script>
+</div>
+
+<!-- ═══════════════════════════════════════════════════===
+	HEADER: TITLE, LINKS TO GROUPED-APPS and THEME TOGGLE
+═══════════════════════════════════════════════════=== -->
+<header>
+  <div style="flex: 1;">
+    <h1><a href=../../index.html>Computational Geometry</a></h1>
+    <p style="margin-top:8px">Interactive Demos</p>
+    <div style="margin-top:10px">
+		<span class="badge"><a href=../RefFrame/refFrame.html>Ref Frame</a></span>
+		<span class="badge"><a href=../Basics/basics.html>Basics</a></span>
+		<span class="badge"><a href=../Triangle/triangle.html>Triangle</a></span>
+		<span class="badge"><a href=polygon.html>POLYGON</a></span>
+    </div>
+  </div>
+  <button class="theme-toggle" onclick="toggleTheme()">
+    <span id="theme-icon">☀️</span>
+    <span>Light Mode</span>
+  </button>
+</header>
+
+<!-- Navigation app - tabs  -->
+<nav> 
+	<button class="active" data-tab="selfIntersectionApp">Self Intersection</button>
+</nav>
+<!-- Associate actions to all Navigation tabs -->
+<div> 
+	<script>
+		document.querySelectorAll('nav button').forEach(btn => {
+			// add click event listener to each navigation button btn
+		
+			btn.addEventListener('click', () => {
+			
+				// deactivate all navigation buttons and demo-containers
+				document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+				document.querySelectorAll('.demo-container').forEach(d => d.classList.remove('active'));
+				
+				// activate all classes of currently clicked btn and all elements with id's starting with tab-
+				btn.classList.add('active');
+				document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+				
+				// setColors();
+				redrawActiveApp();
+			});
+		});
+		
+	</script>
+</div>
+
+
+<!-- >═══════════════════════════════════════════════════
+     TAB 1 — SELF INTERSECTION APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container active" id="tab-selfIntersectionApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-selfIntersectionApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize the orientation of three points
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-selfIntersectionApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-selfIntersectionApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-selfIntersectionApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-selfIntersectionApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showVertices-selfIntersectionApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showSegments-selfIntersectionApp" checked> Line Segments</label>
+			<label><input type="checkbox" id="showFill-selfIntersectionApp" checked> Fill</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="selfIntersectionApp-list" id="selfIntersectionApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonIntersect-selfIntersectionApp">Self-Intersecting</button>
+				<button class="pill" id="buttonSeparate-selfIntersectionApp">Non-Intersecting</button>
+				<button class="pill" id="buttonRandom-selfIntersectionApp">Generate Random</button>
+				<select id="nVertices-selfIntersectionApp" name="nVertices-selfIntersectionApp">
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="15">15</option>
+					<option value="20">20</option>
+				</select>
+				<button class="pill danger" id="buttonReset-selfIntersectionApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+	
+<!-- .................................................................................................
+     JS: INITIALIZE and START EXECUTION of ACTIVE TAB-APP 
+...................................................................................................... -->
+<!-- Initialize global variables for each mini-app object -->	
+<div>
+	<script>
+		var SELFINTERSECTIONAPP = new SelfIntersectionApp();
+	</script>
+</div>	
+<!-- Draw active app -->	
+<div>
+	<script>	
+		redrawActiveApp();
+	</script>
+</div>	
+
+</body>
+</html>
+
