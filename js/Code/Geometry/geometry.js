@@ -163,9 +163,18 @@ const Geometry1 = {
   exradius(A,B,C) { // finds the radius of the excircle opposite to the first vertex A
     const sides = this.sideLengths(A,B,C);
     const s = this.semiperimeter(A,B,C);
-    
+
     const r = Area2D.triangleArea(A,B,C) / (s - sides.a);
     return r;
+  },
+
+  incenter(A,B,C) {
+    const sides = this.sideLengths(A,B,C);
+
+    const cx = (sides.a*A.x + sides.b*B.x + sides.c*C.x) / (sides.a + sides.b + sides.c);
+    const cy = (sides.a*A.y + sides.b*B.y + sides.c*C.y) / (sides.a + sides.b + sides.c);
+
+    return {x:cx, y:cy};
   },
 
   inradius(A,B,C) {

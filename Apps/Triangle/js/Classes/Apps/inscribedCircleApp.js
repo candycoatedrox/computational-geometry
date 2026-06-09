@@ -192,22 +192,11 @@ class InscribedCircleApp {
 		this.dataC.triangleB.snapToCanvas(this.canvas);
 		this.dataC.triangleC.snapToCanvas(this.canvas);
 
-		// this is the most efficient method I could think of...
-		let bisectAVec = Geometry1.angleBisector(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
-		this.dataC.bisectorA.head.coords = this.dataC.bisectorA.tail.coords;
-		this.dataC.bisectorA.head.addToVec(bisectAVec);
-		this.dataC.bisectorA.head.coords = this.dataC.bisectorA.nearestEdgePoint(this.canvas, false);
-
-		let bisectBVec = Geometry1.angleBisector(this.dataC.triangleB, this.dataC.triangleA, this.dataC.triangleC);
-		this.dataC.bisectorB.head.coords = this.dataC.bisectorB.tail.coords;
-		this.dataC.bisectorB.head.addToVec(bisectBVec);
-		this.dataC.bisectorB.head.coords = this.dataC.bisectorB.nearestEdgePoint(this.canvas, false);
-
-		let bisectIntersect = Geometry1.lineSegIntersection(this.dataC.triangleA, this.dataC.bisectorA.head, this.dataC.triangleB, this.dataC.bisectorB.head);
-		this.dataC.center.coords = bisectIntersect.X;
-		this.dataC.bisectorA.head.coords = bisectIntersect.X;
-		this.dataC.bisectorB.head.coords = bisectIntersect.X;
-		this.dataC.bisectorC.head.coords = bisectIntersect.X;
+		let incenter = Geometry1.incenter(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
+		this.dataC.center.coords = incenter;
+		this.dataC.bisectorA.head.coords = incenter;
+		this.dataC.bisectorB.head.coords = incenter;
+		this.dataC.bisectorC.head.coords = incenter;
 
 		this.dataC.radius = Geometry1.inradius(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
         

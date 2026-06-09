@@ -66,10 +66,11 @@ class EscribedCirclesApp {
 		let extBC = new Line(bC, cC);
 		let extAC = new Line(aC, cC);
 
+		let incenterC = new Point(0,0);
 		// interior and exterior angle bisectors are TEMPORARILY set to lines instead of segments until I can get segment.drawExtended() functioning properly...
-		let bisectAC = new Line(aC, new Point(0,0));
-		let bisectBC = new Line(bC, new Point(0,0));
-		let bisectCC = new Line(cC, new Point(0,0));
+		let bisectAC = new Line(aC, incenterC);
+		let bisectBC = new Line(bC, incenterC);
+		let bisectCC = new Line(cC, incenterC);
 
 		let centerAC = new Point(0,0);
 		let centerBC = new Point(0,0);
@@ -96,6 +97,7 @@ class EscribedCirclesApp {
 			extendedBC: extBC,
 			extendedAC: extAC,
 
+			incenter: incenterC,
 			intBisectorA: bisectAC,
 			intBisectorB: bisectBC,
 			intBisectorC: bisectCC,
@@ -267,7 +269,7 @@ class EscribedCirclesApp {
 	updateInfo() {
 		let ptsC = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.centerA, this.dataC.radiusA, this.dataC.centerB, this.dataC.radiusB, this.dataC.centerC, this.dataC.radiusC];
 		let ptsW = [this.dataW.triangleA, this.dataW.triangleB, this.dataW.triangleC, this.dataW.centerA, this.dataW.radiusA, this.dataW.centerB, this.dataW.radiusB, this.dataW.centerC, this.dataW.radiusC];
-		let labs = ["A","B","C","excenter A","radius A","excenter B","radius B","excenter C","radius C"];
+		let labs = ["A","B","C","E<sub>a</sub>","r<sub>a</sub>","E<sub>b</sub>","r<sub>b</sub>","E<sub>c</sub>","r<sub>c</sub>"];
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
 		this.infoField.innerHTML = res;
@@ -296,21 +298,7 @@ class EscribedCirclesApp {
 		this.dataC.extendedBC.fromCanvas(this.canvas);
 		this.dataC.extendedAC.fromCanvas(this.canvas);
 
-		// this is the most efficient method I could think of...
-		let bisectAVec = Geometry1.angleBisector(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
-		this.dataC.intBisectorA.head.coords = this.dataC.intBisectorA.tail.coords;
-		this.dataC.intBisectorA.head.addToVec(bisectAVec);
-
-		let bisectBVec = Geometry1.angleBisector(this.dataC.triangleB, this.dataC.triangleA, this.dataC.triangleC);
-		this.dataC.intBisectorB.head.coords = this.dataC.intBisectorB.tail.coords;
-		this.dataC.intBisectorB.head.addToVec(bisectBVec);
-
-		let bisectIntersect = Geometry1.lineSegIntersection(this.dataC.triangleA, this.dataC.intBisectorA.head, this.dataC.triangleB, this.dataC.intBisectorB.head);
-		this.dataC.intBisectorA.head.coords = bisectIntersect.X;
-		this.dataC.intBisectorB.head.coords = bisectIntersect.X;
-		this.dataC.intBisectorC.head.coords = bisectIntersect.X;
-
-		// radius, ext angle bisectors, excenters
+		this.dataC.incenter.coords = Geometry1.incenter(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
 
 		this.dataC.centerA.coords = Geometry1.excenter(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
 		this.dataC.centerB.coords = Geometry1.excenter(this.dataC.triangleB, this.dataC.triangleA, this.dataC.triangleC);
