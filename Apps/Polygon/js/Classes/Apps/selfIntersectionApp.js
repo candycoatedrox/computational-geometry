@@ -11,13 +11,16 @@ class SelfIntersectionApp {
 		grid: document.getElementById("showGrid-selfIntersectionApp"),
 		vertices: document.getElementById("showVertices-selfIntersectionApp"),
 		segments: document.getElementById("showSegments-selfIntersectionApp"),
-		fill: document.getElementById("showFill-selfIntersectionApp")
+		fill: document.getElementById("showFill-selfIntersectionApp"),
+        intersections: document.getElementById("showIntersections-selfIntersectionApp")
 	};
 	
 	buttons = {
 		intersecting: document.getElementById("buttonIntersect-selfIntersectionApp"),
 		separate: document.getElementById("buttonSeparate-selfIntersectionApp"),
+		addRandom: document.getElementById("buttonAddRandom-selfIntersectionApp"),
 		generate: document.getElementById("buttonRandom-selfIntersectionApp"),
+		clear: document.getElementById("buttonClear-selfIntersectionApp"),
 		reset: document.getElementById("buttonReset-selfIntersectionApp")
 	};
 
@@ -45,6 +48,8 @@ class SelfIntersectionApp {
 
 		let pointsC = new Points();
         let labels = [];
+        let edges = [];
+
         let intersectC = new Points();
         let intersectLabs = [];
 
@@ -56,6 +61,7 @@ class SelfIntersectionApp {
 
 			points: pointsC,
             labels: labels,
+            edges: edges,
 
             intersections: intersectC,
             intersectLabels: intersectLabs
@@ -84,6 +90,12 @@ class SelfIntersectionApp {
             points: pointsW,
             intersections: intersectW
 		};
+
+        this.createVertex(225,75);
+        this.createVertex(200,350);
+        this.createVertex(600,175);
+        this.createVertex(425,400);
+        this.updateVertexLabels();
 		
 		// gui: set up actions
 		this.setupShowEvents();
@@ -92,13 +104,16 @@ class SelfIntersectionApp {
 
 		// Init canvas / graphics
 		this.graphics = initCanvasGraphics(this.canvas);
-		this.scene();
+		//this.scene();
 
 		// Init/Update info field
 		this.updateInfo();
     }
 	
 	// computations
+    get selfIntersects() {
+        return (this.dataC.intersections.length !== 0);
+    }
 
 	// view
 	// graphics
@@ -123,19 +138,26 @@ class SelfIntersectionApp {
 			this.dataC.origin.draw(this.graphics);
 		}
 
-        // NOT UPDATED!!!
+        let polyColor = (this.selfIntersects) ? NEGATIVECOLOR : POSITIVECOLOR;
 
-        if (this.show.fill.checked) {
-            
+        if (this.show.fill.checked && this.dataC.points.length >= 3) {
+            let face = [...Array(this.dataC.points.length).keys()];
+            Draw.face(this.graphics, this.dataC.points, face, COLORS.setAlpha(polyColor));
         }
 
-        if (this.show.segments.checked) {
-            
+        if (this.show.segments.checked && this.dataC.points.length >= 2) {
+            for (let i = 0; i < this.dataC.edges.length; i++) {
+                Draw.segment(this.graphics, this.dataC.points[this.dataC.edges[i][0]], this.dataC.points[this.dataC.edges[i][1]], polyColor);
+            }
         }
 		
 		if (this.show.vertices.checked) { 
 			this.dataC.points.draw(this.graphics, this.dataC.labels);
 		}
+
+        if (this.show.intersections.checked) {
+			this.dataC.intersections.draw(this.graphics, this.dataC.intersectLabels, THEMETEAL, POINTSIZE-2);
+        }
 	}
 
 	// info
@@ -158,19 +180,33 @@ class SelfIntersectionApp {
 	}
 	// with dataC/W recalculations
 	computeAndRefresh() {
-
-        // NOT UPDATED!!!
-
 		this.graphics = initCanvasGraphics(this.canvas);
 		this.dataC.box.fromCanvas(this.canvas);
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
 		this.dataC.points.snapToCanvas(this.canvas);
 
+        // find intersections
+        this.dataC.intersections.length = 0;
+        this.dataW.intersections.length = 0;
+        for (let i = 0; i < this.dataC.edges.length; i++) {
+            for (let j = i+2; j < this.dataC.edges.length; j++) {
+                // exclude edge pairs that share one or more vertices
+                if (this.dataC.edges[i].includes(this.dataC.edges[j][0]) || this.dataC.edges[i].includes(this.dataC.edges[j][1])) continue;
 
-        // FIND INTERSECTIONS...
+                let intersect = Geometry1.lineSegIntersection(this.dataC.points[this.dataC.edges[i][0]], this.dataC.points[this.dataC.edges[i][1]], this.dataC.points[this.dataC.edges[j][0]], this.dataC.points[this.dataC.edges[j][1]]);
 
+                if (intersect !== null) {
+                    let intersectCoords = intersect.X;
+                    let ptW = ConvertPoint.canvasToWorldCoords({x:intersectCoords.x, y:intersectCoords.y}, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+                    this.dataC.intersections.push(new Point(intersectCoords.x, intersectCoords.y));
+                    this.dataW.intersections.push(new Point(ptW.x, ptW.y));
+                }
+            }
+        }
 
+        this.dataC.intersectLabels = Utils.stdRange1(this.dataC.intersections.length);
+        this.dataC.intersectLabels = this.dataC.intersectLabels.map((n) => { return 'i' + n; });
         
 		let boxPtsC = this.dataC.box.pts;	
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
@@ -182,18 +218,31 @@ class SelfIntersectionApp {
 		this.updateInfo();
 	}
 
-	createPoint(xC, yC) {
+	createVertex(xC, yC, index = this.dataC.points.length) {
 		const ptW = ConvertPoint.canvasToWorldCoords({x:xC, y:yC}, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-		this.dataC.points.push(new Point(xC, yC));
-		this.dataW.points.push(new Point(ptW.x, ptW.y));
+        this.dataC.points.splice(index, 0, new Point(xC,yC));
+        this.dataW.points.splice(index, 0, new Point(ptW.x, ptW.y));
+        this.updateEdges();
 	}
-	clearPoints() {
+	clearVertices() {
 		this.dataC.points.length = 0;
 		this.dataW.points.length = 0;
+        this.updateEdges();
 	}
-    updateLabels() {
+    updateVertexLabels() {
         this.dataC.labels = Utils.stdRange1(this.dataC.points.length);
         this.dataC.labels = this.dataC.labels.map((n) => { return 'p' + n; });
+    }
+    updateEdges() {
+        this.dataC.edges.length = 0;
+        if (this.dataC.points.length === 2) {
+            this.dataC.edges.push([0,1]);
+        } else if (this.dataC.points.length >= 3) {
+            for (let i = 0; i < this.dataC.points.length; i++) {
+                let j = (i !== this.dataC.points.length - 1) ? i+1 : 0;
+                this.dataC.edges.push([i,j]);
+            }
+        }
     }
 	
 	// set up gui
@@ -206,22 +255,37 @@ class SelfIntersectionApp {
 		this.show.vertices.addEventListener("change", () => this.refresh());
 		this.show.segments.addEventListener("change", () => this.refresh());
 		this.show.fill.addEventListener("change", () => this.refresh());
+		this.show.intersections.addEventListener("change", () => this.refresh());
 	}
 	// buttons
 	setupButtonEvents() {
-
-        // NOT UPDATED!!!
-
 		this.buttons.intersecting.addEventListener("click", () => {
-			this.createPoint(0,0);
-            this.updateLabels();
+            this.clearVertices();
+            this.createVertex(110,330);
+            this.createVertex(220,400);
+            this.createVertex(225,225);
+            this.createVertex(410,130);
+            this.createVertex(230,80);
+            this.createVertex(400,380);
+            this.updateVertexLabels();
 			this.computeAndRefresh();
 		});
 		
 		this.buttons.separate.addEventListener("click", () => {
+            this.clearVertices();
+            this.createVertex(180,350);
+            this.createVertex(160,190);
+            this.createVertex(300,120);
+            this.createVertex(440,230);
+            this.createVertex(350,390);
+            this.updateVertexLabels();
+			this.computeAndRefresh();
+		});
+		
+		this.buttons.addRandom.addEventListener("click", () => {
             let pt = Utils.makeRandomPoint(this.canvas);
-			this.createPoint(pt.x, pt.y);
-            this.updateLabels();
+			this.createVertex(pt.x, pt.y);
+            this.updateVertexLabels();
 			this.computeAndRefresh();
 		});
 		
@@ -229,18 +293,28 @@ class SelfIntersectionApp {
             const nPts = this.nPtsSelect.value;
             const pts = Utils.makeRandomPoints(this.canvas, nPts);
 
-            this.clearPoints();
+            this.clearVertices();
             for (let i = 0; i < nPts; i++) {
-				this.createPoint(pts[i].x, pts[i].y);
+				this.createVertex(pts[i].x, pts[i].y);
             }
 
-            this.updateLabels();
+            this.updateVertexLabels();
+			this.computeAndRefresh();
+		});
+
+		this.buttons.clear.addEventListener("click", () => {
+			this.clearVertices();
+            this.updateVertexLabels();
 			this.computeAndRefresh();
 		});
 
 		this.buttons.reset.addEventListener("click", () => {
-			this.clearPoints();
-            this.updateLabels();
+            this.clearVertices();
+            this.createVertex(225,75);
+            this.createVertex(200,350);
+            this.createVertex(600,175);
+            this.createVertex(425,400);
+            this.updateVertexLabels();
 			this.computeAndRefresh();
 		});
 	}
@@ -259,9 +333,19 @@ class SelfIntersectionApp {
 			{
 				if (this.locatorId === null) // not near an existing point: insert a new point and label
 				{
-					this.locatorId = this.dataC.points.length;
-					this.createPoint(mx, my);
-                    this.updateLabels();
+                    if (this.dataC.points.length <= 1) { // insert at end
+                        this.locatorId = this.dataC.points.length;
+                    } else { // insert between nearest edge
+                        let e = Geometry1.nearestEdgeByMidpoint({x:mx, y:my}, this.dataC.points, this.dataC.edges);
+                        if (e[0] === this.dataC.points.length - 1 && e[1] === 0) {
+                            this.locatorId = this.dataC.points.length;
+                        } else {
+                            this.locatorId = e[0] + 1;
+                        }
+                    }
+					
+					this.createVertex(mx, my, this.locatorId);
+                    this.updateVertexLabels();
 				} 
 				// else, do nothing now - but check the mouse-move-event on the clicked-on point	
 			} 
@@ -271,7 +355,8 @@ class SelfIntersectionApp {
 				if (this.dataC.points.length >= 1) { 
 					this.dataC.points.splice(this.locatorId,1); 				// delete the point
 					this.dataW.points.splice(this.locatorId,1);
-                    this.updateLabels();	// relabel all points
+                    this.updateVertexLabels();	// relabel all points
+                    this.updateEdges();
 					this.locatorId = null;
 				}
 			};

@@ -1,5 +1,12 @@
 class Points extends Array {
 
+	constructor(n = 0) {
+		super();
+		for (let i = 0; i < n; i++) {
+			this[i] = new Point(0,0);
+		}
+	}
+
 	setAll(pts) {
 		for (let i = 0; i < this.length; i++) {
 			this[i].coords = pts[i];

@@ -233,6 +233,34 @@ const Geometry1 = {
       return null;
     },
 
+  nearestEdge(P, pts, edges) {
+    let edge = edges[0];
+    let lowDist = this.pointLineDistance(P, pts[edges[0][0]], pts[edges[0][1]]);
+    for (let i = 1; i < edges.length; i++) {
+      let dxy = this.pointLineDistance(P, pts[edges[i][0]], pts[edges[i][1]]);
+      if (dxy < lowDist) {
+        edge = edges[i];
+        lowDist = dxy;
+      }
+    }
+
+    return edge;
+  },
+
+  nearestEdgeByMidpoint(P, pts, edges) {
+    let edge = edges[0];
+    let lowDist = this.distance(P, this.midpoint(pts[edges[0][0]], pts[edges[0][1]]));
+    for (let i = 1; i < edges.length; i++) {
+      let dxy = this.distance(P, this.midpoint(pts[edges[i][0]], pts[edges[i][1]]));
+      if (dxy < lowDist) {
+        edge = edges[i];
+        lowDist = dxy;
+      }
+    }
+
+    return edge;
+  },
+
 	midpoint(i, j) {
       return {
         x: (i.x + j.x) / 2,

@@ -133,7 +133,7 @@
 	<div class="canvas-wrap">
 		<canvas id="canvas-selfIntersectionApp" width="300" height="300"></canvas>
 		<div class="canvas-hint">
-			Visualize the orientation of three points
+			Visualize a polygon and its self-intersections
 		</div>
 	</div>
 	<div class="side-panel">
@@ -147,6 +147,8 @@
 			<label><input type="checkbox" id="showVertices-selfIntersectionApp" checked> Vertices</label>
 			<label><input type="checkbox" id="showSegments-selfIntersectionApp" checked> Line Segments</label>
 			<label><input type="checkbox" id="showFill-selfIntersectionApp" checked> Fill</label>
+			<br>
+			<label><input type="checkbox" id="showIntersections-selfIntersectionApp" checked> Intersections</label>
 		</div>
 		<div class="panel-section">
 			<h3>Coordinates</h3>
@@ -158,10 +160,12 @@
 			<div class="ctrl-row">
 				<button class="pill" id="buttonIntersect-selfIntersectionApp">Self-Intersecting</button>
 				<button class="pill" id="buttonSeparate-selfIntersectionApp">Non-Intersecting</button>
+				<button class="pill" id="buttonAddRandom-selfIntersectionApp">Add Random Point</button>
 				<button class="pill" id="buttonRandom-selfIntersectionApp">Generate Random</button>
 				<select id="nVertices-selfIntersectionApp" name="nVertices-selfIntersectionApp">
+					<option value="3">3</option>
 					<option value="4">4</option>
-					<option value="5">5</option>
+					<option value="5" selected>5</option>
 					<option value="6">6</option>
 					<option value="7">7</option>
 					<option value="8">8</option>
@@ -170,6 +174,7 @@
 					<option value="15">15</option>
 					<option value="20">20</option>
 				</select>
+				<button class="pill danger" id="buttonClear-selfIntersectionApp">Clear Vertices</button>
 				<button class="pill danger" id="buttonReset-selfIntersectionApp">Reset</button>
 			</div>
 		</div>
