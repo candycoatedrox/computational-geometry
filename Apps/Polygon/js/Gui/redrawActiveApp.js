@@ -4,5 +4,6 @@ function redrawActiveApp(){
 	setColors();
 	setTimeout(() => {
 		if (activeTab === 'selfIntersectionApp') SELFINTERSECTIONAPP.computeAndRefresh();
+		if (activeTab === 'pointInPolygonApp') POINTINPOLYGONAPP.computeAndRefresh();
   }, 100);
 }

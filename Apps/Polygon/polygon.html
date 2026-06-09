@@ -56,6 +56,7 @@
 			
 	<!-- Mini-apps -->
 	<script src="js/Classes/Apps/selfIntersectionApp.js"></script>
+	<script src="js/Classes/Apps/pointInPolygonApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
 <div>
@@ -100,6 +101,7 @@
 <!-- Navigation app - tabs  -->
 <nav> 
 	<button class="active" data-tab="selfIntersectionApp">Self Intersection</button>
+	<button data-tab="pointInPolygonApp">Point in Polygon</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -181,6 +183,59 @@
 	</div>
 </div>
 
+<!-- >═══════════════════════════════════════════════════
+     TAB 2 — POINT IN POLYGON APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container" id="tab-pointInPolygonApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-pointInPolygonApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize a point within a polygon
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-pointInPolygonApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-pointInPolygonApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-pointInPolygonApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-pointInPolygonApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showVertices-pointInPolygonApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showSegments-pointInPolygonApp" checked> Line Segments</label>
+			<label><input type="checkbox" id="showFill-pointInPolygonApp" checked> Fill</label>
+			<br>
+			<label><input type="checkbox" id="showPoint-pointInPolygonApp" checked> Point</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="pointInPolygonApp-list" id="pointInPolygonApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonInside-pointInPolygonApp">Inside</button>
+				<button class="pill" id="buttonOutside-pointInPolygonApp">Outside</button>
+				<button class="pill" id="buttonRandom-pointInPolygonApp">Generate Random Polygon</button>
+				<select id="nVertices-pointInPolygonApp" name="nVertices-pointInPolygonApp">
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5" selected>5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="15">15</option>
+					<option value="20">20</option>
+				</select>
+				<button class="pill danger" id="buttonReset-pointInPolygonApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 	
 <!-- .................................................................................................
      JS: INITIALIZE and START EXECUTION of ACTIVE TAB-APP 
@@ -189,6 +244,7 @@
 <div>
 	<script>
 		var SELFINTERSECTIONAPP = new SelfIntersectionApp();
+		var POINTINPOLYGONAPP = new PointInPolygonApp();
 	</script>
 </div>	
 <!-- Draw active app -->	
