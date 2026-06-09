@@ -1,5 +1,5 @@
 class Triangle {
-    // class is UNTESTED
+    labels = ["A","B","C"];
 
     constructor(a, b, c) {
         this.a = a;
@@ -43,10 +43,11 @@ class Triangle {
         this.c.snapToCanvas(canvas);
     }
 
-    drawVertices(ctx, labels = true, color = POINTCOLOR, size = POINTSIZE) {
-        this.a.draw(ctx, "A", color, size);
-        this.b.draw(ctx, "B", color, size);
-        this.c.draw(ctx, "C", color, size);
+    drawVertices(ctx, labeled = true, color = POINTCOLOR, size = POINTSIZE) {
+        let labs = labeled ? this.labels : ["","",""];
+        this.a.draw(ctx, labs[0], color, size);
+        this.b.draw(ctx, labs[1], color, size);
+        this.c.draw(ctx, labs[2], color, size);
     }
 
     drawSegments(ctx, color = EDGECOLOR, width = EDGETHICKNESS) {

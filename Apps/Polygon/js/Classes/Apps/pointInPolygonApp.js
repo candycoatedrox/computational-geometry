@@ -138,7 +138,7 @@ class PointInPolygonApp {
         let polyColor = (this.pointInsidePolygon) ? POSITIVECOLOR : NEGATIVECOLOR;
 
         if (this.show.fill.checked && this.dataC.vertices.length >= 3) {
-            let face = [...Array(this.dataC.vertices.length).keys()];
+            let face = Utils.stdRange(this.length);
             Draw.face(this.graphics, this.dataC.vertices, face, COLORS.setAlpha(polyColor));
         }
 

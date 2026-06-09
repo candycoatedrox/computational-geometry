@@ -317,6 +317,15 @@ const Geometry1 = {
 		}));
 	},
 
+  polygonSideLengths(poly, edges) {
+    let s = [];
+    for (let i = 0; i < edges.length; i++) {
+      s.push(this.distance(poly[edges[i][0]], poly[edges[i][1]]));
+    }
+    
+    return s;
+  },
+
 	projectionT(p, a, b) {
     const abx = b.x - a.x, aby = b.y - a.y;
     const den = abx * abx + aby * aby;

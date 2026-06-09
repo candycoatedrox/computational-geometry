@@ -141,7 +141,7 @@ class SelfIntersectionApp {
         let polyColor = (this.selfIntersects) ? NEGATIVECOLOR : POSITIVECOLOR;
 
         if (this.show.fill.checked && this.dataC.points.length >= 3) {
-            let face = [...Array(this.dataC.points.length).keys()];
+            let face = Utils.stdRange(this.length);
             Draw.face(this.graphics, this.dataC.points, face, COLORS.setAlpha(polyColor));
         }
 
