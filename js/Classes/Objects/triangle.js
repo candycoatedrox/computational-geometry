@@ -1,14 +1,35 @@
 class Triangle {
     // class is UNTESTED
 
-    a = null;
-    b = null;
-    c = null;
-
     constructor(a, b, c) {
         this.a = a;
         this.b = b;
         this.c = c;
+
+        this.ab = new Segment(this.a, this.b);
+        this.bc = new Segment(this.a, this.b);
+        this.ac = new Segment(this.a, this.b);
+    }
+
+    drawVertices(ctx, color = POINTCOLOR, size = POINTSIZE) {
+        this.a.draw(ctx, color, size);
+        this.b.draw(ctx, color, size);
+        this.c.draw(ctx, color, size);
+    }
+
+    drawSegments(ctx, color = EDGECOLOR, width = EDGETHICKNESS) {
+        this.ab.draw(ctx, color, width);
+        this.bc.draw(ctx, color, width);
+        this.ac.draw(ctx, color, width);
+    }
+
+    draw(ctx, segmentColor = EDGECOLOR, vertexColor = POINTCOLOR, segmentWidth = EDGETHICKNESS, vertexSize = POINTSIZE) {
+        this.drawSegments(ctx, segmentColor, segmentWidth);
+        this.drawVertices(ctx, vertexColor, vertexSize);
+    }
+
+    drawFill(ctx, color = COLORS.setAlpha(EDGECOLOR)) {
+        Draw.triangleFilled(ctx, this.a, this.b, this.c, color);
     }
 
     setA(x,y) {
@@ -57,9 +78,9 @@ class Triangle {
     }
 
     midpoints() {
-        const AB = Geometry1.midpoint(this.a, this.b);
-        const BC = Geometry1.midpoint(this.b, this.c);
-        const AC = Geometry1.midpoint(this.a, this.c);
+        const AB = this.ab.midpoint();
+        const BC = this.bc.midpoint();
+        const AC = this.ac.midpoint();
 
         return {AB:AB, BC:BC, AC:AC};
     }
