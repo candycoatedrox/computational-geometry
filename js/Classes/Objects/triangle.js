@@ -7,14 +7,46 @@ class Triangle {
         this.c = c;
 
         this.ab = new Segment(this.a, this.b);
-        this.bc = new Segment(this.a, this.b);
-        this.ac = new Segment(this.a, this.b);
+        this.bc = new Segment(this.b, this.c);
+        this.ac = new Segment(this.a, this.c);
     }
 
-    drawVertices(ctx, color = POINTCOLOR, size = POINTSIZE) {
-        this.a.draw(ctx, color, size);
-        this.b.draw(ctx, color, size);
-        this.c.draw(ctx, color, size);
+    get points() {
+        return [this.a, this.b, this.c];
+    }
+
+    get segments() {
+        return [this.ab, this.bc, this.ac];
+    }
+
+    setPoints(pts) {
+        this.a.coords = pts[0];
+        this.b.coords = pts[1];
+        this.c.coords = pts[2];
+    }
+
+    setA(x,y) {
+        this.a.set(x,y);
+    }
+
+    setB(x,y) {
+        this.b.set(x,y);
+    }
+
+    setC(x,y) {
+        this.c.set(x,y);
+    }
+
+    snapToCanvas(canvas) {
+        this.a.snapToCanvas(canvas);
+        this.b.snapToCanvas(canvas);
+        this.c.snapToCanvas(canvas);
+    }
+
+    drawVertices(ctx, labels = true, color = POINTCOLOR, size = POINTSIZE) {
+        this.a.draw(ctx, "A", color, size);
+        this.b.draw(ctx, "B", color, size);
+        this.c.draw(ctx, "C", color, size);
     }
 
     drawSegments(ctx, color = EDGECOLOR, width = EDGETHICKNESS) {
@@ -30,18 +62,6 @@ class Triangle {
 
     drawFill(ctx, color = COLORS.setAlpha(EDGECOLOR)) {
         Draw.triangleFilled(ctx, this.a, this.b, this.c, color);
-    }
-
-    setA(x,y) {
-        this.a.set(x,y);
-    }
-
-    setB(x,y) {
-        this.b.set(x,y);
-    }
-
-    setC(x,y) {
-        this.c.set(x,y);
     }
 
     sideLengths() {

@@ -58,10 +58,8 @@ class EscribedCirclesApp {
 		let aC = new Point(350, 300);
         let bC = new Point(300, 260);
         let cC = new Point(375, 200);
+		let triC = new Triangle(aC, bC, cC);
 
-		let segABC = new Segment(aC, bC);
-		let segBCC = new Segment(bC, cC);
-        let segACC = new Segment(aC, cC);
 		let extAB = new Line(aC, bC);
 		let extBC = new Line(bC, cC);
 		let extAC = new Line(aC, cC);
@@ -86,13 +84,8 @@ class EscribedCirclesApp {
             axes: axesC,
             range: rangeC,
 
-			triangleA: aC,
-            triangleB: bC,
-            triangleC: cC,
+			triangle: triC,
 
-            segmentAB: segABC,
-            segmentBC: segBCC,
-            segmentAC: segACC,
 			extendedAB: extAB,
 			extendedBC: extBC,
 			extendedAC: extAC,
@@ -128,6 +121,7 @@ class EscribedCirclesApp {
 		let aW = new Point(0,0);
         let bW = new Point(0,0);
         let cW = new Point(0,0);
+		let triW = new Triangle(aW, bW, cW);
 
 		let centerAW = new Point(0,0);
 		let centerBW = new Point(0,0);
@@ -139,9 +133,7 @@ class EscribedCirclesApp {
 			axes: axesW,
 			range: rangeW,
 
-			triangleA: aW,
-            triangleB: bW,
-            triangleC: cW,
+			triangle: triW,
 
 			centerA: centerAW,
 			centerB: centerBW,
@@ -253,22 +245,18 @@ class EscribedCirclesApp {
 		}
 
 		if (this.show.segments.checked) {
-			this.dataC.segmentAB.draw(this.graphics);
-			this.dataC.segmentBC.draw(this.graphics);
-			this.dataC.segmentAC.draw(this.graphics);
+			this.dataC.triangle.drawSegments(this.graphics);
 		}
 		
 		if (this.show.vertices.checked) {
-			this.dataC.triangleA.draw(this.graphics, "A");
-			this.dataC.triangleB.draw(this.graphics, "B");
-			this.dataC.triangleC.draw(this.graphics, "C");
+			this.dataC.triangle.drawVertices(this.graphics);
 		}
 	}
 
 	// info
 	updateInfo() {
-		let ptsC = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.centerA, this.dataC.radiusA, this.dataC.centerB, this.dataC.radiusB, this.dataC.centerC, this.dataC.radiusC];
-		let ptsW = [this.dataW.triangleA, this.dataW.triangleB, this.dataW.triangleC, this.dataW.centerA, this.dataW.radiusA, this.dataW.centerB, this.dataW.radiusB, this.dataW.centerC, this.dataW.radiusC];
+		let ptsC = this.dataC.triangle.points.concat(this.dataC.centerA, this.dataC.radiusA, this.dataC.centerB, this.dataC.radiusB, this.dataC.centerC, this.dataC.radiusC);
+		let ptsW = this.dataW.triangle.points.concat(this.dataW.centerA, this.dataW.radiusA, this.dataW.centerB, this.dataW.radiusB, this.dataW.centerC, this.dataW.radiusC);
 		let labs = ["A","B","C","E<sub>a</sub>","r<sub>a</sub>","E<sub>b</sub>","r<sub>b</sub>","E<sub>c</sub>","r<sub>c</sub>"];
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
@@ -291,22 +279,21 @@ class EscribedCirclesApp {
 		this.dataC.box.fromCanvas(this.canvas);
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
-		this.dataC.triangleA.snapToCanvas(this.canvas);
-		this.dataC.triangleB.snapToCanvas(this.canvas);
-		this.dataC.triangleC.snapToCanvas(this.canvas);
+		this.dataC.triangle.snapToCanvas(this.canvas);
 		this.dataC.extendedAB.fromCanvas(this.canvas);
 		this.dataC.extendedBC.fromCanvas(this.canvas);
 		this.dataC.extendedAC.fromCanvas(this.canvas);
 
-		this.dataC.incenter.coords = Geometry1.incenter(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
+		this.dataC.incenter.coords = this.dataC.triangle.incenter();
 
-		this.dataC.centerA.coords = Geometry1.excenter(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
-		this.dataC.centerB.coords = Geometry1.excenter(this.dataC.triangleB, this.dataC.triangleA, this.dataC.triangleC);
-		this.dataC.centerC.coords = Geometry1.excenter(this.dataC.triangleC, this.dataC.triangleA, this.dataC.triangleB);
-
-		this.dataC.radiusA = Geometry1.exradius(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
-		this.dataC.radiusB = Geometry1.exradius(this.dataC.triangleB, this.dataC.triangleA, this.dataC.triangleC);
-		this.dataC.radiusC = Geometry1.exradius(this.dataC.triangleC, this.dataC.triangleA, this.dataC.triangleB);
+		let excenters = this.dataC.triangle.excenters();
+		let exradii = this.dataC.triangle.exradii();
+		this.dataC.centerA.coords = excenters.a;
+		this.dataC.centerB.coords = excenters.b;
+		this.dataC.centerC.coords = excenters.c;
+		this.dataC.radiusA = exradii.a;
+		this.dataC.radiusB = exradii.b;
+		this.dataC.radiusC = exradii.c;
 
 		this.dataC.intBisectorA.fromCanvas(this.canvas);
 		this.dataC.intBisectorB.fromCanvas(this.canvas);
@@ -320,9 +307,7 @@ class EscribedCirclesApp {
 		this.dataW.box.setPoints(boxPtsW);
 		this.dataW.range.set(this.canvas);
 	
-		this.dataW.triangleA.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleA, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-		this.dataW.triangleB.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleB, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-		this.dataW.triangleC.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		this.dataW.triangle.setPoints(ConvertPoints.canvasToWorldCoords(this.dataC.triangle.points, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis));
 		
 		this.dataW.centerA.coords = ConvertPoint.canvasToWorldCoords(this.dataC.centerA, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.centerB.coords = ConvertPoint.canvasToWorldCoords(this.dataC.centerB, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
@@ -366,16 +351,16 @@ class EscribedCirclesApp {
     setupButtonEvents() {
 		this.buttons.random.addEventListener("click", () => {
 			const pts = Utils.makeRandomPoints(this.canvas, 3);
-			this.dataC.triangleA.coords = pts[0];
-			this.dataC.triangleB.coords = pts[1];
-			this.dataC.triangleC.coords = pts[2];
+			this.dataC.triangle.a.coords = pts[0];
+			this.dataC.triangle.b.coords = pts[1];
+			this.dataC.triangle.c.coords = pts[2];
 			this.computeAndRefresh();
 		});
 
 		this.buttons.reset.addEventListener("click", () => {
-			this.dataC.triangleA.set(425, 475);
-			this.dataC.triangleB.set(200, 200);
-			this.dataC.triangleC.set(475, 75);
+			this.dataC.triangle.a.set(425, 475);
+			this.dataC.triangle.b.set(200, 200);
+			this.dataC.triangle.c.set(475, 75);
 			this.computeAndRefresh();
 		});
     }
@@ -386,7 +371,7 @@ class EscribedCirclesApp {
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
 
-			let pts = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC];
+			let pts = this.dataC.triangle.points;
 
 			// find id of existing nearby point
 			this.locatorId = null;
@@ -399,7 +384,7 @@ class EscribedCirclesApp {
 			// else, update the coordinates of the dragged point; do not change the labels
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
-            let pts = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC];
+            let pts = this.dataC.triangle.points;
 			pts[this.locatorId].set(mx,my);
 			// visualize the effect
 			this.computeAndRefresh();

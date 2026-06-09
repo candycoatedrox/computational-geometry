@@ -46,9 +46,7 @@ class PointednessApp {
 		let aC = new Point(540, 275);
         let bC = new Point(400, 150);
         let cC = new Point(540, 75);
-		let segABC = new Segment(aC, bC);
-		let segBCC = new Segment(bC, cC);
-        let segACC = new Segment(aC, cC);
+		let triC = new Triangle(aC, bC, cC);
 
         let pC = new Point(200, 200);
 		let vecPAC = new OrientedSegment(pC, aC);
@@ -61,13 +59,7 @@ class PointednessApp {
             axes: axesC,
             range: rangeC,
 
-			triangleA: aC,
-            triangleB: bC,
-            triangleC: cC,
-            segmentAB: segABC,
-            segmentBC: segBCC,
-            segmentAC: segACC,
-
+			triangle: triC,
             point: pC,
 			vectorPA: vecPAC,
 			vectorPB: vecPBC,
@@ -88,6 +80,7 @@ class PointednessApp {
 		let aW = new Point(0,0);
         let bW = new Point(0,0);
         let cW = new Point(0,0);
+		let triW = new Triangle(aW, bW, cW);
         let pW = new Point(0,0);
 		
 		this.dataW = {
@@ -96,10 +89,7 @@ class PointednessApp {
 			axes: axesW,
 			range: rangeW,
 
-			triangleA: aW,
-            triangleB: bW,
-            triangleC: cW,
-
+			triangle: triW,
             point: pW
 		};
 		
@@ -121,9 +111,9 @@ class PointednessApp {
 	
 	// computations
 	get isPointed() {
-		let PA = this.dataW.point.distanceToCoords(this.dataW.triangleA);
-		let PB = this.dataW.point.distanceToCoords(this.dataW.triangleB);
-		let PC = this.dataW.point.distanceToCoords(this.dataW.triangleC);
+		let PA = this.dataW.point.distanceToCoords(this.dataW.triangle.a);
+		let PB = this.dataW.point.distanceToCoords(this.dataW.triangle.b);
+		let PC = this.dataW.point.distanceToCoords(this.dataW.triangle.c);
 
 		// formula for angles with x-axis
 		/* let anglePA = Geometry1.ccwAngleBetweenVectors(PA, this.dataW.axes.xAxis);
@@ -170,19 +160,15 @@ class PointednessApp {
 		let vectorsColor = this.isPointed ? POSITIVECOLOR : NEGATIVECOLOR;
 
 		if (this.show.fill.checked) {
-			Draw.triangleFilled(this.graphics, this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, COLORS.setAlpha(triangleColor));
+			this.dataC.triangle.drawFill(this.graphics, COLORS.setAlpha(triangleColor));
 		}
 
 		if (this.show.segments.checked) {
-			this.dataC.segmentAB.draw(this.graphics, triangleColor);
-			this.dataC.segmentBC.draw(this.graphics, triangleColor);
-			this.dataC.segmentAC.draw(this.graphics, triangleColor);
+			this.dataC.triangle.drawSegments(this.graphics, triangleColor);
 		}
 		
 		if (this.show.vertices.checked) {
-			this.dataC.triangleA.draw(this.graphics, "A", triangleColor);
-			this.dataC.triangleB.draw(this.graphics, "B", triangleColor);
-			this.dataC.triangleC.draw(this.graphics, "C", triangleColor);
+			this.dataC.triangle.drawVertices(this.graphics, true, triangleColor)
 		}
 
 		if (this.show.vectors.checked) {
@@ -198,8 +184,8 @@ class PointednessApp {
 
 	// info
 	updateInfo() {
-		let ptsC = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.point];
-		let ptsW = [this.dataW.triangleA, this.dataW.triangleB, this.dataW.triangleC, this.dataW.point];
+		let ptsC = this.dataC.triangle.points.concat(this.dataC.point);
+		let ptsW = this.dataW.triangle.points.concat(this.dataW.point);
 		let labs = ["A","B","C","P"];
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
@@ -219,9 +205,7 @@ class PointednessApp {
 		this.dataC.box.fromCanvas(this.canvas);
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
-		this.dataC.triangleA.snapToCanvas(this.canvas);
-		this.dataC.triangleB.snapToCanvas(this.canvas);
-		this.dataC.triangleC.snapToCanvas(this.canvas);
+		this.dataC.triangle.snapToCanvas(this.canvas);
         this.dataC.point.snapToCanvas(this.canvas);
         
 		let boxPtsC = this.dataC.box.pts;	
@@ -229,9 +213,7 @@ class PointednessApp {
 		this.dataW.box.setPoints(boxPtsW);
 		this.dataW.range.set(this.canvas);
 	
-		this.dataW.triangleA.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleA, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-		this.dataW.triangleB.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleB, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-		this.dataW.triangleC.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		this.dataW.triangle.setPoints(ConvertPoints.canvasToWorldCoords(this.dataC.triangle.points, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis));
 		this.dataW.point.coords = ConvertPoint.canvasToWorldCoords(this.dataC.point, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 
 		this.scene();
@@ -254,34 +236,34 @@ class PointednessApp {
     // buttons
     setupButtonEvents() {
 		this.buttons.pointed.addEventListener("click", () => {
-			this.dataC.triangleA.set(375, 225);
-			this.dataC.triangleB.set(200, 175);
-			this.dataC.triangleC.set(350, 75);
+			this.dataC.triangle.a.set(375, 225);
+			this.dataC.triangle.b.set(200, 175);
+			this.dataC.triangle.c.set(350, 75);
 			this.dataC.point.set(325, 150);
 			this.computeAndRefresh();
 		});
 		
 		this.buttons.nonPointed.addEventListener("click", () => {
-			this.dataC.triangleA.set(375, 225);
-			this.dataC.triangleB.set(200, 175);
-			this.dataC.triangleC.set(350, 75);
+			this.dataC.triangle.a.set(375, 225);
+			this.dataC.triangle.b.set(200, 175);
+			this.dataC.triangle.c.set(350, 75);
 			this.dataC.point.set(150, 50);
 			this.computeAndRefresh();
 		});
 		
 		this.buttons.random.addEventListener("click", () => {
 			const pts = Utils.makeRandomPoints(this.canvas, 4);
-			this.dataC.triangleA.coords = pts[0];
-			this.dataC.triangleB.coords = pts[1];
-			this.dataC.triangleC.coords = pts[2];
+			this.dataC.triangle.a.coords = pts[0];
+			this.dataC.triangle.b.coords = pts[1];
+			this.dataC.triangle.c.coords = pts[2];
 			this.dataC.point.coords = pts[3];
 			this.computeAndRefresh();
 		});
 
 		this.buttons.reset.addEventListener("click", () => {
-			this.dataC.triangleA.set(540, 275);
-			this.dataC.triangleB.set(400, 150);
-			this.dataC.triangleC.set(540, 75);
+			this.dataC.triangle.a.set(540, 275);
+			this.dataC.triangle.b.set(400, 150);
+			this.dataC.triangle.c.set(540, 75);
             this.dataC.point.set(200, 200);
 			this.computeAndRefresh();
 		});
@@ -293,7 +275,7 @@ class PointednessApp {
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
 
-			let pts = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.point];
+			let pts = this.dataC.triangle.points.concat(this.dataC.point);
 
 			// find id of existing nearby point
 			this.locatorId = null;
@@ -306,7 +288,7 @@ class PointednessApp {
 			// else, update the coordinates of the dragged point; do not change the labels
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
-            let pts = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.point];
+            let pts = this.dataC.triangle.points.concat(this.dataC.point);
 			pts[this.locatorId].set(mx,my);
 			// visualize the effect
 			this.computeAndRefresh();

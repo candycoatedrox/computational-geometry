@@ -48,9 +48,7 @@ class CircumscribedCircleApp {
 		let aC = new Point(425, 350);
         let bC = new Point(450, 100);
         let cC = new Point(575, 175);
-		let segABC = new Segment(aC, bC);
-		let segBCC = new Segment(bC, cC);
-        let segACC = new Segment(aC, cC);
+		let triC = new Triangle(aC, bC, cC);
 
 		let midABC = new Point(0,0);
 		let midBCC = new Point(0,0);
@@ -66,12 +64,7 @@ class CircumscribedCircleApp {
             axes: axesC,
             range: rangeC,
 
-			triangleA: aC,
-            triangleB: bC,
-            triangleC: cC,
-            segmentAB: segABC,
-            segmentBC: segBCC,
-            segmentAC: segACC,
+			triangle: triC,
 			midpointAB: midABC,
 			midpointBC: midBCC,
 			midpointAC: midACC,
@@ -97,6 +90,7 @@ class CircumscribedCircleApp {
 		let aW = new Point(0,0);
         let bW = new Point(0,0);
         let cW = new Point(0,0);
+		let triW = new Triangle(aW, bW, cW);
 		let centerW = new Point(0,0);
 		
 		this.dataW = {
@@ -105,10 +99,7 @@ class CircumscribedCircleApp {
 			axes: axesW,
 			range: rangeW,
 
-			triangleA: aW,
-            triangleB: bW,
-            triangleC: cW,
-
+			triangle: triW,
 			center: centerW,
 			radius: 50
 		};
@@ -161,9 +152,7 @@ class CircumscribedCircleApp {
         }
 
 		if (this.show.segments.checked) {
-			this.dataC.segmentAB.draw(this.graphics);
-			this.dataC.segmentBC.draw(this.graphics);
-			this.dataC.segmentAC.draw(this.graphics);
+			this.dataC.triangle.drawSegments(this.graphics);
 		}
 
 		if (this.show.midpoints.checked) {
@@ -173,16 +162,14 @@ class CircumscribedCircleApp {
 		}
 		
 		if (this.show.vertices.checked) {
-			this.dataC.triangleA.draw(this.graphics, "A");
-			this.dataC.triangleB.draw(this.graphics, "B");
-			this.dataC.triangleC.draw(this.graphics, "C");
+			this.dataC.triangle.drawVertices(this.graphics);
 		}
 	}
 
 	// info
 	updateInfo() {
-		let ptsC = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.center, this.dataC.radius];
-		let ptsW = [this.dataW.triangleA, this.dataW.triangleB, this.dataW.triangleC, this.dataW.center, this.dataW.radius];
+		let ptsC = this.dataC.triangle.points.concat(this.dataC.center, this.dataC.radius);
+		let ptsW = this.dataW.triangle.points.concat(this.dataW.center, this.dataW.radius);
 		let labs = ["A","B","C","center","radius"];
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
@@ -202,15 +189,14 @@ class CircumscribedCircleApp {
 		this.dataC.box.fromCanvas(this.canvas);
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
-		this.dataC.triangleA.snapToCanvas(this.canvas);
-		this.dataC.triangleB.snapToCanvas(this.canvas);
-		this.dataC.triangleC.snapToCanvas(this.canvas);
+		this.dataC.triangle.snapToCanvas(this.canvas);
 
-		this.dataC.midpointAB.coords = this.dataC.segmentAB.midpoint();
-		this.dataC.midpointBC.coords = this.dataC.segmentBC.midpoint();
-		this.dataC.midpointAC.coords = this.dataC.segmentAC.midpoint();
-		this.dataC.center.coords = Geometry1.circumcenter(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
-		this.dataC.radius = Geometry1.circumradius(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
+		let midpoints = this.dataC.triangle.midpoints();
+		this.dataC.midpointAB.coords = midpoints.AB;
+		this.dataC.midpointBC.coords = midpoints.BC;
+		this.dataC.midpointAC.coords = midpoints.AC;
+		this.dataC.center.coords = this.dataC.triangle.circumcenter();
+		this.dataC.radius = this.dataC.triangle.circumradius();
 
 		// FIX: there is something up with the bisectors thru AC only in the reset position from Orientation??? (but if you rotate the points, it's ONLY an issue when the right side is AC or AB, *not* BC??)
 
@@ -219,9 +205,7 @@ class CircumscribedCircleApp {
 		this.dataW.box.setPoints(boxPtsW);
 		this.dataW.range.set(this.canvas);
 	
-		this.dataW.triangleA.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleA, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-		this.dataW.triangleB.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleB, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-		this.dataW.triangleC.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		this.dataW.triangle.setPoints(ConvertPoints.canvasToWorldCoords(this.dataC.triangle.points, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis));
 		this.dataW.center.coords = ConvertPoint.canvasToWorldCoords(this.dataC.center, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.radius = ConvertLength.canvasToWorldLength(this.dataC.radius, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 
@@ -250,16 +234,16 @@ class CircumscribedCircleApp {
     setupButtonEvents() {
 		this.buttons.random.addEventListener("click", () => {
 			const pts = Utils.makeRandomPoints(this.canvas, 3);
-			this.dataC.triangleA.coords = pts[0];
-			this.dataC.triangleB.coords = pts[1];
-			this.dataC.triangleC.coords = pts[2];
+			this.dataC.triangle.a.coords = pts[0];
+			this.dataC.triangle.b.coords = pts[1];
+			this.dataC.triangle.c.coords = pts[2];
 			this.computeAndRefresh();
 		});
 
 		this.buttons.reset.addEventListener("click", () => {
-			this.dataC.triangleA.set(425, 350);
-			this.dataC.triangleB.set(450, 100);
-			this.dataC.triangleC.set(575, 175);
+			this.dataC.triangle.a.set(425, 350);
+			this.dataC.triangle.b.set(450, 100);
+			this.dataC.triangle.c.set(575, 175);
 			this.computeAndRefresh();
 		});
     }
@@ -270,7 +254,7 @@ class CircumscribedCircleApp {
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
 
-			let pts = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC];
+			let pts = [this.dataC.triangle.a, this.dataC.triangle.b, this.dataC.triangle.c];
 
 			// find id of existing nearby point
 			this.locatorId = null;
@@ -283,7 +267,7 @@ class CircumscribedCircleApp {
 			// else, update the coordinates of the dragged point; do not change the labels
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
-            let pts = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC];
+            let pts = [this.dataC.triangle.a, this.dataC.triangle.b, this.dataC.triangle.c];
 			pts[this.locatorId].set(mx,my);
 			// visualize the effect
 			this.computeAndRefresh();

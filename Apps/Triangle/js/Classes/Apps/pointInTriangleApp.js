@@ -45,9 +45,7 @@ class PointInTriangleApp {
 		let aC = new Point(540, 275);
         let bC = new Point(400, 150);
         let cC = new Point(540, 75);
-		let segABC = new Segment(aC, bC);
-		let segBCC = new Segment(bC, cC);
-        let segACC = new Segment(aC, cC);
+		let triC = new Triangle(aC, bC, cC);
 
         let ptC = new Point(200, 200);
 
@@ -57,13 +55,7 @@ class PointInTriangleApp {
             axes: axesC,
             range: rangeC,
 
-			triangleA: aC,
-            triangleB: bC,
-            triangleC: cC,
-            segmentAB: segABC,
-            segmentBC: segBCC,
-            segmentAC: segACC,
-
+			triangle: triC,
             point: ptC
 		};
 
@@ -81,6 +73,7 @@ class PointInTriangleApp {
 		let aW = new Point(0,0);
         let bW = new Point(0,0);
         let cW = new Point(0,0);
+		let triW = new Triangle(aW, bW, cW);
         let ptW = new Point(0,0);
 		
 		this.dataW = {
@@ -89,10 +82,7 @@ class PointInTriangleApp {
 			axes: axesW,
 			range: rangeW,
 
-			triangleA: aW,
-            triangleB: bW,
-            triangleC: cW,
-
+			triangle: triW,
             point: ptW
 		};
 		
@@ -114,7 +104,7 @@ class PointInTriangleApp {
 	
 	// computations
 	get pointInsideTriangle() {
-		return Geometry1.pointInTriangle(this.dataC.point, this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
+		return this.dataC.triangle.pointIsInside(this.dataC.point);
 	}
 
 	// view
@@ -139,19 +129,15 @@ class PointInTriangleApp {
         let triangleColor = this.pointInsideTriangle ? POSITIVECOLOR : NEGATIVECOLOR;
 
 		if (this.show.fill.checked) {
-			Draw.triangleFilled(this.graphics, this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, COLORS.setAlpha(triangleColor));
+			this.dataC.triangle.drawFill(this.graphics, COLORS.setAlpha(triangleColor));
 		}
 
 		if (this.show.segments.checked) {
-			this.dataC.segmentAB.draw(this.graphics, triangleColor);
-			this.dataC.segmentBC.draw(this.graphics, triangleColor);
-			this.dataC.segmentAC.draw(this.graphics, triangleColor);
+			this.dataC.triangle.drawSegments(this.graphics, triangleColor);
 		}
 		
 		if (this.show.vertices.checked) {
-			this.dataC.triangleA.draw(this.graphics, "A", triangleColor);
-			this.dataC.triangleB.draw(this.graphics, "B", triangleColor);
-			this.dataC.triangleC.draw(this.graphics, "C", triangleColor);
+			this.dataC.triangle.drawVertices(this.graphics, true, triangleColor)
 		}
 
         if (this.show.point.checked) {
@@ -161,8 +147,8 @@ class PointInTriangleApp {
 
 	// info
 	updateInfo() {
-		let ptsC = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.point];
-		let ptsW = [this.dataW.triangleA, this.dataW.triangleB, this.dataW.triangleC, this.dataW.point];
+		let ptsC = this.dataC.triangle.points.concat(this.dataC.point);
+		let ptsW = this.dataW.triangle.points.concat(this.dataW.point);
 		let labs = ["A","B","C","P"];
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
@@ -182,9 +168,7 @@ class PointInTriangleApp {
 		this.dataC.box.fromCanvas(this.canvas);
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
-		this.dataC.triangleA.snapToCanvas(this.canvas);
-		this.dataC.triangleB.snapToCanvas(this.canvas);
-		this.dataC.triangleC.snapToCanvas(this.canvas);
+		this.dataC.triangle.snapToCanvas(this.canvas);
         this.dataC.point.snapToCanvas(this.canvas);
         
 		let boxPtsC = this.dataC.box.pts;	
@@ -192,9 +176,7 @@ class PointInTriangleApp {
 		this.dataW.box.setPoints(boxPtsW);
 		this.dataW.range.set(this.canvas);
 	
-		this.dataW.triangleA.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleA, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-		this.dataW.triangleB.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleB, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-		this.dataW.triangleC.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		this.dataW.triangle.setPoints(ConvertPoints.canvasToWorldCoords(this.dataC.triangle.points, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis));
 		this.dataW.point.coords = ConvertPoint.canvasToWorldCoords(this.dataC.point, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 
 		this.scene();
@@ -216,34 +198,34 @@ class PointInTriangleApp {
     // buttons
     setupButtonEvents() {
 		this.buttons.inside.addEventListener("click", () => {
-			this.dataC.triangleA.set(250, 100);
-			this.dataC.triangleB.set(400, 175);
-			this.dataC.triangleC.set(150, 325);
+			this.dataC.triangle.a.set(250, 100);
+			this.dataC.triangle.b.set(400, 175);
+			this.dataC.triangle.c.set(150, 325);
 			this.dataC.point.set(250, 200);
 			this.computeAndRefresh();
 		});
 		
 		this.buttons.outside.addEventListener("click", () => {
-			this.dataC.triangleA.set(250, 100);
-			this.dataC.triangleB.set(400, 175);
-			this.dataC.triangleC.set(150, 325);
+			this.dataC.triangle.a.set(250, 100);
+			this.dataC.triangle.b.set(400, 175);
+			this.dataC.triangle.c.set(150, 325);
 			this.dataC.point.set(125, 175);
 			this.computeAndRefresh();
 		});
 		
 		this.buttons.random.addEventListener("click", () => {
 			const pts = Utils.makeRandomPoints(this.canvas, 4);
-			this.dataC.triangleA.coords = pts[0];
-			this.dataC.triangleB.coords = pts[1];
-			this.dataC.triangleC.coords = pts[2];
+			this.dataC.triangle.a.coords = pts[0];
+			this.dataC.triangle.b.coords = pts[1];
+			this.dataC.triangle.c.coords = pts[2];
 			this.dataC.point.coords = pts[3];
 			this.computeAndRefresh();
 		});
 
 		this.buttons.reset.addEventListener("click", () => {
-			this.dataC.triangleA.set(540, 275);
-			this.dataC.triangleB.set(400, 150);
-			this.dataC.triangleC.set(540, 75);
+			this.dataC.triangle.a.set(540, 275);
+			this.dataC.triangle.b.set(400, 150);
+			this.dataC.triangle.c.set(540, 75);
             this.dataC.point.set(200, 200);
 			this.computeAndRefresh();
 		});
@@ -255,7 +237,7 @@ class PointInTriangleApp {
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
 
-			let pts = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.point];
+			let pts = this.dataC.triangle.points.concat(this.dataC.point);
 
 			// find id of existing nearby point
 			this.locatorId = null;
@@ -268,7 +250,7 @@ class PointInTriangleApp {
 			// else, update the coordinates of the dragged point; do not change the labels
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
-            let pts = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.point];
+            let pts = this.dataC.triangle.points.concat(this.dataC.point);
 			pts[this.locatorId].set(mx,my);
 			// visualize the effect
 			this.computeAndRefresh();

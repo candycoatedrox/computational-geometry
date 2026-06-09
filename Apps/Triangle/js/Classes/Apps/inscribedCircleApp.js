@@ -46,14 +46,12 @@ class InscribedCircleApp {
 		let aC = new Point(425, 475);
         let bC = new Point(200, 200);
         let cC = new Point(475, 75);
-		let segABC = new Segment(aC, bC);
-		let segBCC = new Segment(bC, cC);
-        let segACC = new Segment(aC, cC);
+		let triC = new Triangle(aC, bC, cC);
 
-		let bisectAC = new Segment(aC, new Point(0,0));
-		let bisectBC = new Segment(bC, new Point(0,0));
-		let bisectCC = new Segment(cC, new Point(0,0));
 		let centerC = new Point(0,0);
+		let bisectAC = new Segment(aC, centerC);
+		let bisectBC = new Segment(bC, centerC);
+		let bisectCC = new Segment(cC, centerC);
 
 		this.dataC = {
             box: boxC,
@@ -61,13 +59,7 @@ class InscribedCircleApp {
             axes: axesC,
             range: rangeC,
 
-			triangleA: aC,
-            triangleB: bC,
-            triangleC: cC,
-            segmentAB: segABC,
-            segmentBC: segBCC,
-            segmentAC: segACC,
-
+			triangle: triC,
 			bisectorA: bisectAC,
 			bisectorB: bisectBC,
 			bisectorC: bisectCC,
@@ -89,6 +81,7 @@ class InscribedCircleApp {
 		let aW = new Point(0,0);
         let bW = new Point(0,0);
         let cW = new Point(0,0);
+		let triW = new Triangle(aW, bW, cW);
 		let centerW = new Point(0,0);
 		
 		this.dataW = {
@@ -97,10 +90,7 @@ class InscribedCircleApp {
 			axes: axesW,
 			range: rangeW,
 
-			triangleA: aW,
-            triangleB: bW,
-            triangleC: cW,
-
+			triangle: triW,
 			center: centerW,
 			radius: 50
 		};
@@ -153,22 +143,18 @@ class InscribedCircleApp {
         }
 
 		if (this.show.segments.checked) {
-			this.dataC.segmentAB.draw(this.graphics);
-			this.dataC.segmentBC.draw(this.graphics);
-			this.dataC.segmentAC.draw(this.graphics);
+			this.dataC.triangle.drawSegments(this.graphics);
 		}
 		
 		if (this.show.vertices.checked) {
-			this.dataC.triangleA.draw(this.graphics, "A");
-			this.dataC.triangleB.draw(this.graphics, "B");
-			this.dataC.triangleC.draw(this.graphics, "C");
+			this.dataC.triangle.drawVertices(this.graphics);
 		}
 	}
 
 	// info
 	updateInfo() {
-		let ptsC = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC, this.dataC.center, this.dataC.radius];
-		let ptsW = [this.dataW.triangleA, this.dataW.triangleB, this.dataW.triangleC, this.dataW.center, this.dataW.radius];
+		let ptsC = this.dataC.triangle.points.concat(this.dataC.center, this.dataC.radius);
+		let ptsW = this.dataW.triangle.points.concat(this.dataW.center, this.dataW.radius);
 		let labs = ["A","B","C","center","radius"];
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
@@ -188,26 +174,17 @@ class InscribedCircleApp {
 		this.dataC.box.fromCanvas(this.canvas);
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
-		this.dataC.triangleA.snapToCanvas(this.canvas);
-		this.dataC.triangleB.snapToCanvas(this.canvas);
-		this.dataC.triangleC.snapToCanvas(this.canvas);
+		this.dataC.triangle.snapToCanvas(this.canvas);
 
-		let incenter = Geometry1.incenter(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
-		this.dataC.center.coords = incenter;
-		this.dataC.bisectorA.head.coords = incenter;
-		this.dataC.bisectorB.head.coords = incenter;
-		this.dataC.bisectorC.head.coords = incenter;
-
-		this.dataC.radius = Geometry1.inradius(this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
+		this.dataC.center.coords = this.dataC.triangle.incenter();
+		this.dataC.radius = this.dataC.triangle.inradius();
         
 		let boxPtsC = this.dataC.box.pts;	
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.box.setPoints(boxPtsW);
 		this.dataW.range.set(this.canvas);
 	
-		this.dataW.triangleA.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleA, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-		this.dataW.triangleB.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleB, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-		this.dataW.triangleC.coords = ConvertPoint.canvasToWorldCoords(this.dataC.triangleC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+		this.dataW.triangle.setPoints(ConvertPoints.canvasToWorldCoords(this.dataC.triangle.points, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis));
 		this.dataW.center.coords = ConvertPoint.canvasToWorldCoords(this.dataC.center, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.radius = ConvertLength.canvasToWorldLength(this.dataC.radius, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 
@@ -234,16 +211,16 @@ class InscribedCircleApp {
     setupButtonEvents() {
 		this.buttons.random.addEventListener("click", () => {
 			const pts = Utils.makeRandomPoints(this.canvas, 3);
-			this.dataC.triangleA.coords = pts[0];
-			this.dataC.triangleB.coords = pts[1];
-			this.dataC.triangleC.coords = pts[2];
+			this.dataC.triangle.a.coords = pts[0];
+			this.dataC.triangle.b.coords = pts[1];
+			this.dataC.triangle.c.coords = pts[2];
 			this.computeAndRefresh();
 		});
 
 		this.buttons.reset.addEventListener("click", () => {
-			this.dataC.triangleA.set(425, 475);
-			this.dataC.triangleB.set(200, 200);
-			this.dataC.triangleC.set(475, 75);
+			this.dataC.triangle.a.set(425, 475);
+			this.dataC.triangle.b.set(200, 200);
+			this.dataC.triangle.c.set(475, 75);
 			this.computeAndRefresh();
 		});
     }
@@ -254,7 +231,7 @@ class InscribedCircleApp {
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
 
-			let pts = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC];
+			let pts = this.dataC.triangle.points;
 
 			// find id of existing nearby point
 			this.locatorId = null;
@@ -267,7 +244,7 @@ class InscribedCircleApp {
 			// else, update the coordinates of the dragged point; do not change the labels
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
-            let pts = [this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC];
+            let pts = this.dataC.triangle.points;
 			pts[this.locatorId].set(mx,my);
 			// visualize the effect
 			this.computeAndRefresh();
