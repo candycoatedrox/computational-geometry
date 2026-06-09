@@ -5,9 +5,7 @@ class Segment {
 	}
 
 	getVector() {
-		let dx = this.head.x - this.tail.x;
-		let dy = this.head.y - this.tail.y;
-		return new Vector(dx, dy);
+		return Geometry1.vectorBetween(this.tail, this.head);
 	}
 	
 	draw(ctx, color = EDGECOLOR, width = EDGETHICKNESS){

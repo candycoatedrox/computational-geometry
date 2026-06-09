@@ -1,0 +1,117 @@
+class Triangle {
+    // class is UNTESTED
+
+    a = null;
+    b = null;
+    c = null;
+
+    constructor(a, b, c) {
+        this.a = a;
+        this.b = b;
+        this.c = c;
+    }
+
+    setA(x,y) {
+        this.a.set(x,y);
+    }
+
+    setB(x,y) {
+        this.b.set(x,y);
+    }
+
+    setC(x,y) {
+        this.c.set(x,y);
+    }
+
+    sideLengths() {
+        return Geometry1.triangleSideLengths(this.a, this.b, this.c);
+    }
+
+    // this fully breaks everything if I put it into Geometry1, inexplicably
+    angles() {
+        const A = Geometry1.smallestAngle(B,A,C);
+        const B = Geometry1.smallestAngle(A,B,C);
+        const C = Geometry1.smallestAngle(A,C,B);
+
+        return {A:A, B:B, C:C};
+    }
+
+    area() {
+        return Area2D.triangleArea(this.a, this.b, this.c);
+    }
+
+    signedArea() {
+        return Area2D.signedTriangleArea(this.a, this.b, this.c);
+    }
+
+    signedDoubleArea() {
+        return Area2D.signedDoubleTriangleArea(this.a, this.b, this.c);
+    }
+
+    semiperimeter() {
+        return Geometry1.semiperimeter(this.a, this.b, this.c);
+    }
+
+    pointIsInside(P) {
+        return Geometry1.pointInTriangle(P, this.a, this.b, this.c);
+    }
+
+    midpoints() {
+        const AB = Geometry1.midpoint(this.a, this.b);
+        const BC = Geometry1.midpoint(this.b, this.c);
+        const AC = Geometry1.midpoint(this.a, this.c);
+
+        return {AB:AB, BC:BC, AC:AC};
+    }
+
+    angleBisectors() {
+        const A = Geometry1.angleBisector(this.a, this.b, this.c);
+        const B = Geometry1.angleBisector(this.b, this.a, this.c);
+        const C = Geometry1.angleBisector(this.c, this.b, this.a);
+
+        return {A:A, B:B, C:C};
+    }
+
+    perpendicularBisectors() {
+        const mid = this.midpoints();
+        const cc = this.circumcenter();
+
+        const AB = Geometry1.vectorBetween(mid.AB, cc);
+        const BC = Geometry1.vectorBetween(mid.BC, cc);
+        const AC = Geometry1.vectorBetween(mid.AC, cc);
+
+        return {AB:AB, BC:BC, AC:AC};
+    }
+
+    incenter() {
+        return Geometry1.incenter(this.a, this.b, this.c);
+    }
+
+    inradius() {
+        return Geometry1.inradius(this.a, this.b, this.c);
+    }
+
+    circumcenter() {
+        return Geometry1.circumcenter(this.a, this.b, this.c);
+    }
+
+    circumradius() {
+        return Geometry1.circumradius(this.a, this.b, this.c);
+    }
+
+    excenters() {
+        const a = Geometry1.excenter(this.a, this.b, this.c);
+        const b = Geometry1.excenter(this.b, this.a, this.c);
+        const c = Geometry1.excenter(this.c, this.b, this.a);
+
+        return {a:a, b:b, c:c};
+    }
+
+    exradii() {
+        const a = Geometry1.exradius(this.a, this.b, this.c);
+        const b = Geometry1.exradius(this.b, this.a, this.c);
+        const c = Geometry1.exradius(this.c, this.b, this.a);
+
+        return {a:a, b:b, c:c};
+    }
+}

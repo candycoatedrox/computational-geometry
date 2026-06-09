@@ -114,17 +114,7 @@ class PointInTriangleApp {
 	
 	// computations
 	get pointInsideTriangle() {
-		let signAB = Area2D.signedTriangleDoubleArea(this.dataC.point, this.dataC.triangleA, this.dataC.triangleB);
-		let signBC = Area2D.signedTriangleDoubleArea(this.dataC.point, this.dataC.triangleB, this.dataC.triangleC);
-		let signCA = Area2D.signedTriangleDoubleArea(this.dataC.point, this.dataC.triangleC, this.dataC.triangleA);
-		
-		if (signAB > 0) {
-			return signBC > 0 && signCA > 0;
-		} else if (signAB < 0) {
-			return signBC < 0 && signCA < 0;
-		} else {
-			return false;
-		}
+		return Geometry1.pointInTriangle(this.dataC.point, this.dataC.triangleA, this.dataC.triangleB, this.dataC.triangleC);
 	}
 
 	// view

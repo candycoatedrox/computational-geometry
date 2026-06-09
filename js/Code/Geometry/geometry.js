@@ -129,7 +129,7 @@ const Geometry1 = {
   },
 
   circumradius(A,B,C) {
-    const sides = this.sideLengths(A,B,C);
+    const sides = this.triangleSideLengths(A,B,C);
     const angleA = this.smallestAngle(B,A,C);
     const r = (sides.a / Math.sin(angleA)) / 2;
 
@@ -152,7 +152,7 @@ const Geometry1 = {
 	},
 
   excenter(A,B,C) { // finds the excenter opposite to the first vertex A
-    const sides = this.sideLengths(A,B,C);
+    const sides = this.triangleSideLengths(A,B,C);
 
     const cx = (-sides.a*A.x + sides.b*B.x + sides.c*C.x) / (-sides.a + sides.b + sides.c);
     const cy = (-sides.a*A.y + sides.b*B.y + sides.c*C.y) / (-sides.a + sides.b + sides.c);
@@ -161,7 +161,7 @@ const Geometry1 = {
   },
 
   exradius(A,B,C) { // finds the radius of the excircle opposite to the first vertex A
-    const sides = this.sideLengths(A,B,C);
+    const sides = this.triangleSideLengths(A,B,C);
     const s = this.semiperimeter(A,B,C);
 
     const r = Area2D.triangleArea(A,B,C) / (s - sides.a);
@@ -169,7 +169,7 @@ const Geometry1 = {
   },
 
   incenter(A,B,C) {
-    const sides = this.sideLengths(A,B,C);
+    const sides = this.triangleSideLengths(A,B,C);
 
     const cx = (sides.a*A.x + sides.b*B.x + sides.c*C.x) / (sides.a + sides.b + sides.c);
     const cy = (sides.a*A.y + sides.b*B.y + sides.c*C.y) / (sides.a + sides.b + sides.c);
@@ -285,6 +285,20 @@ const Geometry1 = {
     }
     return inside;
   },
+
+  pointInTriangle(P, A, B, C) {
+		let signAB = Area2D.signedTriangleDoubleArea(P,A,B);
+		let signBC = Area2D.signedTriangleDoubleArea(P,B,C);
+		let signCA = Area2D.signedTriangleDoubleArea(P,C,A);
+		
+		if (signAB > 0) {
+			return signBC > 0 && signCA > 0;
+		} else if (signAB < 0) {
+			return signBC < 0 && signCA < 0;
+		} else {
+			return false;
+		}
+  },
 	
 	pointLineDistance(p, a, b) {
     const abx = b.x - a.x, aby = b.y - a.y;
@@ -335,16 +349,8 @@ const Geometry1 = {
 	},
 
   semiperimeter(A,B,C) {
-    const sides = this.sideLengths(A,B,C);
+    const sides = this.triangleSideLengths(A,B,C);
     return (sides.a + sides.b + sides.c)/2;
-  },
-
-  sideLengths(A,B,C) {
-    const a = this.distance(B,C);
-    const b = this.distance(A,C);
-    const c = this.distance(A,B);
-    
-    return {a:a, b:b, c:c};
   },
 
 	signedArea(poly) {
@@ -360,6 +366,21 @@ const Geometry1 = {
     let theta = this.ccwAngle(A,B,C);
     if (theta > Math.PI) theta = 2*Math.PI - theta;
     return theta;
+  },
+
+  triangleSideLengths(A,B,C) {
+    const a = this.distance(B,C);
+    const b = this.distance(A,C);
+    const c = this.distance(A,B);
+    
+    return {a:a, b:b, c:c};
+  },
+
+  vectorBetween(a, b) {
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+
+    return {x:dx, y:dy};
   },
 
   vectorCoordinates(r, theta) {
