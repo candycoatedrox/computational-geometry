@@ -44,10 +44,7 @@ class PointInPolygonApp {
 		originC.fromCanvas(this.canvas);
 		let axesC = new Axes(100,-100);
 
-		let pointsC = new Points();
-        let labels = [];
-        let edges = [];
-
+		let polyC = new Polygon();
         let ptC = new Point(260,230);
 
 		this.dataC = {
@@ -56,10 +53,7 @@ class PointInPolygonApp {
             axes: axesC,
             range: rangeC,
 
-			vertices: pointsC,
-            labels: labels,
-            edges: edges,
-
+			polygon: polyC,
             point: ptC
 		};
 
@@ -74,7 +68,7 @@ class PointInPolygonApp {
 		let originW = new Origin(0,0);
 		let axesW = new Axes(1,1);
 
-        let pointsW = new Points();
+        let polyW = new Polygon();
         let ptW = new Point(0,0);
 		
 		this.dataW = {
@@ -83,7 +77,7 @@ class PointInPolygonApp {
 			axes: axesW,
 			range: rangeW,
 
-            vertices: pointsW,
+            polygon: polyW,
             point: ptW
 		};
 
@@ -92,7 +86,7 @@ class PointInPolygonApp {
         this.createVertex(300,120);
         this.createVertex(440,230);
         this.createVertex(350,390);
-        this.updateVertexLabels();
+        this.dataC.polygon.updateLabels();
 		
 		// gui: set up actions
 		this.setupShowEvents();
@@ -109,7 +103,7 @@ class PointInPolygonApp {
 	
 	// computations
     get pointInsidePolygon() {
-        return Geometry1.pointInPolygon(this.dataC.point, this.dataC.vertices);
+        return this.dataC.polygon.pointIsInside(this.dataC.point);
     }
 
 	// view
@@ -137,19 +131,16 @@ class PointInPolygonApp {
 
         let polyColor = (this.pointInsidePolygon) ? POSITIVECOLOR : NEGATIVECOLOR;
 
-        if (this.show.fill.checked && this.dataC.vertices.length >= 3) {
-            let face = Utils.stdRange(this.length);
-            Draw.face(this.graphics, this.dataC.vertices, face, COLORS.setAlpha(polyColor));
+        if (this.show.fill.checked) {
+			this.dataC.polygon.drawFill(this.graphics, COLORS.setAlpha(polyColor));
         }
 
-        if (this.show.segments.checked && this.dataC.vertices.length >= 2) {
-            for (let i = 0; i < this.dataC.edges.length; i++) {
-                Draw.segment(this.graphics, this.dataC.vertices[this.dataC.edges[i][0]], this.dataC.vertices[this.dataC.edges[i][1]], polyColor);
-            }
+        if (this.show.segments.checked) {
+            this.dataC.polygon.drawSegments(this.graphics, polyColor);
         }
 		
 		if (this.show.vertices.checked) { 
-			this.dataC.vertices.draw(this.graphics, this.dataC.labels, polyColor);
+			this.dataC.polygon.drawVertices(this.graphics);
 		}
 
         if (this.show.point.checked) {
@@ -159,9 +150,9 @@ class PointInPolygonApp {
 
 	// info
 	updateInfo() {
-        const ptsC = this.dataC.vertices.concat(this.dataC.point);
-        const ptsW = this.dataW.vertices.concat(this.dataW.point);
-        const labs = this.dataC.labels.concat("P");
+        const ptsC = this.dataC.polygon.concat(this.dataC.point);
+        const ptsW = this.dataW.polygon.concat(this.dataW.point);
+        const labs = this.dataC.polygon.labels.concat("P");
 
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
@@ -181,46 +172,31 @@ class PointInPolygonApp {
 		this.dataC.box.fromCanvas(this.canvas);
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
-		this.dataC.vertices.snapToCanvas(this.canvas);
+		this.dataC.polygon.snapToCanvas(this.canvas);
         this.dataC.point.snapToCanvas(this.canvas);
         
 		let boxPtsC = this.dataC.box.pts;	
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.box.setPoints(boxPtsW);
 		this.dataW.range.set(this.canvas);
-        this.dataW.vertices.setAll(ConvertPoints.canvasToWorldCoords(this.dataC.vertices, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis));
+        this.dataW.polygon.setAll(ConvertPoints.canvasToWorldCoords(this.dataC.polygon, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis));
         this.dataW.point.coords = ConvertPoint.canvasToWorldCoords(this.dataC.point, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 
 		this.scene();
 		this.updateInfo();
 	}
 
-	createVertex(xC, yC, index = this.dataC.vertices.length) {
+	createVertex(xC, yC, index = this.dataC.polygon.length) {
 		const ptW = ConvertPoint.canvasToWorldCoords({x:xC, y:yC}, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-        this.dataC.vertices.splice(index, 0, new Point(xC,yC));
-        this.dataW.vertices.splice(index, 0, new Point(ptW.x, ptW.y));
-        this.updateEdges();
+        this.dataC.polygon.splice(index, 0, new Point(xC,yC));
+        this.dataW.polygon.splice(index, 0, new Point(ptW.x, ptW.y));
+        this.dataC.polygon.updateEdges();
 	}
 	clearVertices() {
-		this.dataC.vertices.length = 0;
-		this.dataW.vertices.length = 0;
-        this.updateEdges();
+		this.dataC.polygon.length = 0;
+		this.dataW.polygon.length = 0;
+        this.dataC.polygon.updateEdges();
 	}
-    updateVertexLabels() {
-        this.dataC.labels = Utils.stdRange1(this.dataC.vertices.length);
-        this.dataC.labels = this.dataC.labels.map((n) => { return 'p' + n; });
-    }
-    updateEdges() {
-        this.dataC.edges.length = 0;
-        if (this.dataC.vertices.length === 2) {
-            this.dataC.edges.push([0,1]);
-        } else if (this.dataC.vertices.length >= 3) {
-            for (let i = 0; i < this.dataC.vertices.length; i++) {
-                let j = (i !== this.dataC.vertices.length - 1) ? i+1 : 0;
-                this.dataC.edges.push([i,j]);
-            }
-        }
-    }
 	
 	// set up gui
 	// checkboxes
@@ -245,7 +221,7 @@ class PointInPolygonApp {
             this.createVertex(450,60);
             this.createVertex(90,170);
             this.dataC.point.set(360,120);
-            this.updateVertexLabels();
+            this.dataC.polygon.updateLabels();
 			this.computeAndRefresh();
 		});
 		
@@ -256,7 +232,7 @@ class PointInPolygonApp {
             this.createVertex(220,520);
             this.createVertex(560,430);
             this.dataC.point.set(430,240);
-            this.updateVertexLabels();
+            this.dataC.polygon.updateLabels();
 			this.computeAndRefresh();
 		});
 		
@@ -269,7 +245,7 @@ class PointInPolygonApp {
 				this.createVertex(pts[i].x, pts[i].y);
             }
 
-            this.updateVertexLabels();
+            this.dataC.polygon.updateLabels();
 			this.computeAndRefresh();
 		});
 
@@ -281,7 +257,7 @@ class PointInPolygonApp {
             this.createVertex(440,230);
             this.createVertex(350,390);
             this.dataC.point.set(260,230);
-            this.updateVertexLabels();
+            this.dataC.polygon.updateLabels();
 			this.computeAndRefresh();
 		});
 	}
@@ -292,7 +268,7 @@ class PointInPolygonApp {
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
 
-            const pts = this.dataC.vertices.concat(this.dataC.point);
+            const pts = this.dataC.polygon.concat(this.dataC.point);
 			
 			// find id of existing nearby point
 			this.locatorId = null;
@@ -302,19 +278,19 @@ class PointInPolygonApp {
 			{
 				if (this.locatorId === null) // not near an existing point: insert a new point and label
 				{
-                    if (this.dataC.vertices.length <= 1) { // insert at end
-                        this.locatorId = this.dataC.vertices.length;
+                    if (this.dataC.polygon.length <= 1) { // insert at end
+                        this.locatorId = this.dataC.polygon.length;
                     } else { // insert between nearest edge
-                        let e = Geometry1.nearestEdgeByMidpoint({x:mx, y:my}, this.dataC.vertices, this.dataC.edges);
-                        if (e[0] === this.dataC.vertices.length - 1 && e[1] === 0) {
-                            this.locatorId = this.dataC.vertices.length;
+                        let e = Geometry1.nearestEdgeByMidpoint({x:mx, y:my}, this.dataC.polygon, this.dataC.polygon.edges);
+                        if (e[0] === this.dataC.polygon.length - 1 && e[1] === 0) {
+                            this.locatorId = this.dataC.polygon.length;
                         } else {
                             this.locatorId = e[0] + 1;
                         }
                     }
 					
 					this.createVertex(mx, my, this.locatorId);
-                    this.updateVertexLabels();
+                    this.dataC.polygon.updateLabels();
 				} 
 				// else, do nothing now - but check the mouse-move-event on the clicked-on point	
 			} 
@@ -322,11 +298,11 @@ class PointInPolygonApp {
 			{				
 				// if on an existing point, delete the point, else ignore the double click
                 // user cannot delete points if there are 3 or fewer points in the polygon
-				if (this.dataC.vertices.length >= 4 && this.locatorId !== this.dataC.vertices.length) { 
-					this.dataC.vertices.splice(this.locatorId,1); 				// delete the point
-					this.dataW.vertices.splice(this.locatorId,1);
-                    this.updateVertexLabels();	// relabel all points
-                    this.updateEdges();
+				if (this.dataC.polygon.length >= 4 && this.locatorId !== this.dataC.polygon.length) { 
+					this.dataC.polygon.splice(this.locatorId,1); 				// delete the point
+					this.dataW.polygon.splice(this.locatorId,1);
+                    this.dataC.polygon.updateLabels();	// relabel all points
+                    this.dataC.polygon.updateEdges();
 					this.locatorId = null;
 				}
 			};
@@ -340,10 +316,10 @@ class PointInPolygonApp {
 			// else, update the coordinates of the dragged point; do not change the labels
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
-            if (this.locatorId === this.dataC.vertices.length) {
+            if (this.locatorId === this.dataC.polygon.length) {
                 this.dataC.point.set(mx,my);
             } else {
-                this.dataC.vertices[this.locatorId].set(mx,my);
+                this.dataC.polygon[this.locatorId].set(mx,my);
             }
 			
 			// visualize the effect

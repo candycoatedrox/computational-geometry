@@ -138,7 +138,8 @@ class Polygon extends Points {
 
                 if (intersect !== null) {
                     let intersectCoords = intersect.X;
-                    intersections.push(new Point(intersectCoords.x, intersectCoords.y));
+                    intersections.push(intersectCoords);
+                    console.log("intersection " + JSON.stringify(intersectCoords));
                 }
             }
         }

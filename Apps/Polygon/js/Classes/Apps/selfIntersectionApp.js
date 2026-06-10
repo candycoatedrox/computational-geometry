@@ -46,7 +46,7 @@ class SelfIntersectionApp {
 		originC.fromCanvas(this.canvas);
 		let axesC = new Axes(100,-100);
 
-		let pointsC = new Points();
+		let polyC = new Polygon();
         let labels = [];
         let edges = [];
 
@@ -59,10 +59,7 @@ class SelfIntersectionApp {
             axes: axesC,
             range: rangeC,
 
-			points: pointsC,
-            labels: labels,
-            edges: edges,
-
+			polygon: polyC,
             intersections: intersectC,
             intersectLabels: intersectLabs
 		};
@@ -78,7 +75,7 @@ class SelfIntersectionApp {
 		let originW = new Origin(0,0);
 		let axesW = new Axes(1,1);
 
-        let pointsW = new Points();
+        let polyW = new Polygon();
         let intersectW = new Points();
 		
 		this.dataW = {
@@ -87,7 +84,7 @@ class SelfIntersectionApp {
 			axes: axesW,
 			range: rangeW,
 
-            points: pointsW,
+            polygon: polyW,
             intersections: intersectW
 		};
 
@@ -95,7 +92,7 @@ class SelfIntersectionApp {
         this.createVertex(200,350);
         this.createVertex(600,175);
         this.createVertex(425,400);
-        this.updateVertexLabels();
+        this.dataC.polygon.updateLabels();
 		
 		// gui: set up actions
 		this.setupShowEvents();
@@ -140,19 +137,16 @@ class SelfIntersectionApp {
 
         let polyColor = (this.selfIntersects) ? NEGATIVECOLOR : POSITIVECOLOR;
 
-        if (this.show.fill.checked && this.dataC.points.length >= 3) {
-            let face = Utils.stdRange(this.length);
-            Draw.face(this.graphics, this.dataC.points, face, COLORS.setAlpha(polyColor));
+        if (this.show.fill.checked) {
+			this.dataC.polygon.drawFill(this.graphics, COLORS.setAlpha(polyColor));
         }
 
-        if (this.show.segments.checked && this.dataC.points.length >= 2) {
-            for (let i = 0; i < this.dataC.edges.length; i++) {
-                Draw.segment(this.graphics, this.dataC.points[this.dataC.edges[i][0]], this.dataC.points[this.dataC.edges[i][1]], polyColor);
-            }
+        if (this.show.segments.checked) {
+            this.dataC.polygon.drawSegments(this.graphics, polyColor);
         }
 		
 		if (this.show.vertices.checked) { 
-			this.dataC.points.draw(this.graphics, this.dataC.labels);
+			this.dataC.polygon.drawVertices(this.graphics);
 		}
 
         if (this.show.intersections.checked) {
@@ -162,9 +156,9 @@ class SelfIntersectionApp {
 
 	// info
 	updateInfo() {
-        const ptsC = this.dataC.points.concat(this.dataC.intersections);
-        const ptsW = this.dataW.points.concat(this.dataW.intersections);
-        const labs = this.dataC.labels.concat(this.dataC.intersectLabels);
+        const ptsC = this.dataC.polygon.concat(this.dataC.intersections);
+        const ptsW = this.dataW.polygon.concat(this.dataW.intersections);
+        const labs = this.dataC.polygon.labels.concat(this.dataC.intersectLabels);
 
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
@@ -184,26 +178,17 @@ class SelfIntersectionApp {
 		this.dataC.box.fromCanvas(this.canvas);
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
-		this.dataC.points.snapToCanvas(this.canvas);
+		this.dataC.polygon.snapToCanvas(this.canvas);
 
         // find intersections
+		let intersects = this.dataC.polygon.selfIntersections();
         this.dataC.intersections.length = 0;
         this.dataW.intersections.length = 0;
-        for (let i = 0; i < this.dataC.edges.length; i++) {
-            for (let j = i+2; j < this.dataC.edges.length; j++) {
-                // exclude edge pairs that share one or more vertices
-                if (this.dataC.edges[i].includes(this.dataC.edges[j][0]) || this.dataC.edges[i].includes(this.dataC.edges[j][1])) continue;
-
-                let intersect = Geometry1.lineSegIntersection(this.dataC.points[this.dataC.edges[i][0]], this.dataC.points[this.dataC.edges[i][1]], this.dataC.points[this.dataC.edges[j][0]], this.dataC.points[this.dataC.edges[j][1]]);
-
-                if (intersect !== null) {
-                    let intersectCoords = intersect.X;
-                    let ptW = ConvertPoint.canvasToWorldCoords({x:intersectCoords.x, y:intersectCoords.y}, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-                    this.dataC.intersections.push(new Point(intersectCoords.x, intersectCoords.y));
-                    this.dataW.intersections.push(new Point(ptW.x, ptW.y));
-                }
-            }
-        }
+		for (let i = 0; i < intersects.length; i++) {
+			let ptW = ConvertPoint.canvasToWorldCoords(intersects[i], this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+			this.dataC.intersections.push(new Point(intersects[i].x, intersects[i].y))
+			this.dataW.intersections.push(new Point(ptW.x, ptW.y));
+		}
 
         this.dataC.intersectLabels = Utils.stdRange1(this.dataC.intersections.length);
         this.dataC.intersectLabels = this.dataC.intersectLabels.map((n) => { return 'i' + n; });
@@ -212,38 +197,23 @@ class SelfIntersectionApp {
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.box.setPoints(boxPtsW);
 		this.dataW.range.set(this.canvas);
-        this.dataW.points.setAll(ConvertPoints.canvasToWorldCoords(this.dataC.points, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis));
+        this.dataW.polygon.setAll(ConvertPoints.canvasToWorldCoords(this.dataC.polygon, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis));
 
 		this.scene();
 		this.updateInfo();
 	}
 
-	createVertex(xC, yC, index = this.dataC.points.length) {
+	createVertex(xC, yC, index = this.dataC.polygon.length) {
 		const ptW = ConvertPoint.canvasToWorldCoords({x:xC, y:yC}, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-        this.dataC.points.splice(index, 0, new Point(xC,yC));
-        this.dataW.points.splice(index, 0, new Point(ptW.x, ptW.y));
-        this.updateEdges();
+        this.dataC.polygon.splice(index, 0, new Point(xC,yC));
+        this.dataW.polygon.splice(index, 0, new Point(ptW.x, ptW.y));
+        this.dataC.polygon.updateEdges();
 	}
 	clearVertices() {
-		this.dataC.points.length = 0;
-		this.dataW.points.length = 0;
-        this.updateEdges();
+		this.dataC.polygon.length = 0;
+		this.dataW.polygon.length = 0;
+        this.dataC.polygon.updateEdges();
 	}
-    updateVertexLabels() {
-        this.dataC.labels = Utils.stdRange1(this.dataC.points.length);
-        this.dataC.labels = this.dataC.labels.map((n) => { return 'p' + n; });
-    }
-    updateEdges() {
-        this.dataC.edges.length = 0;
-        if (this.dataC.points.length === 2) {
-            this.dataC.edges.push([0,1]);
-        } else if (this.dataC.points.length >= 3) {
-            for (let i = 0; i < this.dataC.points.length; i++) {
-                let j = (i !== this.dataC.points.length - 1) ? i+1 : 0;
-                this.dataC.edges.push([i,j]);
-            }
-        }
-    }
 	
 	// set up gui
 	// checkboxes
@@ -267,7 +237,7 @@ class SelfIntersectionApp {
             this.createVertex(410,130);
             this.createVertex(230,80);
             this.createVertex(400,380);
-            this.updateVertexLabels();
+            this.dataC.polygon.updateLabels();
 			this.computeAndRefresh();
 		});
 		
@@ -278,14 +248,14 @@ class SelfIntersectionApp {
             this.createVertex(300,120);
             this.createVertex(440,230);
             this.createVertex(350,390);
-            this.updateVertexLabels();
+            this.dataC.polygon.updateLabels();
 			this.computeAndRefresh();
 		});
 		
 		this.buttons.addRandom.addEventListener("click", () => {
             let pt = Utils.makeRandomPoint(this.canvas);
 			this.createVertex(pt.x, pt.y);
-            this.updateVertexLabels();
+            this.dataC.polygon.updateLabels();
 			this.computeAndRefresh();
 		});
 		
@@ -298,13 +268,13 @@ class SelfIntersectionApp {
 				this.createVertex(pts[i].x, pts[i].y);
             }
 
-            this.updateVertexLabels();
+            this.dataC.polygon.updateLabels();
 			this.computeAndRefresh();
 		});
 
 		this.buttons.clear.addEventListener("click", () => {
 			this.clearVertices();
-            this.updateVertexLabels();
+            this.dataC.polygon.updateLabels();
 			this.computeAndRefresh();
 		});
 
@@ -314,7 +284,7 @@ class SelfIntersectionApp {
             this.createVertex(200,350);
             this.createVertex(600,175);
             this.createVertex(425,400);
-            this.updateVertexLabels();
+            this.dataC.polygon.updateLabels();
 			this.computeAndRefresh();
 		});
 	}
@@ -327,36 +297,36 @@ class SelfIntersectionApp {
 			
 			// find id of existing nearby point
 			this.locatorId = null;
-			this.dataC.points.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) this.locatorId = i; });
+			this.dataC.polygon.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) this.locatorId = i; });
 						
 			if (e.detail === 1) // it was a single click
 			{
 				if (this.locatorId === null) // not near an existing point: insert a new point and label
 				{
-                    if (this.dataC.points.length <= 1) { // insert at end
-                        this.locatorId = this.dataC.points.length;
+                    if (this.dataC.polygon.length <= 1) { // insert at end
+                        this.locatorId = this.dataC.polygon.length;
                     } else { // insert between nearest edge
-                        let e = Geometry1.nearestEdgeByMidpoint({x:mx, y:my}, this.dataC.points, this.dataC.edges);
-                        if (e[0] === this.dataC.points.length - 1 && e[1] === 0) {
-                            this.locatorId = this.dataC.points.length;
+                        let e = Geometry1.nearestEdgeByMidpoint({x:mx, y:my}, this.dataC.polygon, this.dataC.polygon.edges);
+                        if (e[0] === this.dataC.polygon.length - 1 && e[1] === 0) {
+                            this.locatorId = this.dataC.polygon.length;
                         } else {
                             this.locatorId = e[0] + 1;
                         }
                     }
 					
 					this.createVertex(mx, my, this.locatorId);
-                    this.updateVertexLabels();
+                    this.dataC.polygon.updateLabels();
 				} 
 				// else, do nothing now - but check the mouse-move-event on the clicked-on point	
 			} 
 			else if (e.detail === 2) // it was a double click
 			{				
 				// if on an existing point, delete the point, else ignore the double click
-				if (this.dataC.points.length >= 1) { 
-					this.dataC.points.splice(this.locatorId,1); 				// delete the point
-					this.dataW.points.splice(this.locatorId,1);
-                    this.updateVertexLabels();	// relabel all points
-                    this.updateEdges();
+				if (this.dataC.polygon.length >= 1) { 
+					this.dataC.polygon.splice(this.locatorId,1); 				// delete the point
+					this.dataW.polygon.splice(this.locatorId,1);
+                    this.dataC.polygon.updateLabels();	// relabel all points
+					this.dataC.polygon.updateEdges();
 					this.locatorId = null;
 				}
 			};
@@ -370,7 +340,7 @@ class SelfIntersectionApp {
 			// else, update the coordinates of the dragged point; do not change the labels
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
-			this.dataC.points[this.locatorId].set(mx,my);
+			this.dataC.polygon[this.locatorId].set(mx,my);
 			// visualize the effect
 			this.computeAndRefresh();
 		});
