@@ -19,6 +19,14 @@ class Segment {
 	drawVec(ctx, color = EDGECOLOR, width = EDGETHICKNESS){
   	  	Draw.arrow(ctx, this.tail, this.head, color, width);
 	}
+
+	includes(p) {
+		return (this.tail == p) || (this.head == p);
+	}
+
+	isBetween(p, q) {
+		return this.includes(p) && this.includes(q);
+	}
 	
 	length() {
 		const dx = this.head.x - this.tail.x;
@@ -31,6 +39,10 @@ class Segment {
 		const dx = this.head.x - this.tail.x;
 		const dy = this.head.y - this.tail.y;
 		return dx * dx + dy * dy;
+	}
+
+	distanceToPoint(p) {
+		return Geometry1.pointLineDistance(p, this.tail, this.head);
 	}
 
 	slope() {

@@ -58,8 +58,7 @@
 	<script src="js/Gui/redrawActiveApp.js"></script>
 			
 	<!-- Mini-apps -->
-	<script src="js/Classes/Apps/selfIntersectionApp.js"></script>
-	<script src="js/Classes/Apps/pointInPolygonApp.js"></script>
+	<script src="js/Classes/Apps/graphEditorApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
 <div>
@@ -92,8 +91,8 @@
 		<span class="badge"><a href=../RefFrame/refFrame.html>Ref Frame</a></span>
 		<span class="badge"><a href=../Basics/basics.html>Basics</a></span>
 		<span class="badge"><a href=../Triangle/triangle.html>Triangle</a></span>
-		<span class="badge"><a href=polygon.html>POLYGON</a></span>
-		<span class="badge"><a href=../Editor/editor.html>Editor</a></span>
+		<span class="badge"><a href=../Polygon/polygon.html>Polygon</a></span>
+		<span class="badge"><a href=editor.html>EDITOR</a></span>
     </div>
   </div>
   <button class="theme-toggle" onclick="toggleTheme()">
@@ -104,8 +103,7 @@
 
 <!-- Navigation app - tabs  -->
 <nav> 
-	<button class="active" data-tab="selfIntersectionApp">Self Intersection</button>
-	<button data-tab="pointInPolygonApp">Point in Polygon</button>
+	<button class="active" data-tab="graphEditorApp">Graph</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -133,42 +131,49 @@
 
 
 <!-- >═══════════════════════════════════════════════════
-     TAB 1 — SELF INTERSECTION APP
+     TAB 1 — GRAPH EDITOR APP
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container active" id="tab-selfIntersectionApp">
+<div class="demo-container active" id="tab-graphEditorApp">
 	<div class="canvas-wrap">
-		<canvas id="canvas-selfIntersectionApp" width="300" height="300"></canvas>
+		<canvas id="canvas-graphEditorApp" width="300" height="300"></canvas>
 		<div class="canvas-hint">
-			Visualize a polygon and its self-intersections
+			Visualize and edit a graph
 		</div>
 	</div>
 	<div class="side-panel">
 		<div class="panel-section">
 			<h3>SHOW</h3>
-			<label><input type="checkbox" id="showBox-selfIntersectionApp" checked> Box</label>
-			<label><input type="checkbox" id="showOrigin-selfIntersectionApp" checked> Origin</label>
-			<label><input type="checkbox" id="showAxes-selfIntersectionApp" checked> Axes</label>
-			<label><input type="checkbox" id="showGrid-selfIntersectionApp" checked> Grid</label>
+			<label><input type="checkbox" id="showBox-graphEditorApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-graphEditorApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-graphEditorApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-graphEditorApp" checked> Grid</label>
 			<br>
-			<label><input type="checkbox" id="showVertices-selfIntersectionApp" checked> Vertices</label>
-			<label><input type="checkbox" id="showSegments-selfIntersectionApp" checked> Line Segments</label>
-			<label><input type="checkbox" id="showFill-selfIntersectionApp" checked> Fill</label>
+			<label><input type="checkbox" id="showVertices-graphEditorApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showEdges-graphEditorApp" checked> Edges</label>
+		</div>
+		<div class="panel-section">
+			<h3>MODE</h3>
+			<label><input type="radio" id="modeVertex-graphEditorApp" name="mode-graphEditorApp" value="vertex" checked> Edit Vertices</label>
+			<label><input type="radio" id="modeEdge-graphEditorApp" name="mode-graphEditorApp" value="edge"> Edit Edges</label>
 			<br>
-			<label><input type="checkbox" id="showIntersections-selfIntersectionApp" checked> Intersections</label>
+			<label><input type="radio" id="modeView-graphEditorApp" name="mode-graphEditorApp" value="view"> View</label>
 		</div>
 		<div class="panel-section">
 			<h3>Coordinates</h3>
-			<div class="selfIntersectionApp-list" id="selfIntersectionApp-points">
+			<div class="graphEditorApp-list" id="graphEditorApp-points">
 			</div>
 		</div>
 		<div class="panel-section">
 			<h3>EXAMPLES</h3>
 			<div class="ctrl-row">
-				<button class="pill" id="buttonIntersect-selfIntersectionApp">Self-Intersecting</button>
-				<button class="pill" id="buttonSeparate-selfIntersectionApp">Non-Intersecting</button>
-				<button class="pill" id="buttonAddRandom-selfIntersectionApp">Add Random Point</button>
-				<button class="pill" id="buttonRandom-selfIntersectionApp">Generate Random</button>
-				<select id="nVertices-selfIntersectionApp" name="nVertices-selfIntersectionApp">
+				<button class="pill" id="buttonA-graphEditorApp">Example A</button>
+				<button class="pill" id="buttonB-graphEditorApp">Example B</button>
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonRandomVertex-graphEditorApp">Add Random Vertex</button>
+				<button class="pill" id="buttonRandomEdge-graphEditorApp">Add Random Edge</button>
+				<button class="pill" id="buttonGenerate-graphEditorApp">Generate Random</button>
+				<select id="nVertices-graphEditorApp" name="nVertices-graphEditorApp">
 					<option value="3">3</option>
 					<option value="4">4</option>
 					<option value="5" selected>5</option>
@@ -180,61 +185,12 @@
 					<option value="15">15</option>
 					<option value="20">20</option>
 				</select>
-				<button class="pill danger" id="buttonClear-selfIntersectionApp">Clear Vertices</button>
-				<button class="pill danger" id="buttonReset-selfIntersectionApp">Reset</button>
+				<label><input type="checkbox" id="genEdges-graphEditorApp" checked> Generate Edges</label>
 			</div>
-		</div>
-	</div>
-</div>
-
-<!-- >═══════════════════════════════════════════════════
-     TAB 2 — POINT IN POLYGON APP
-═══════════════════════════════════════════════════ -->
-<div class="demo-container" id="tab-pointInPolygonApp">
-	<div class="canvas-wrap">
-		<canvas id="canvas-pointInPolygonApp" width="300" height="300"></canvas>
-		<div class="canvas-hint">
-			Visualize a point within a polygon
-		</div>
-	</div>
-	<div class="side-panel">
-		<div class="panel-section">
-			<h3>SHOW</h3>
-			<label><input type="checkbox" id="showBox-pointInPolygonApp" checked> Box</label>
-			<label><input type="checkbox" id="showOrigin-pointInPolygonApp" checked> Origin</label>
-			<label><input type="checkbox" id="showAxes-pointInPolygonApp" checked> Axes</label>
-			<label><input type="checkbox" id="showGrid-pointInPolygonApp" checked> Grid</label>
 			<br>
-			<label><input type="checkbox" id="showVertices-pointInPolygonApp" checked> Vertices</label>
-			<label><input type="checkbox" id="showSegments-pointInPolygonApp" checked> Line Segments</label>
-			<label><input type="checkbox" id="showFill-pointInPolygonApp" checked> Fill</label>
-			<br>
-			<label><input type="checkbox" id="showPoint-pointInPolygonApp" checked> Point</label>
-		</div>
-		<div class="panel-section">
-			<h3>Coordinates</h3>
-			<div class="pointInPolygonApp-list" id="pointInPolygonApp-points">
-			</div>
-		</div>
-		<div class="panel-section">
-			<h3>EXAMPLES</h3>
 			<div class="ctrl-row">
-				<button class="pill" id="buttonInside-pointInPolygonApp">Inside</button>
-				<button class="pill" id="buttonOutside-pointInPolygonApp">Outside</button>
-				<button class="pill" id="buttonRandom-pointInPolygonApp">Generate Random Polygon</button>
-				<select id="nVertices-pointInPolygonApp" name="nVertices-pointInPolygonApp">
-					<option value="3">3</option>
-					<option value="4">4</option>
-					<option value="5" selected>5</option>
-					<option value="6">6</option>
-					<option value="7">7</option>
-					<option value="8">8</option>
-					<option value="9">9</option>
-					<option value="10">10</option>
-					<option value="15">15</option>
-					<option value="20">20</option>
-				</select>
-				<button class="pill danger" id="buttonReset-pointInPolygonApp">Reset</button>
+				<button class="pill danger" id="buttonClear-graphEditorApp">Clear Graph</button>
+				<button class="pill danger" id="buttonReset-graphEditorApp">Reset</button>
 			</div>
 		</div>
 	</div>
@@ -247,8 +203,7 @@
 <!-- Initialize global variables for each mini-app object -->	
 <div>
 	<script>
-		var SELFINTERSECTIONAPP = new SelfIntersectionApp();
-		var POINTINPOLYGONAPP = new PointInPolygonApp();
+		var GRAPHEDITORAPP = new GraphEditorApp();
 	</script>
 </div>	
 <!-- Draw active app -->	
