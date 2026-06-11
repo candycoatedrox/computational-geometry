@@ -129,9 +129,8 @@ class GraphEditorApp {
         return (n*(n-1))/2; // n choose 2
     }
     get possibleEdges() {
-        let n = this.dataC.vertices.length;
         let e = [];
-
+        let n = this.dataC.vertices.length;
         for (let i = 0; i < n-1; i++) {
             for (let j = i+1; j < n; j++) {
                 e.push([i,j]);
@@ -320,19 +319,14 @@ class GraphEditorApp {
 		this.buttons.randomEdge.addEventListener("click", () => {
             if (this.dataC.edges.length === this.maxEdges) return; // cannot create any more edges
 
-            let a = Math.floor(Utils.rand(0, nPts));
-            let b;
-
-            // find a random non-duplicate index
-            let valid = false;
-            while (!valid) {
-                b = Math.floor(Utils.rand(0, nPts));
-                if (a !== b) valid = true;
+            let allEdges = this.possibleEdges;
+            let validEdge = false;
+            while (!validEdge) {
+                let i = Math.floor(Utils.rand(0, allEdges.length));
+                let currentN = this.dataC.edges.length;
+                this.createEdge(allEdges[i][0], allEdges[i][1]);
+                if (this.dataC.edges.length !== currentN) validEdge = true; // successfully created new non-duplicate edge
             }
-
-            let currentN = this.dataC.edges.length;
-            this.createEdge(a,b);
-            if (this.dataC.edges.length === currentN) i--; // failed to create duplicate edge
 
 			this.computeAndRefresh();
 		});
@@ -349,28 +343,23 @@ class GraphEditorApp {
 
             if (this.generateParams.edges.checked) {
                 let nEdges = 0;
-                if (nPts === 2) {
-                    nEdges = Math.floor(Utils.rand(0,2));
-                } else if (nPts > 2) {
+                if (nPts >= 2) {
                     nEdges = Math.floor(Utils.rand(0, this.maxEdges + 1));
                 }
 
-                // generate nEdges unique pairs of integers from 0-nPts
-                let e = [];
-                for (let i = 0; i < nEdges; i++) {
-                    let a = Math.floor(Utils.rand(0, nPts));
-                    let b;
-
-                    // find a random non-duplicate index
-                    let valid = false;
-                    while (!valid) {
-                        b = Math.floor(Utils.rand(0, nPts));
-                        if (a !== b) valid = true;
+                let allEdges = this.possibleEdges;
+                if (nEdges === this.maxEdges) {
+                    for (let i = 0; i < nEdges; i++) {
+                        this.createEdge(allEdges[i][0], allEdges[i][1]);
                     }
-
-                    let currentN = this.dataC.edges.length;
-                    this.createEdge(a,b);
-                    if (this.dataC.edges.length === currentN) i--; // failed to create duplicate edge
+                } else {
+                    // generate nEdges unique edges
+                    for (let i = 0; i < nEdges; i++) {
+                        let j = Math.floor(Utils.rand(0, allEdges.length));
+                        let currentN = this.dataC.edges.length;
+                        this.createEdge(allEdges[j][0], allEdges[j][1]);
+                        if (this.dataC.edges.length === currentN) i--; // failed to create duplicate edge
+                    }
                 }
             }
 
