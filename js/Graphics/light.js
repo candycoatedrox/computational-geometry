@@ -13,7 +13,7 @@ const LIGHT = {
     pointLabelColor: COLORS.black,
 
     edgeColor: COLORS.black,
-    faceColor: COLORS.black,
+    faceColor: COLORS.setAlpha(COLORS.black),
 
     lineColor: COLORS.purple,
     dottedEdgeColor: COLORS.purple,

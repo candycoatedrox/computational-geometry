@@ -94,7 +94,7 @@ class Triangle {
         return Geometry1.semiperimeter(this.a, this.b, this.c);
     }
 
-    pointIsInside(P) {
+    containsPoint(P) {
         return Geometry1.pointInTriangle(P, this.a, this.b, this.c);
     }
 

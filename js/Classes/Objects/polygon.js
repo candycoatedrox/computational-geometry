@@ -20,9 +20,24 @@ class Polygon extends Points {
         return e;
     }
 
+    includesEdge(a, b) {
+        for (let e in this.edgePoints) {
+            if (e.isBetween(a, b)) return true;
+        }
+        return false;
+    }
+
+	isBetween(...pts) {
+		if (pts.length !== this.length) return false;
+        for (let i = 0; i < pts.length; i++) {
+            if (!this.includes(pts[i])) return false;
+        }
+        return true;
+	}
+
     updateLabels() {
         this.labels = Utils.stdRange1(this.length);
-        this.labels = this.labels.map((n) => { return 'p' + n; });
+        this.labels = this.labels.map(n => { return 'p' + n; });
     }
 
     updateEdges() {
@@ -87,11 +102,11 @@ class Polygon extends Points {
         return Geometry1.signedArea(this);
     }
 
-    pointIsInside(P) {
+    containsPoint(P) {
         return Geometry1.pointInPolygon(P, this);
     }
 
-    segmentIsInside(A, B) {
+    containsSegment(A, B) {
         return Geometry1.isSegmentInsidePolygon(this, A, B);
     }
 
@@ -149,7 +164,7 @@ class Polygon extends Points {
 
     selfIntersectionLabels() {
         let intersectLabs = Utils.stdRange1(this.dataC.intersections.length);
-        intersectLabs = intersectLabs.map((n) => { return 'i' + n; });
+        intersectLabs = intersectLabs.map(n => { return 'i' + n; });
     }
 
 }

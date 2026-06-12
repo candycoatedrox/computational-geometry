@@ -191,7 +191,7 @@ class SelfIntersectionApp {
 		}
 
         this.dataC.intersectLabels = Utils.stdRange1(this.dataC.intersections.length);
-        this.dataC.intersectLabels = this.dataC.intersectLabels.map((n) => { return 'i' + n; });
+        this.dataC.intersectLabels = this.dataC.intersectLabels.map(n => { return 'i' + n; });
         
 		let boxPtsC = this.dataC.box.pts;	
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);

@@ -107,7 +107,7 @@ class PointsApp {
 
     updateLabels() {
         this.dataC.labels = Utils.stdRange1(this.dataC.points.length);
-        this.dataC.labels = this.dataC.labels.map((n) => { return 'p' + n; });
+        this.dataC.labels = this.dataC.labels.map(n => { return 'p' + n; });
     }
 	
 	// set up gui

@@ -4,5 +4,6 @@ function redrawActiveApp(){
 	setColors();
 	setTimeout(() => {
 		if (activeTab === 'graphEditorApp') GRAPHEDITORAPP.computeAndRefresh();
+		if (activeTab === 'faceGraphEditorApp') FACEGRAPHEDITORAPP.computeAndRefresh();
   }, 100);
 }

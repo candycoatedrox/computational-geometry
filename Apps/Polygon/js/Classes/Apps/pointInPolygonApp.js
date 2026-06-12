@@ -103,7 +103,7 @@ class PointInPolygonApp {
 	
 	// computations
     get pointInsidePolygon() {
-        return this.dataC.polygon.pointIsInside(this.dataC.point);
+        return this.dataC.polygon.containsPoint(this.dataC.point);
     }
 
 	// view

@@ -31,6 +31,7 @@
 		<script src="../../js/Classes/Objects/range.js"></script>
 
 		<script src="../../js/Classes/Objects/triangle.js"></script>
+		<script src="../../js/Classes/Objects/face.js"></script>
 		<script src="../../js/Classes/Objects/polygon.js"></script>
 		
 		
@@ -59,6 +60,7 @@
 			
 	<!-- Mini-apps -->
 	<script src="js/Classes/Apps/graphEditorApp.js"></script>
+	<script src="js/Classes/Apps/faceGraphEditorApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
 <div>
@@ -104,6 +106,7 @@
 <!-- Navigation app - tabs  -->
 <nav> 
 	<button class="active" data-tab="graphEditorApp">Graph</button>
+	<button data-tab="faceGraphEditorApp">Face Graph</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -164,6 +167,12 @@
 			</div>
 		</div>
 		<div class="panel-section">
+			<h3>EDGES</h3>
+			<div class="graphEditorApp-list" id="graphEditorApp-edges">
+			</div>
+		</div>
+		<!-- figure out how to include list of edges -->
+		<div class="panel-section">
 			<h3>EXAMPLES</h3>
 			<div class="ctrl-row">
 				<button class="pill" id="buttonA-graphEditorApp">Example A</button>
@@ -185,12 +194,96 @@
 					<option value="15">15</option>
 					<option value="20">20</option>
 				</select>
-				<label><input type="checkbox" id="genEdges-graphEditorApp" checked> Generate Edges</label>
+				<label><input type="checkbox" id="genEdges-graphEditorApp" checked> Create Edges</label>
 			</div>
 			<br>
 			<div class="ctrl-row">
 				<button class="pill danger" id="buttonClear-graphEditorApp">Clear Graph</button>
 				<button class="pill danger" id="buttonReset-graphEditorApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- >═══════════════════════════════════════════════════
+     TAB 2 — FACE GRAPH EDITOR APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container" id="tab-faceGraphEditorApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-faceGraphEditorApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize and edit a graph, including faces
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-faceGraphEditorApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-faceGraphEditorApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-faceGraphEditorApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-faceGraphEditorApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showVertices-faceGraphEditorApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showEdges-faceGraphEditorApp" checked> Edges</label>
+			<label><input type="checkbox" id="showFaces-faceGraphEditorApp" checked> Faces</label>
+		</div>
+		<div class="panel-section">
+			<h3>MODE</h3>
+			<label><input type="radio" id="modeVertex-faceGraphEditorApp" name="mode-faceGraphEditorApp" value="vertex" checked> Edit Vertices</label>
+			<label><input type="radio" id="modeEdge-faceGraphEditorApp" name="mode-faceGraphEditorApp" value="edge"> Edit Edges</label>
+			<br>
+			<label><input type="radio" id="modeFace-faceGraphEditorApp" name="mode-faceGraphEditorApp" value="face"> Edit Faces</label>
+			<br>
+			<label><input type="radio" id="modeView-faceGraphEditorApp" name="mode-faceGraphEditorApp" value="view"> View</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="faceGraphEditorApp-list" id="faceGraphEditorApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<!-- edges & faces -->
+			<div class="column">
+				<h3>EDGES</h3>
+				<div class="faceGraphEditorApp-list" id="faceGraphEditorApp-edges">
+				</div>
+			</div>
+			<div class="column">
+				<h3>FACES</h3>
+				<div class="faceGraphEditorApp-list" id="faceGraphEditorApp-faces">
+				</div>
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonA-faceGraphEditorApp">Example A</button>
+				<button class="pill" id="buttonB-faceGraphEditorApp">Example B</button>
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonRandomVertex-faceGraphEditorApp">Add Random Vertex</button>
+				<button class="pill" id="buttonRandomEdge-faceGraphEditorApp">Add Random Edge</button>
+				<button class="pill" id="buttonRandomFace-faceGraphEditorApp">Add Random Face</button>
+				<button class="pill" id="buttonGenerate-faceGraphEditorApp">Generate Random</button>
+				<select id="nVertices-faceGraphEditorApp" name="nVertices-faceGraphEditorApp">
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5" selected>5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="15">15</option>
+					<option value="20">20</option>
+				</select>
+				<label><input type="checkbox" id="genEdges-faceGraphEditorApp" checked> Create Edges</label>
+				<label><input type="checkbox" id="genFaces-faceGraphEditorApp" checked> Create Faces</label>
+			</div>
+			<br>
+			<div class="ctrl-row">
+				<button class="pill danger" id="buttonClear-faceGraphEditorApp">Clear Graph</button>
+				<button class="pill danger" id="buttonReset-faceGraphEditorApp">Reset</button>
 			</div>
 		</div>
 	</div>
@@ -204,6 +297,7 @@
 <div>
 	<script>
 		var GRAPHEDITORAPP = new GraphEditorApp();
+		var FACEGRAPHEDITORAPP = new FaceGraphEditorApp();
 	</script>
 </div>	
 <!-- Draw active app -->	

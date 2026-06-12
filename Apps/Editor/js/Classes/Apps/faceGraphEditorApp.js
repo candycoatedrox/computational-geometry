@@ -1,41 +1,46 @@
-class GraphEditorApp {
+class FaceGraphEditorApp {
 	// constants: global names of i/o fields 
-	canvas = document.getElementById('canvas-graphEditorApp');
-	infoField = document.getElementById('graphEditorApp-points');
-    edgeList = document.getElementById('graphEditorApp-edges');
+	canvas = document.getElementById('canvas-faceGraphEditorApp');
+	infoField = document.getElementById('faceGraphEditorApp-points');
+    edgeList = document.getElementById('faceGraphEditorApp-edges');
+    faceList = document.getElementById('faceGraphEditorApp-faces');
 
     // gui
 	show = {
-		box: document.getElementById("showBox-graphEditorApp"),
-		origin: document.getElementById("showOrigin-graphEditorApp"),
-		axes: document.getElementById("showAxes-graphEditorApp"),
-		grid: document.getElementById("showGrid-graphEditorApp"),
-
-		vertices: document.getElementById("showVertices-graphEditorApp"),
-		edges: document.getElementById("showEdges-graphEditorApp")
+		box: document.getElementById("showBox-faceGraphEditorApp"),
+		origin: document.getElementById("showOrigin-faceGraphEditorApp"),
+		axes: document.getElementById("showAxes-faceGraphEditorApp"),
+		grid: document.getElementById("showGrid-faceGraphEditorApp"),
+        
+		vertices: document.getElementById("showVertices-faceGraphEditorApp"),
+		edges: document.getElementById("showEdges-faceGraphEditorApp"),
+		faces: document.getElementById("showFaces-faceGraphEditorApp")
 	};
 	
 	buttons = {
-		a: document.getElementById("buttonA-graphEditorApp"),
-		b: document.getElementById("buttonB-graphEditorApp"),
+		a: document.getElementById("buttonA-faceGraphEditorApp"),
+		b: document.getElementById("buttonB-faceGraphEditorApp"),
+        
+		randomVertex: document.getElementById("buttonRandomVertex-faceGraphEditorApp"),
+		randomEdge: document.getElementById("buttonRandomEdge-faceGraphEditorApp"),
+		randomFace: document.getElementById("buttonRandomFace-faceGraphEditorApp"),
+		generate: document.getElementById("buttonGenerate-faceGraphEditorApp"),
 
-		randomVertex: document.getElementById("buttonRandomVertex-graphEditorApp"),
-		randomEdge: document.getElementById("buttonRandomEdge-graphEditorApp"),
-		generate: document.getElementById("buttonGenerate-graphEditorApp"),
-
-		clear: document.getElementById("buttonClear-graphEditorApp"),
-		reset: document.getElementById("buttonReset-graphEditorApp")
+		clear: document.getElementById("buttonClear-faceGraphEditorApp"),
+		reset: document.getElementById("buttonReset-faceGraphEditorApp")
 	};
 
     generateParams = {
-        vertices: document.getElementById("nVertices-graphEditorApp"),
-		edges: document.getElementById("genEdges-graphEditorApp")
+        vertices: document.getElementById("nVertices-faceGraphEditorApp"),
+		edges: document.getElementById("genEdges-faceGraphEditorApp"),
+        faces: document.getElementById("genFaces-faceGraphEditorApp")
     };
 
 	modes = {
-		vertex: document.getElementById("modeVertex-graphEditorApp"),
-		edge: document.getElementById("modeEdge-graphEditorApp"),
-		view: document.getElementById("modeView-graphEditorApp")
+		vertex: document.getElementById("modeVertex-faceGraphEditorApp"),
+		edge: document.getElementById("modeEdge-faceGraphEditorApp"),
+		face: document.getElementById("modeFace-faceGraphEditorApp"),
+		view: document.getElementById("modeView-faceGraphEditorApp")
 	};
 
 	editState = "vertex";
@@ -47,6 +52,7 @@ class GraphEditorApp {
     // mouse
 	locatorId = null;
     creatingEdge = false;
+    faceInProgress = [];
 	
 	// view
 	graphics = null;
@@ -64,6 +70,7 @@ class GraphEditorApp {
 		let vertC = new Points();
         let labels = [];
         let edges = [];
+        let faces = [];
 
         let mouse = new Point(0,0);
 
@@ -76,6 +83,7 @@ class GraphEditorApp {
 			vertices: vertC,
             labels: labels,
             edges: edges,
+            faces: faces,
 
             mouse: mouse
 		};
@@ -111,6 +119,8 @@ class GraphEditorApp {
         this.createEdge(0,4);
         this.createEdge(1,2);
         this.createEdge(1,3);
+        this.createFace(0,2,4);
+        this.createFace(1,3,4);
         this.updateVertexLabels();
 		
 		// gui: set up actions
@@ -145,6 +155,33 @@ class GraphEditorApp {
     get possibleEdges() {
         return Combinations.allIndexPairs(this.dataC.vertices.length);
     }
+    // faces
+    get creatingFace() {
+        return this.faceInProgress.length !== 0;
+    }
+    get faceIndices() {
+        let indices = [];
+        for (let i = 0; i < this.dataC.faces.length; i++) {
+            let face = this.dataC.faces[i];
+            let f = [];
+            for (let j = 0; j < face.length; j++) {
+                f.push(this.dataC.vertices.indexOf(face[j]));
+            }
+            indices.push(f);
+        }
+        return indices;
+    }
+    get maxFaces() {
+        let m = 0;
+        let n = this.dataC.vertices.length;
+        for (let r = 3; r <= n; r++) {
+            m += Combinations.nChooseR(n,r);
+        }
+        return m;
+    }
+    get possibleFaces() {
+        return Combinations.allIndexCombinations(this.dataC.vertices.length, 3);
+    }
 
 	// view
 	// graphics
@@ -169,6 +206,22 @@ class GraphEditorApp {
 			this.dataC.origin.draw(this.graphics);
 		}
 
+        if (this.show.faces.checked) {
+            for (let i = 0; i < this.dataC.faces.length; i++) {
+                this.dataC.faces[i].draw(this.graphics);
+            }
+
+            if (this.creatingFace) {
+                if (this.faceInProgress.length === 1) {
+                    Draw.edge(this.graphics, this.dataC.vertices[this.faceInProgress[0]], this.dataC.mouse, COLORS.setAlpha(THEMETEAL), EDGETHICKNESS + 2);
+                } else {
+                    let pts = this.faceInProgress.map(i => this.dataC.vertices[i]).concat(this.dataC.mouse);
+                    let f = Utils.stdRange(pts.length);
+                    Draw.face(this.graphics, pts, f, COLORS.setAlpha(THEMETEAL));
+                }
+            }
+        }
+
         if (this.show.edges.checked) {
             for (let i = 0; i < this.dataC.edges.length; i++) {
                 this.dataC.edges[i].draw(this.graphics);
@@ -187,7 +240,6 @@ class GraphEditorApp {
 
 	// info
 	updateInfo() {
-        // coordinates
         const ptsC = this.dataC.vertices;
         const ptsW = this.dataW.vertices;
         const labs = this.dataC.labels;
@@ -196,12 +248,15 @@ class GraphEditorApp {
 		
 		this.infoField.innerHTML = res;
 
-        // edges
+        // edges & faces
         const edges = this.edgeIndices;
+        const faces = this.faceIndices;
 
         const eList = Utils.edgesOrFacesToListString(edges, labs);
+        const fList = Utils.edgesOrFacesToListString(faces, labs);
 
         this.edgeList.innerHTML = eList;
+        this.faceList.innerHTML = fList;
 	}
 	
 	// actions for gui, affecting the view
@@ -229,7 +284,7 @@ class GraphEditorApp {
 		this.updateInfo();
 	}
 
-    // manage vertices and edges
+    // manage graph objects
     // vertices
 	createVertex(xC, yC, index = this.dataC.vertices.length) {
 		const ptW = ConvertPoint.canvasToWorldCoords({x:xC, y:yC}, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
@@ -245,15 +300,36 @@ class GraphEditorApp {
                 i--; // don't skip the next edge!
             }
         }
+        // remove vertex from any connected faces
+        for (let i = 0; i < this.dataC.faces.length; i++) {
+            let j = this.dataC.faces[i].indexOf(v);
+            if (j !== -1) { // vertex is included in face
+                this.dataC.faces[i].splice(j,1); // remove vertex from face
+                if (this.dataC.faces[i].length < 3) { // fewer than 3 vertices left, delete face
+                    this.dataC.faces.splice(i,1);
+                    i--; // don't skip the next face!
+                } else {
+                    for (let n = 0; n < this.dataC.faces.length; n++) {
+                        if (n !== i && this.dataC.faces[i].isBetween(this.dataC.faces[n])) { // face is now a duplicate
+                            this.dataC.faces.splice(i,1);
+                            i--; // don't skip the next face!
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
         this.dataC.vertices.splice(index,1); 				// delete the point
         this.dataW.vertices.splice(index,1);
         this.updateVertexLabels();	// relabel all points
     }
 	clearVertices() {
+        this.cancelFaceCreation();
 		this.dataC.vertices.length = 0;
 		this.dataW.vertices.length = 0;
         this.dataC.edges.length = 0;
+        this.dataC.faces.length = 0;
 	}
     updateVertexLabels() {
         this.dataC.labels = Utils.stdRange1(this.dataC.vertices.length);
@@ -273,16 +349,38 @@ class GraphEditorApp {
     clearEdges() {
         this.dataC.edges.length = 0;
     }
+    // faces
+    createFace(...indices) {
+        let ind = Utils.withoutDuplicates(indices);
+        if (ind.length >= 3) {
+            let vertices = ind.map(i => this.dataC.vertices[i]);
+            // no duplicate faces
+            for (let i = 0; i < this.dataC.faces.length; i++) {
+                if (this.dataC.faces[i].isBetween(...vertices)) return;
+            }
+
+            this.dataC.faces.push(new Face(...vertices));
+        }
+    }
+    cancelFaceCreation() {
+        this.locatorId = null;
+        this.faceInProgress.length = 0;
+    }
+    clearFaces() {
+        this.dataC.faces.length = 0;
+    }
 	
 	// set up gui
 	// checkboxes
 	setupShowEvents() {
+        // can this be accomplished with a for loop?
 		this.show.box.addEventListener("change", () => this.refresh());
 		this.show.origin.addEventListener("change", () => this.refresh());
 		this.show.axes.addEventListener("change", () => this.refresh());
 		this.show.grid.addEventListener("change", () => this.refresh());
 		this.show.vertices.addEventListener("change", () => this.refresh());
 		this.show.edges.addEventListener("change", () => this.refresh());
+		this.show.faces.addEventListener("change", () => this.refresh());
 	}
 	// buttons
 	setupButtonEvents() {
@@ -302,6 +400,9 @@ class GraphEditorApp {
             this.createEdge(4,6);
             this.createEdge(2,3);
             this.createEdge(2,5);
+            this.createFace(0,1,4);
+            this.createFace(0,3,6);
+            this.createFace(3,4,6);
             this.updateVertexLabels();
 
 			this.computeAndRefresh();
@@ -315,6 +416,7 @@ class GraphEditorApp {
             this.createVertex(580,140);
             this.createVertex(210,210);
             this.createEdge(0,1);
+            this.createFace(0,1,2);
             this.updateVertexLabels();
 
 			this.computeAndRefresh();
@@ -329,6 +431,8 @@ class GraphEditorApp {
 		});
 		
 		this.buttons.randomEdge.addEventListener("click", () => {
+            this.cancelFaceCreation();
+
             if (this.dataC.edges.length === this.maxEdges) return; // cannot create any more edges
 
             let allEdges = this.possibleEdges;
@@ -342,6 +446,24 @@ class GraphEditorApp {
 
 			this.computeAndRefresh();
 		});
+
+        this.buttons.randomFace.addEventListener("click", () => {
+            this.cancelFaceCreation();
+
+            if (this.dataC.faces.length === this.maxFaces) return; // cannot create any more faces
+
+            let allFaces = this.possibleFaces;
+            let validFace = false;
+            while (!validFace) {
+                let i = Math.floor(Utils.rand(0, allFaces.length));
+                let currentN = this.dataC.faces.length;
+                this.createFace(...allFaces[i]);
+                if (this.dataC.faces.length !== currentN) validFace = true; // successfully created new non-duplicate face
+            }
+
+			this.computeAndRefresh();
+
+        });
 		
 		this.buttons.generate.addEventListener("click", () => {
             const nPts = this.generateParams.vertices.value;
@@ -353,12 +475,8 @@ class GraphEditorApp {
             }
             this.updateVertexLabels();
 
-            if (this.generateParams.edges.checked) {
-                let nEdges = 0;
-                if (nPts >= 2) {
-                    nEdges = Math.floor(Utils.rand(0, this.maxEdges + 1));
-                }
-
+            if (this.generateParams.edges.checked && nPts >= 2) {
+                let nEdges = Math.floor(Utils.rand(0, this.maxEdges + 1));
                 let allEdges = this.possibleEdges;
                 if (nEdges === this.maxEdges) {
                     for (let i = 0; i < nEdges; i++) {
@@ -371,6 +489,25 @@ class GraphEditorApp {
                         let currentN = this.dataC.edges.length;
                         this.createEdge(allEdges[j][0], allEdges[j][1]);
                         if (this.dataC.edges.length === currentN) i--; // failed to create duplicate edge
+                    }
+                }
+            }
+
+            if (this.generateParams.faces.checked && nPts >= 3) {
+                let halfMaxFaces = Math.floor(this.maxFaces/2) + 1; // "bias" towards lower face numbers, to make the graph more readable
+                let nFaces = Math.floor(Utils.rand(0, halfMaxFaces+1));
+                let allFaces = this.possibleFaces;
+                if (nFaces === this.maxFaces) {
+                    for (let i = 0; i < nFaces; i++) {
+                        this.createFace(...allFaces[i]);
+                    }
+                } else {
+                    // generate nFaces unique faces
+                    for (let i = 0; i < nFaces; i++) {
+                        let j = Math.floor(Utils.rand(0, allFaces.length));
+                        let currentN = this.dataC.faces.length;
+                        this.createFace(...allFaces[j]);
+                        if (this.dataC.faces.length === currentN) i--; // failed to create duplicate face
                     }
                 }
             }
@@ -397,6 +534,8 @@ class GraphEditorApp {
             this.createEdge(0,4);
             this.createEdge(1,2);
             this.createEdge(1,3);
+            this.createFace(0,2,4);
+            this.createFace(1,3,4);
             this.updateVertexLabels();
 
 			this.computeAndRefresh();
@@ -405,16 +544,24 @@ class GraphEditorApp {
     // states
     setupStateEvents() {
 		this.modes.vertex.addEventListener("input", () => {
+            this.cancelFaceCreation();
 			this.editState = "vertex";
 			this.computeAndRefresh();
 		});
 
 		this.modes.edge.addEventListener("input", () => {
+            this.cancelFaceCreation();
 			this.editState = "edge";
 			this.computeAndRefresh();
 		});
 
+		this.modes.face.addEventListener("input", () => {
+			this.editState = "face";
+			this.computeAndRefresh();
+		});
+
 		this.modes.view.addEventListener("input", () => {
+            this.cancelFaceCreation();
 			this.editState = "view";
 			this.computeAndRefresh();
 		});
@@ -451,7 +598,7 @@ class GraphEditorApp {
                         this.locatorId = null;
                     }
                 };
-            } else { // edge
+            } else if (this.editState == "edge") {
                 if (this.locatorId !== null) { // found a nearby point
                     if (e.detail === 1) { // it was a single click
                         this.creatingEdge = true; // start dragging to create edge
@@ -471,6 +618,32 @@ class GraphEditorApp {
                         }
                     }
                 }
+            } else { // face
+                if (this.locatorId !== null) { // found a nearby point
+                    if (this.locatorId === this.faceInProgress[0]) { // finish and add face
+                        this.createFace(...this.faceInProgress);
+                        this.faceInProgress.length = 0;
+                    } else {
+                        if (!this.faceInProgress.includes(this.locatorId)) this.faceInProgress.push(this.locatorId);
+                        this.dataC.mouse.set(mx,my);
+                    }
+                } else { // no nearby point
+                    if (e.detail === 2) { // it was a double click
+                        if (this.creatingFace) {
+                            this.cancelFaceCreation();
+                        } else {
+                            // check if on face
+                            const m = {x:mx, y:my};
+                            this.dataC.faces.forEach((f,i) => { if (f.containsPoint(m)) this.locatorId = i; });
+
+                            // if on an existing face, delete the face, else ignore the double click
+                            if (this.locatorId !== null) {
+                                this.dataC.faces.splice(this.locatorId, 1); // delete the face
+                                this.locatorId = null;
+                            }
+                        }
+                    }
+                }
             }
 				
 			// visualize the effect
@@ -479,14 +652,23 @@ class GraphEditorApp {
 		
 		// MOUSE MOVE
 		this.canvas.addEventListener('mousemove', e => {
-			if (this.locatorId === null) return; 			// no specific point to move - ignore the dragging
+			if (this.locatorId === null) {
+                if (this.creatingFace) {
+                    const canvasBounds = this.canvas.getBoundingClientRect();
+                    const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
+                    this.dataC.mouse.set(mx,my);
+                    this.refresh();
+                }
+                return; // no specific point to move - ignore the dragging
+            }
+
 			// else, update the coordinates of the dragged point; do not change the labels
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
             
             if (this.creatingEdge) {
                 this.dataC.mouse.set(mx,my);
-            } else {
+            } else if (this.editState == "vertex") {
                 this.dataC.vertices[this.locatorId].set(mx,my);
             }
 			

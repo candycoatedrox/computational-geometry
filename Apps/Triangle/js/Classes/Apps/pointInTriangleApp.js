@@ -104,7 +104,7 @@ class PointInTriangleApp {
 	
 	// computations
 	get pointInsideTriangle() {
-		return this.dataC.triangle.pointIsInside(this.dataC.point);
+		return this.dataC.triangle.containsPoint(this.dataC.point);
 	}
 
 	// view

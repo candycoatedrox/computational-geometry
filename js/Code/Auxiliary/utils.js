@@ -103,6 +103,25 @@ const Utils = {
 	stdRange1(n){return Array.from({ length: n }, (_, i) => i+1);},
 	stdRange(n){return Array.from({ length: n }, (_, i) => i);},
 
+	// Check if an array contains duplicates
+	includesDuplicates(arr) {
+		for (let i = 0; i < arr.length - 1; i++) {
+			for (let j = i+1; j < arr.length; j++) {
+				if (arr[i] === arr[j]) return true;
+			}
+		}
+
+		return false;
+	},
+
+	withoutDuplicates(arr) {
+		output = [];
+		for (let i = 0; i < arr.length; i++) {
+			if (!output.includes(arr[i])) output.push(arr[i]);
+		}
+		return output;
+	},
+
 	// To String: for printing point coordinates
 	pointsToString(fieldId, pts){
 		const string = pts.map((p,i)=>
@@ -178,6 +197,27 @@ const Utils = {
 			str = Math.round(n); // cut off trailing zeroes for whole numbers
 		}
 
+		return str;
+	},
+
+	edgeOrFaceToString(face, labs) {
+		let str = "[";
+		for (let i = 0; i < face.length; i++) {
+			if (i !== 0) str += ", ";
+			str += labs[face[i]];
+		}
+		str += "]";
+		return str;
+	},
+	edgeOrFaceToListString(face, labs) {
+		return `<li>${this.edgeOrFaceToString(face, labs)}</li>`;
+	},
+	edgesOrFacesToListString(faces, labs) {
+		let str = "<ul>";
+		for (let i = 0; i < faces.length; i++) {
+			str += this.edgeOrFaceToListString(faces[i], labs);
+		}
+		str += "</ul>";
 		return str;
 	},
 	

@@ -13,7 +13,7 @@ const DARK = {
     pointLabelColor: COLORS.white,
 
     edgeColor: COLORS.white,
-    faceColor: COLORS.white,
+    faceColor: COLORS.setAlpha(COLORS.white),
 
     lineColor: COLORS.purple,
     dottedEdgeColor: COLORS.purple,
