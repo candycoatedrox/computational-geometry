@@ -208,16 +208,16 @@ class FaceGraphEditorApp {
 
         if (this.show.faces.checked) {
             for (let i = 0; i < this.dataC.faces.length; i++) {
-                this.dataC.faces[i].draw(this.graphics);
+                this.dataC.faces[i].draw(this.graphics, COLORS.setAlpha(FACECOLORS[i % FACECOLORS.length]));
             }
 
             if (this.creatingFace) {
                 if (this.faceInProgress.length === 1) {
-                    Draw.edge(this.graphics, this.dataC.vertices[this.faceInProgress[0]], this.dataC.mouse, COLORS.setAlpha(THEMETEAL), EDGETHICKNESS + 2);
+                    Draw.edge(this.graphics, this.dataC.vertices[this.faceInProgress[0]], this.dataC.mouse, COLORS.setAlpha(FACECOLOR), EDGETHICKNESS + 2);
                 } else {
                     let pts = this.faceInProgress.map(i => this.dataC.vertices[i]).concat(this.dataC.mouse);
                     let f = Utils.stdRange(pts.length);
-                    Draw.face(this.graphics, pts, f, COLORS.setAlpha(THEMETEAL));
+                    Draw.face(this.graphics, pts, f, COLORS.setAlpha(FACECOLOR));
                 }
             }
         }
@@ -401,8 +401,8 @@ class FaceGraphEditorApp {
             this.createEdge(2,3);
             this.createEdge(2,5);
             this.createFace(0,1,4);
+            this.createFace(2,3,4,6);
             this.createFace(0,3,6);
-            this.createFace(3,4,6);
             this.updateVertexLabels();
 
 			this.computeAndRefresh();

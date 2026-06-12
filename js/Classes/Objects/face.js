@@ -5,7 +5,7 @@ class Face extends Points {
         pts.forEach(p => this.push(p));
     }
 
-    draw(ctx, color = FACECOLOR) {
+    draw(ctx, color = COLORS.setAlpha(FACECOLOR)) {
         if (this.length >= 3) {
             let f = Utils.stdRange(this.length);
             Draw.face(ctx, this, f, color);

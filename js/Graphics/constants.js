@@ -35,6 +35,7 @@ const EDGETHICKNESS = 5;
 
 // FACES
 var FACECOLOR;
+var FACECOLORS;
 
 // LINE
 var LINECOLOR;

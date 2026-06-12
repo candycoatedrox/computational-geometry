@@ -20,6 +20,7 @@ function setColors() {
 
 	EDGECOLOR = colorSet.edgeColor;
 	FACECOLOR = colorSet.faceColor;
+	FACECOLORS = [colorSet.themePurple, colorSet.themeTeal, colorSet.themeScarlet, colorSet.themeAmber]
 
 	LINECOLOR = colorSet.lineColor;
 	DOTTEDEDGECOLOR = colorSet.dottedEdgeColor;
