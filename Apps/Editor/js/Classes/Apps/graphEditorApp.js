@@ -261,13 +261,16 @@ class GraphEditorApp {
     }
     // edges
     createEdge(i, j) {
-        if (i !== j) {
+        if (i === j) {
+            return false;
+        } else {
             // no duplicate edges
             for (let n = 0; n < this.dataC.edges.length; n++) {
-                if (this.dataC.edges[n].isBetween(this.dataC.vertices[i], this.dataC.vertices[j])) return;
+                if (this.dataC.edges[n].isBetween(this.dataC.vertices[i], this.dataC.vertices[j])) return false;
             }
 
             this.dataC.edges.push(new Segment(this.dataC.vertices[i], this.dataC.vertices[j]));
+            return true;
         }
     }
     clearEdges() {
@@ -335,9 +338,7 @@ class GraphEditorApp {
             let validEdge = false;
             while (!validEdge) {
                 let i = Math.floor(Utils.rand(0, allEdges.length));
-                let currentN = this.dataC.edges.length;
-                this.createEdge(allEdges[i][0], allEdges[i][1]);
-                if (this.dataC.edges.length !== currentN) validEdge = true; // successfully created new non-duplicate edge
+                if (this.createEdge(allEdges[i][0], allEdges[i][1])) validEdge = true; // successfully created new non-duplicate edge
             }
 
 			this.computeAndRefresh();
@@ -368,9 +369,7 @@ class GraphEditorApp {
                     // generate nEdges unique edges
                     for (let i = 0; i < nEdges; i++) {
                         let j = Math.floor(Utils.rand(0, allEdges.length));
-                        let currentN = this.dataC.edges.length;
-                        this.createEdge(allEdges[j][0], allEdges[j][1]);
-                        if (this.dataC.edges.length === currentN) i--; // failed to create duplicate edge
+                        if (!this.createEdge(allEdges[j][0], allEdges[j][1])) i--; // failed to create duplicate edge
                     }
                 }
             }
@@ -406,17 +405,17 @@ class GraphEditorApp {
     setupStateEvents() {
 		this.modes.vertex.addEventListener("input", () => {
 			this.editState = "vertex";
-			this.computeAndRefresh();
+			this.refresh();
 		});
 
 		this.modes.edge.addEventListener("input", () => {
 			this.editState = "edge";
-			this.computeAndRefresh();
+			this.refresh();
 		});
 
 		this.modes.view.addEventListener("input", () => {
 			this.editState = "view";
-			this.computeAndRefresh();
+			this.refresh();
 		});
     }
 	// mouse

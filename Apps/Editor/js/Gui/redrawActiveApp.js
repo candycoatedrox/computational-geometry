@@ -5,5 +5,6 @@ function redrawActiveApp(){
 	setTimeout(() => {
 		if (activeTab === 'graphEditorApp') GRAPHEDITORAPP.computeAndRefresh();
 		if (activeTab === 'faceGraphEditorApp') FACEGRAPHEDITORAPP.computeAndRefresh();
+		if (activeTab === 'nonCrossingGraphEditorApp') NONCROSSINGGRAPHEDITORAPP.computeAndRefresh();
   }, 100);
 }

@@ -220,6 +220,11 @@ const Utils = {
 		str += "</ul>";
 		return str;
 	},
+
+	displayErrorMessage(message, element, duration = 3000) {
+		element.innerHTML = message + "<br><br>";
+		setTimeout(() => { element.innerHTML = ""; }, duration);
+	},
 	
 	// Polygon
 	stdPolygonEdges(n){return Array.from({ length: n }, (_, i) => [i, (i+1) % n]);},
