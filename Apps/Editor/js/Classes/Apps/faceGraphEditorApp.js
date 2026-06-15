@@ -262,8 +262,8 @@ class FaceGraphEditorApp {
         const edges = this.edgeIndices;
         const faces = this.faceIndices;
 
-        const eList = Utils.edgesOrFacesToListString(edges, labs);
-        const fList = Utils.edgesOrFacesToListString(faces, labs);
+        const eList = Utils.groupsToListString(edges, labs);
+        const fList = Utils.groupsToListString(faces, labs);
 
         this.edgeList.innerHTML = eList;
         this.faceList.innerHTML = fList;

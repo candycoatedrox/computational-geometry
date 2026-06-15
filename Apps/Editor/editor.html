@@ -63,6 +63,7 @@
 	<script src="js/Classes/Apps/graphEditorApp.js"></script>
 	<script src="js/Classes/Apps/faceGraphEditorApp.js"></script>
 	<script src="js/Classes/Apps/nonCrossingGraphEditorApp.js"></script>
+	<script src="js/Classes/Apps/treeEditorApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
 <div>
@@ -110,6 +111,7 @@
 	<button class="active" data-tab="graphEditorApp">Graph</button>
 	<button data-tab="faceGraphEditorApp">Face Graph</button>
 	<button data-tab="nonCrossingGraphEditorApp">Non-Crossing Graph</button>
+	<button data-tab="treeEditorApp">Tree</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -369,6 +371,88 @@
 	</div>
 </div>
 
+<!-- >═══════════════════════════════════════════════════
+     TAB 4 — TREE EDITOR APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container" id="tab-treeEditorApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-treeEditorApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize and edit a tree (a graph without cycles)
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-treeEditorApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-treeEditorApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-treeEditorApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-treeEditorApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showVertices-treeEditorApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showEdges-treeEditorApp" checked> Edges</label>
+		</div>
+		<div class="panel-section">
+			<h3>MODE</h3>
+			<label><input type="radio" id="modeVertex-treeEditorApp" name="mode-treeEditorApp" value="vertex" checked> Edit Vertices</label>
+			<label><input type="radio" id="modeEdge-treeEditorApp" name="mode-treeEditorApp" value="edge"> Edit Edges</label>
+			<br>
+			<label><input type="radio" id="modeView-treeEditorApp" name="mode-treeEditorApp" value="view"> View</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="treeEditorApp-list" id="treeEditorApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<!-- edges & groups -->
+			<div class="column">
+				<h3>EDGES</h3>
+				<div class="treeEditorApp-list" id="treeEditorApp-edges">
+				</div>
+			</div>
+			<div class="column">
+				<h3>GROUPS</h3>
+				<div class="treeEditorApp-list" id="treeEditorApp-groups">
+				</div>
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="error-display" id="treeEditorApp-errors">
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonA-treeEditorApp">Example A</button>
+				<button class="pill" id="buttonB-treeEditorApp">Example B</button>
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonRandomVertex-treeEditorApp">Add Random Vertex</button>
+				<button class="pill" id="buttonRandomEdge-treeEditorApp">Add Random Edge</button>
+				<button class="pill" id="buttonGenerate-treeEditorApp">Generate Random</button>
+				<select id="nVertices-treeEditorApp" name="nVertices-treeEditorApp">
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5" selected>5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="15">15</option>
+					<option value="20">20</option>
+				</select>
+				<label><input type="checkbox" id="genEdges-treeEditorApp" checked> Create Edges</label>
+			</div>
+			<br>
+			<div class="ctrl-row">
+				<button class="pill danger" id="buttonClearEdges-treeEditorApp">Clear Edges</button>
+				<button class="pill danger" id="buttonClear-treeEditorApp">Clear Graph</button>
+				<button class="pill danger" id="buttonReset-treeEditorApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 	
 <!-- .................................................................................................
      JS: INITIALIZE and START EXECUTION of ACTIVE TAB-APP 
@@ -379,6 +463,7 @@
 		var GRAPHEDITORAPP = new GraphEditorApp();
 		var FACEGRAPHEDITORAPP = new FaceGraphEditorApp();
 		var NONCROSSINGGRAPHEDITORAPP = new NonCrossingGraphEditorApp();
+		var TREEEDITORAPP = new TreeEditorApp();
 	</script>
 </div>	
 <!-- Draw active app -->	

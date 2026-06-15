@@ -199,7 +199,7 @@ class GraphEditorApp {
         // edges
         const edges = this.edgeIndices;
 
-        const eList = Utils.edgesOrFacesToListString(edges, labs);
+        const eList = Utils.groupsToListString(edges, labs);
 
         this.edgeList.innerHTML = eList;
 	}

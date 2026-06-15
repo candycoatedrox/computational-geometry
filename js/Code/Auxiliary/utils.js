@@ -200,25 +200,63 @@ const Utils = {
 		return str;
 	},
 
-	edgeOrFaceToString(face, labs) {
+	groupToString(group, labs) {
 		let str = "[";
-		for (let i = 0; i < face.length; i++) {
+		for (let i = 0; i < group.length; i++) {
 			if (i !== 0) str += ", ";
-			str += labs[face[i]];
+			str += labs[group[i]];
 		}
 		str += "]";
 		return str;
 	},
-	edgeOrFaceToListString(face, labs) {
-		return `<li>${this.edgeOrFaceToString(face, labs)}</li>`;
+	groupToListString(group, labs) {
+		return `<li>${this.groupToString(group, labs)}</li>`;
 	},
-	edgesOrFacesToListString(faces, labs) {
+	groupsToListString(groups, labs) {
 		let str = "<ul>";
-		for (let i = 0; i < faces.length; i++) {
-			str += this.edgeOrFaceToListString(faces[i], labs);
+		for (let i = 0; i < groups.length; i++) {
+			str += this.groupToListString(groups[i], labs);
 		}
 		str += "</ul>";
 		return str;
+	},
+	nestedGroupToString(group, labs) {
+		if (!Array.isArray(group)) { // base case
+			return labs[group];
+		} else {
+			let s = "[";
+			for (let i = 0; i < group.length; i++) {
+				if (i !== 0) s += ", ";
+				s += this.nestedGroupToString(group[i], labs);
+			}
+			s += "]";
+			return s;
+		}
+	},
+	nestedGroupToListString(group, labs) {
+		return `<li>${this.nestedGroupToString(group, labs)}</li>`;
+	},
+	nestedGroupsToListString(groups, labs) {
+		let str = "<ul>";
+		for (let i = 0; i < groups.length; i++) {
+			str += this.nestedGroupToListString(groups[i], labs);
+		}
+		str += "</ul>";
+		return str;
+	},
+
+	nestedArrayToString(arr) {
+		if (!Array.isArray(arr)) { // base case
+			return arr;
+		} else {
+			let s = "[";
+			for (let i = 0; i < arr.length; i++) {
+				if (i !== 0) s += ",";
+				s += this.nestedArrayToString(arr[i]);
+			}
+			s += "]";
+			return s;
+		}
 	},
 
 	displayErrorMessage(message, element, duration = 3000) {

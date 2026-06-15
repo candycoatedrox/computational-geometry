@@ -1,42 +1,44 @@
-class NonCrossingGraphEditorApp {
+class TreeEditorApp {
 	// constants: global names of i/o fields 
-	canvas = document.getElementById('canvas-nonCrossingGraphEditorApp');
-	infoField = document.getElementById('nonCrossingGraphEditorApp-points');
-    errorDisplay = document.getElementById('nonCrossingGraphEditorApp-errors');
-    edgeList = document.getElementById('nonCrossingGraphEditorApp-edges');
+	canvas = document.getElementById('canvas-treeEditorApp');
+	infoField = document.getElementById('treeEditorApp-points');
+    errorDisplay = document.getElementById('treeEditorApp-errors');
+    edgeList = document.getElementById('treeEditorApp-edges');
+    groupList = document.getElementById('treeEditorApp-groups');
 
     // gui
 	show = {
-		box: document.getElementById("showBox-nonCrossingGraphEditorApp"),
-		origin: document.getElementById("showOrigin-nonCrossingGraphEditorApp"),
-		axes: document.getElementById("showAxes-nonCrossingGraphEditorApp"),
-		grid: document.getElementById("showGrid-nonCrossingGraphEditorApp"),
+		box: document.getElementById("showBox-treeEditorApp"),
+		origin: document.getElementById("showOrigin-treeEditorApp"),
+		axes: document.getElementById("showAxes-treeEditorApp"),
+		grid: document.getElementById("showGrid-treeEditorApp"),
 
-		vertices: document.getElementById("showVertices-nonCrossingGraphEditorApp"),
-		edges: document.getElementById("showEdges-nonCrossingGraphEditorApp")
+		vertices: document.getElementById("showVertices-treeEditorApp"),
+		edges: document.getElementById("showEdges-treeEditorApp")
 	};
 	
 	buttons = {
-		a: document.getElementById("buttonA-nonCrossingGraphEditorApp"),
-		b: document.getElementById("buttonB-nonCrossingGraphEditorApp"),
+		a: document.getElementById("buttonA-treeEditorApp"),
+		b: document.getElementById("buttonB-treeEditorApp"),
 
-		randomVertex: document.getElementById("buttonRandomVertex-nonCrossingGraphEditorApp"),
-		randomEdge: document.getElementById("buttonRandomEdge-nonCrossingGraphEditorApp"),
-		generate: document.getElementById("buttonGenerate-nonCrossingGraphEditorApp"),
+		randomVertex: document.getElementById("buttonRandomVertex-treeEditorApp"),
+		randomEdge: document.getElementById("buttonRandomEdge-treeEditorApp"),
+		generate: document.getElementById("buttonGenerate-treeEditorApp"),
 
-		clear: document.getElementById("buttonClear-nonCrossingGraphEditorApp"),
-		reset: document.getElementById("buttonReset-nonCrossingGraphEditorApp")
+		clearEdges: document.getElementById("buttonClearEdges-treeEditorApp"),
+		clear: document.getElementById("buttonClear-treeEditorApp"),
+		reset: document.getElementById("buttonReset-treeEditorApp")
 	};
 
     generateParams = {
-        vertices: document.getElementById("nVertices-nonCrossingGraphEditorApp"),
-		edges: document.getElementById("genEdges-nonCrossingGraphEditorApp")
+        vertices: document.getElementById("nVertices-treeEditorApp"),
+		edges: document.getElementById("genEdges-treeEditorApp")
     };
 
 	modes = {
-		vertex: document.getElementById("modeVertex-nonCrossingGraphEditorApp"),
-		edge: document.getElementById("modeEdge-nonCrossingGraphEditorApp"),
-		view: document.getElementById("modeView-nonCrossingGraphEditorApp")
+		vertex: document.getElementById("modeVertex-treeEditorApp"),
+		edge: document.getElementById("modeEdge-treeEditorApp"),
+		view: document.getElementById("modeView-treeEditorApp")
 	};
 
 	editState = "vertex";
@@ -47,6 +49,7 @@ class NonCrossingGraphEditorApp {
 
     // mouse
 	locatorId = null;
+    nearEdge = null;
     creatingEdge = false;
     edgesToDelete = [];
 	
@@ -64,6 +67,7 @@ class NonCrossingGraphEditorApp {
 		let axesC = new Axes(100,-100);
 
 		let vertC = new Points();
+        let vertGroups = [];
         let labels = [];
         let edges = [];
 
@@ -76,6 +80,7 @@ class NonCrossingGraphEditorApp {
             range: rangeC,
 
 			vertices: vertC,
+            groups: vertGroups,
             labels: labels,
             edges: edges,
 
@@ -104,14 +109,17 @@ class NonCrossingGraphEditorApp {
             vertices: vertW
 		};
 
-        this.createVertex(225,75);
-        this.createVertex(200,350);
-        this.createVertex(600,175);
-        this.createVertex(425,400);
-        this.createVertex(500,300);
+        this.createVertex(300,60);
+        this.createVertex(400,355);
+        this.createVertex(455,165);
+        this.createVertex(535,415);
+        this.createVertex(170,100);
+        this.createVertex(555,320);
         this.createEdge(0,2);
         this.createEdge(0,4);
         this.createEdge(1,3);
+        this.createEdge(1,5);
+        this.createEdge(1,2);
         this.updateVertexLabels();
 		
 		// gui: set up actions
@@ -171,9 +179,15 @@ class NonCrossingGraphEditorApp {
 		}
 
         if (this.show.edges.checked) {
+            let deletedColor = COLORS.setAlpha(NEGATIVECOLOR);
             for (let i = 0; i < this.dataC.edges.length; i++) {
-                let deletedColor = COLORS.setAlpha(NEGATIVECOLOR);
-                let color = (this.edgesToDelete[i]) ? deletedColor : EDGECOLOR;
+                let color = EDGECOLOR;
+                if (this.nearEdge === i) {
+                    if (this.edgeCanBeDeleted(i)) color = deletedColor;
+                } else if (this.edgesToDelete[i]) {
+                    color = deletedColor;
+                }
+
                 this.dataC.edges[i].draw(this.graphics, color);
             }
 
@@ -200,12 +214,17 @@ class NonCrossingGraphEditorApp {
 		
 		this.infoField.innerHTML = res;
 
-        // edges
+        // edges & groups
         const edges = this.edgeIndices;
+        const groups = this.dataC.groups;
 
         const eList = Utils.groupsToListString(edges, labs);
+        console.log(`groups = ${Utils.nestedArrayToString(groups)}
+labs = ${labs}`);
+        const gList = Utils.nestedGroupsToListString(groups, labs);
 
         this.edgeList.innerHTML = eList;
+        this.groupList.innerHTML = gList;
 	}
 	
 	// actions for gui, affecting the view
@@ -239,29 +258,123 @@ class NonCrossingGraphEditorApp {
 		const ptW = ConvertPoint.canvasToWorldCoords({x:xC, y:yC}, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
         this.dataC.vertices.splice(index, 0, new Point(xC,yC));
         this.dataW.vertices.splice(index, 0, new Point(ptW.x, ptW.y));
+        this.dataC.groups.push(index);
 	}
     deleteVertex(index) {
         // delete any connected edges
         let v = this.dataC.vertices[index];
+        let clearedEdges = false;
         for (let i = 0; i < this.dataC.edges.length; i++) {
             if (this.dataC.edges[i].includes(v)) {
-                this.dataC.edges.splice(i,1);
-                i--; // don't skip the next edge!
+                if (this.edgeCanBeDeleted(i)) {
+                    this.deleteEdge(i);
+                    i--; // don't skip the next edge!
+                } else {
+                    // unfortunately we just have to delete all edges at this point or we can't delete the vertex
+                    clearedEdges = true;
+                    this.clearEdges();
+                    Utils.displayErrorMessage("Deleted all edges in order to delete the vertex.", this.errorDisplay);
+                }
             }
         }
 
         this.dataC.vertices.splice(index,1); 				// delete the point
         this.dataW.vertices.splice(index,1);
         this.updateVertexLabels();	// relabel all points
+
+        // update groups
+        if (clearedEdges) {
+            this.dataC.groups = Utils.stdRange(this.dataC.vertices.length);
+        } else {
+            let gIndex = this.dataC.groups.indexOf(index);
+            if (gIndex !== -1) this.dataC.groups.splice(gIndex, 1); // delete the point from groups
+
+            // update group indices accordingly if the vertex was not last in the list
+            if (index < this.dataC.vertices.length) {
+                this.updateGroupIndicesForDeletion(index, this.dataC.groups);
+            }
+        }
+    }
+    updateGroupIndicesForDeletion(deletedIndex, group) {
+        for (let i = 0; i < group.length; i++) {
+            if (typeof group[i] === "number") { // base case
+                if (group[i] > deletedIndex) group[i]--;
+            } else { // subgroup
+                this.updateGroupIndicesForDeletion(deletedIndex, group[i]);
+            }
+        }
     }
 	clearVertices() {
 		this.dataC.vertices.length = 0;
 		this.dataW.vertices.length = 0;
         this.dataC.edges.length = 0;
+        this.dataC.groups.length = 0;
 	}
     updateVertexLabels() {
         this.dataC.labels = Utils.stdRange1(this.dataC.vertices.length);
         this.dataC.labels = this.dataC.labels.map(n => { return 'p' + n; });
+    }
+    getIndexOfVertex(v) {
+        return this.dataC.vertices.indexOf(v);
+    }
+    getVertexByPath(...indices) {
+        let parent = this.dataC.groups;
+        for (let i = 0; i < indices.length; i++) {
+            parent = parent[indices[i]];
+        }
+        return parent;
+    }
+    setGroupByPath(newValue, ...indices) {
+        let parent = this.dataC.groups;
+        for (let i = 0; i < indices.length - 1; i++) {
+            parent = parent[indices[i]];
+        }
+
+        let finalIndex = indices[indices.length - 1];
+        parent[finalIndex] = newValue;
+    }
+    groupIndexOfVertex(i) {
+        return this.groupIndexOfVertexRec(i, this.dataC.groups);
+    }
+    groupIndexOfVertexRec(i, parentGroup) {
+        if (!Array.isArray(parentGroup)) {
+            return [-1]; // vertex is not here
+        } else if (parentGroup.includes(i)) {
+            let j = parentGroup.indexOf(i);
+            return [j];
+        } else {
+            for (let j = 0; j < parentGroup.length; j++) {
+                let path = this.groupIndexOfVertexRec(i, parentGroup[j]);
+                if (!path.includes(-1)) {
+                    path.splice(0, 0, j);
+                    return path;
+                }
+            }
+            
+            return [-1]; // vertex is not in this group
+        }
+    }
+    highestGroupIndexOfVertex(i) {
+        return this.groupIndexOfVertex(i)[0];
+    }
+    verticesPartOfSameGroup(i, j) {
+        return this.highestGroupIndexOfVertex(i) === this.highestGroupIndexOfVertex(j);
+    }
+    deepestSharedGroupIndex(i, j) {
+        let iGroup = this.groupIndexOfVertex(i);
+        let jGroup = this.groupIndexOfVertex(j);
+        if (iGroup[0] !== jGroup[0]) { // vertices do not share a group
+            return [-1];
+        } else {
+            let g = [];
+            for (let n = 0; n < iGroup.length; n++) {
+                if (iGroup[n] === jGroup[n]) {
+                    g.push(iGroup[n]);
+                } else {
+                    return g;
+                }
+            }
+        }
     }
     // edges
     createEdge(i, j) {
@@ -271,17 +384,127 @@ class NonCrossingGraphEditorApp {
             let tail = this.dataC.vertices[i];
             let head = this.dataC.vertices[j];
             if (this.intersectsAnyEdge(tail, head)) return false; // new edge would create a crossing
-
-            for (let n = 0; n < this.dataC.edges.length; n++) { // check for duplicate edges
-                if (this.dataC.edges[n].isBetween(tail, head)) return false;
-            }
+            
+            let tailGroup = this.highestGroupIndexOfVertex(i);
+            let headGroup = this.highestGroupIndexOfVertex(j);
+            if (tailGroup === headGroup) return false; // new edge would create a cycle or duplicate
 
             this.dataC.edges.push(new Segment(tail, head));
+            // combine groups
+            if (tailGroup < headGroup) {
+                let newGroup = [this.dataC.groups[tailGroup], this.dataC.groups[headGroup]];
+                console.log(`newGroup = ${Utils.nestedArrayToString(newGroup)}`);
+                this.dataC.groups.splice(tailGroup, 1, newGroup);
+                this.dataC.groups.splice(headGroup, 1);
+            } else {
+                let newGroup = [this.dataC.groups[headGroup], this.dataC.groups[tailGroup]];
+                console.log(`newGroup = ${Utils.nestedArrayToString(newGroup)}`);
+                this.dataC.groups.splice(headGroup, 1, newGroup);
+                this.dataC.groups.splice(tailGroup, 1);
+            }
             return true;
+        }
+    }
+    deleteEdge(i) {
+        const eIndices = this.getIndicesOfEdge(i);
+        const v1 = eIndices[0];
+        const v2 = eIndices[1];
+        
+        const v1Path = this.groupIndexOfVertex(v1);
+        const v2Path = this.groupIndexOfVertex(v2);
+        const sharedPath = this.deepestSharedGroupIndex(v1, v2);
+        const sharedGroup = this.getVertexByPath(...sharedPath);
+        const highestSharedIndex = sharedPath[0];
+
+        if (sharedPath.length === 1) {
+            console.log("shared index is only highest");
+            // just disconnect the halves of the group
+            let subA = this.dataC.groups[highestSharedIndex][0];
+            let subB = this.dataC.groups[highestSharedIndex][1];
+            this.dataC.groups.splice(highestSharedIndex, 1, subA, subB);
+            this.dataC.edges.splice(i,1); // delete the edge
+        } else {
+            console.log("shared index is more than highest");
+            const v1Connections = this.getVerticesConnectedTo(v1);
+            const v2Connections = this.getVerticesConnectedTo(v2);
+            
+            // whether either vertex will be "orphaned" once the edge is deleted
+            let v1Orphaned = v1Connections.length === 1;
+            let v2Orphaned = v2Connections.length === 1;
+            if (v1Orphaned || v2Orphaned) {
+                // replace shared group with non-orphaned component, removing orphaned vertex entirely
+                let orphanedFinalIndex = (v1Orphaned) ? v1Path[v1Path.length - 1] : v2Path[v2Path.length - 1];
+                let nonOrphanedGroup = (orphanedFinalIndex === 0) ? sharedGroup[1] : sharedGroup[0];
+                this.setGroupByPath(nonOrphanedGroup, ...sharedPath);
+
+                // insert orphaned vertex into dataC.groups, after highest shared group
+                if (v1Orphaned) {
+                    console.log("v1 is orphaned");
+                    this.dataC.groups.splice(highestSharedIndex + 1, 0, v1);
+                } else {
+                    console.log("v2 is orphaned");
+                    this.dataC.groups.splice(highestSharedIndex + 1, 0, v2);
+                }
+
+                this.dataC.edges.splice(i,1); // delete the edge
+            } else {
+                console.log("no orphan");
+                Utils.displayErrorMessage("Only the most recently added edge and edges connected to leaves can be deleted.", this.errorDisplay);
+            }
         }
     }
     clearEdges() {
         this.dataC.edges.length = 0;
+        this.dataC.groups = Utils.stdRange(this.dataC.vertices.length);
+    }
+    getIndicesOfEdge(i) {
+        let e = this.dataC.edges[i];
+        return [this.getIndexOfVertex(e.tail), this.getIndexOfVertex(e.head)];
+    }
+    getEdgesFromVertex(i) {
+        let v = this.dataC.vertices[i];
+        let e = [];
+        for (let j = 0; j < this.dataC.edges.length; j++) {
+            if (this.dataC.edges[j].includes(v)) {
+                e.push(this.dataC.edges[j]);
+            }
+        }
+        return e;
+    }
+    getVerticesConnectedTo(i) {
+        let v = this.dataC.vertices[i];
+        let connected = [];
+        for (let j = 0; j < this.dataC.edges.length; j++) {
+            let e = this.dataC.edges[j];
+            if (e.tail === v) {
+                connected.push(this.getIndexOfVertex(e.head));
+            } else if (e.head === v) {
+                connected.push(this.getIndexOfVertex(e.tail));
+            }
+        }
+        return connected;
+    }
+    verticesAreConnected(i, j) {
+        let v1 = this.dataC.vertices[i];
+        let v2 = this.dataC.vertices[j];
+        for (let n = 0; n < this.dataC.edges.length; n++) {
+            if (this.dataC.edges[n].isBetween(v1, v2)) return true;
+        }
+        return false;
+    }
+    edgeCanBeDeleted(i) {
+        const eIndices = this.getIndicesOfEdge(i);
+        const v1 = eIndices[0];
+        const v2 = eIndices[1];
+
+        const sharedPath = this.deepestSharedGroupIndex(v1, v2);
+        if (sharedPath.length === 1) return true; // most recently added edge
+        
+        const v1Connections = this.getVerticesConnectedTo(v1);
+        const v2Connections = this.getVerticesConnectedTo(v2);
+        if (v1Connections.length === 1 || v2Connections.length === 1) return true; // edge is connected to a leaf
+
+        return false;
     }
     intersectsAnyEdge(p, q) {
         for (let i = 0; i < this.dataC.edges.length; i++) {
@@ -304,6 +527,9 @@ class NonCrossingGraphEditorApp {
         }
         return indices;
     }
+    resetGroups() {
+        this.dataC.groups = Utils.stdRange1(this.dataC.vertices.length);
+    }
 	
 	// set up gui
 	// checkboxes
@@ -320,17 +546,15 @@ class NonCrossingGraphEditorApp {
 		this.buttons.a.addEventListener("click", () => {
             this.clearVertices();
 
-            this.createVertex(300,380);
-            this.createVertex(250,275);
-            this.createVertex(340,600);
-            this.createVertex(90,580);
-            this.createVertex(50,225);
-            this.createVertex(550,475);
-            this.createVertex(340,510);
-            this.createEdge(0,3);
-            this.createEdge(4,3);
-            this.createEdge(2,3);
-            this.createEdge(2,5);
+            this.createVertex(225,75);
+            this.createVertex(200,350);
+            this.createVertex(600,175);
+            this.createVertex(425,400);
+            this.createVertex(500,300);
+            this.createEdge(0,2);
+            this.createEdge(0,4);
+            this.createEdge(1,2);
+            this.createEdge(1,3);
             this.updateVertexLabels();
 
 			this.computeAndRefresh();
@@ -339,11 +563,21 @@ class NonCrossingGraphEditorApp {
 		this.buttons.b.addEventListener("click", () => {
             this.clearVertices();
 
-            this.createVertex(80,290);
-            this.createVertex(450,340);
-            this.createVertex(580,140);
-            this.createVertex(210,210);
-            this.createEdge(0,1);
+            this.createVertex(300,60);
+            this.createVertex(400,355);
+            this.createVertex(455,165);
+            this.createVertex(535,415);
+            this.createVertex(170,100);
+            this.createVertex(555,320);
+            this.createVertex(535,80);
+            this.createVertex(620,85);
+            this.createEdge(0,2);
+            this.createEdge(0,4);
+            this.createEdge(1,3);
+            this.createEdge(1,5);
+            this.createEdge(1,2);
+            this.createEdge(6,7);
+            this.createEdge(2,6);
             this.updateVertexLabels();
 
 			this.computeAndRefresh();
@@ -362,8 +596,8 @@ class NonCrossingGraphEditorApp {
 
             let allEdges = this.possibleEdges;
             let i = Math.floor(Utils.rand(0, allEdges.length));
-            if (!this.createEdge(allEdges[i][0], allEdges[i][1])) { // failed to create duplicate or crossing
-                Utils.displayErrorMessage("Failed to create edge due to a duplicate or crossing.", this.errorDisplay);
+            if (!this.createEdge(allEdges[i][0], allEdges[i][1])) { // failed to create duplicate, crossing, or cycle
+                Utils.displayErrorMessage("Failed to create edge due to a duplicate, crossing, or cycle.", this.errorDisplay);
             }
 
 			this.computeAndRefresh();
@@ -403,6 +637,11 @@ class NonCrossingGraphEditorApp {
 		});
 
 
+		this.buttons.clearEdges.addEventListener("click", () => {
+			this.clearEdges();
+			this.computeAndRefresh();
+		});
+
 		this.buttons.clear.addEventListener("click", () => {
 			this.clearVertices();
             this.updateVertexLabels();
@@ -412,15 +651,17 @@ class NonCrossingGraphEditorApp {
 		this.buttons.reset.addEventListener("click", () => {
             this.clearVertices();
 
-            this.createVertex(225,75);
-            this.createVertex(200,350);
-            this.createVertex(600,175);
-            this.createVertex(425,400);
-            this.createVertex(500,300);
+            this.createVertex(300,60);
+            this.createVertex(400,355);
+            this.createVertex(455,165);
+            this.createVertex(535,415);
+            this.createVertex(170,100);
+            this.createVertex(555,320);
             this.createEdge(0,2);
             this.createEdge(0,4);
-            this.createEdge(1,2);
             this.createEdge(1,3);
+            this.createEdge(1,5);
+            this.createEdge(1,2);
             this.updateVertexLabels();
 
 			this.computeAndRefresh();
@@ -429,18 +670,18 @@ class NonCrossingGraphEditorApp {
     // states
     setupStateEvents() {
 		this.modes.vertex.addEventListener("input", () => {
+            this.nearEdge = null;
 			this.editState = "vertex";
-			this.refresh();
 		});
 
 		this.modes.edge.addEventListener("input", () => {
+            this.nearEdge = null;
 			this.editState = "edge";
-			this.refresh();
 		});
 
 		this.modes.view.addEventListener("input", () => {
+            this.nearEdge = null;
 			this.editState = "view";
-			this.refresh();
 		});
     }
 	// mouse
@@ -481,6 +722,7 @@ class NonCrossingGraphEditorApp {
                 if (this.locatorId !== null) { // found a nearby point
                     if (e.detail === 1) { // it was a single click
                         this.creatingEdge = true; // start dragging to create edge
+                        this.nearEdge = null;
                         this.dataC.mouse.set(mx,my);
                     }
                     // else, do nothing - can't delete vertices in this state
@@ -492,7 +734,7 @@ class NonCrossingGraphEditorApp {
 
                         // if on an existing edge, delete the edge, else ignore the double click
                         if (this.locatorId !== null) {
-                            this.dataC.edges.splice(this.locatorId, 1); // delete the edge
+                            this.deleteEdge(this.locatorId);
                             this.locatorId = null;
                         }
                     }
@@ -505,13 +747,28 @@ class NonCrossingGraphEditorApp {
 		
 		// MOUSE MOVE
 		this.canvas.addEventListener('mousemove', e => {
-			if (this.locatorId === null) return; 			// no specific point to move - ignore the dragging
-			// else, update the coordinates of the dragged point; do not change the labels
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
+
+			if (this.locatorId === null) {
+                if (this.editState == "edge") {
+                    // check if near edge
+                    this.nearEdge = null;
+                    const m = {x:mx, y:my};
+                    this.dataC.edges.forEach((s,i) => { if (s.distanceToPoint(m) < 14) this.nearEdge = i; });
+                    this.refresh();
+                }
+                return; 			// no specific point to move - ignore the dragging
+            }
+
+			// else, update the coordinates of the dragged point; do not change the labels
             
             if (this.creatingEdge) {
                 this.dataC.mouse.set(mx,my);
+
+                // NOT UPDATED!!!
+                // if near point that would create a cycle set a variable to draw red
+
             } else {
                 this.dataC.vertices[this.locatorId].set(mx,my);
 
@@ -558,7 +815,7 @@ class NonCrossingGraphEditorApp {
                 if (this.locatorId !== null) {
                     for (let i = this.dataC.edges.length - 1; i >= 0; i--) { // start from end of list
                         if (this.edgesToDelete[i]) { // this edge is marked for deletion due to crossings
-                            this.dataC.edges.splice(i,1); // delete the edge
+                            this.deleteEdge(i);
                         }
                     }
                     this.edgesToDelete = [];

@@ -6,5 +6,6 @@ function redrawActiveApp(){
 		if (activeTab === 'graphEditorApp') GRAPHEDITORAPP.computeAndRefresh();
 		if (activeTab === 'faceGraphEditorApp') FACEGRAPHEDITORAPP.computeAndRefresh();
 		if (activeTab === 'nonCrossingGraphEditorApp') NONCROSSINGGRAPHEDITORAPP.computeAndRefresh();
+		if (activeTab === 'treeEditorApp') TREEEDITORAPP.computeAndRefresh();
   }, 100);
 }
