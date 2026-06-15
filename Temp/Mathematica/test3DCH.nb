@@ -1,0 +1,313 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     11564,        305]
+NotebookOptionsPosition[      9793,        264]
+NotebookOutlinePosition[     10259,        281]
+CellTagsIndexPosition[     10216,        278]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"},
+        Closed], 
+      Alternatives[Open, True]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{17., {0.7263183593750009, 16.273681640625}}]],
+  ExpressionUUID->"fdd1db6a-95c7-4cca-afac-6915c51d0407"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"618f4c0f-356d-4d0a-9669-71f428893c63"],
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount",ExpressionUUID->
+  "703bbdda-7875-43ea-976e-8d29360e4b46"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->247352488,ExpressionUUID->"20d73de0-ff36-4c3b-837b-b803a9ad856b"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<TetGenLink`\>\"", "]"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->122886544,ExpressionUUID->"21fbd50a-9dfc-488e-b3a1-f594b62f60c1"],
+
+Cell["First, some random points are generated and displayed:", "ExampleText",
+ CellID->428239877,ExpressionUUID->"4b678000-c656-4f45-be74-97581d574dfe"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"data3D", " ", "=", " ", 
+   RowBox[{"RandomReal", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"0", ",", "1"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"10", ",", "3"}], "}"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Graphics3D", "[", 
+  RowBox[{"Point", "[", "data3D", "]"}], "]"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->451088752,ExpressionUUID->"e7119d34-8a97-4b62-b235-9c5ce8d7893d"],
+
+Cell[BoxData[
+ Graphics3DBox[
+  Point3DBox[{{0.40089808734961263`, 0.5614439694468978, 
+   0.0985383048795676}, {0.32745937128811775`, 0.31267084335072104`, 
+   0.09427583522909044}, {0.15510734904511114`, 0.7367097688197513, 
+   0.34133610148567883`}, {0.8208720120062087, 0.41457163146095577`, 
+   0.9227847467797989}, {0.08964178542071699, 0.6280275410355016, 
+   0.772735413276312}, {0.8946993224261532, 0.33317239033471835`, 
+   0.18506924610577014`}, {0.3888166711608847, 0.7576682357118247, 
+   0.3579637674598426}, {0.9326051824833432, 0.5140290040326012, 
+   0.6275575199473242}, {0.14417540536090212`, 0.4265990617140374, 
+   0.31621088269277986`}, {0.9379300460042275, 0.010997671703025791`, 
+   0.6563257495436381}}],
+  ImageSize->{174.5229926542223, 192.27522613866094`},
+  ImageSizeRaw->Automatic,
+  ViewPoint->{0.6693951289521384, -3.0728683119325173`, -1.2487555801101176`},
+  
+  ViewVertical->{0.2239660700874034, -0.8478702615445873, 
+   0.48057800515412397`}]], "Output",
+ CellChangeTimes->{3.990538501401682*^9},
+ CellLabel->"Out[3]=",ExpressionUUID->"8a8a59d6-5e4b-40e1-8b72-9518a564df91"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Now you can compute the convex hull of the 3D points. ",
+ Cell[BoxData["TetGenConvexHull"], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "e871a711-60ed-45bf-978c-c5911673e132"],
+ " will return a list of points and surface triangles:"
+}], "ExampleText",
+ CellID->680971973,ExpressionUUID->"30900768-8c2a-469e-a307-d37d63cb12c8"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"{", 
+   RowBox[{"pts", ",", "surface"}], "}"}], "=", 
+  RowBox[{"TetGenConvexHull", "[", "data3D", "]"}]}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->12813029,ExpressionUUID->"636d2f48-3ca0-46e8-bc7f-bafbf6e70421"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "0.40089808734961263`", ",", "0.5614439694468978`", ",", 
+       "0.0985383048795676`"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0.32745937128811775`", ",", "0.31267084335072104`", ",", 
+       "0.09427583522909044`"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0.15510734904511114`", ",", "0.7367097688197513`", ",", 
+       "0.34133610148567883`"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0.8208720120062087`", ",", "0.41457163146095577`", ",", 
+       "0.9227847467797989`"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0.08964178542071699`", ",", "0.6280275410355016`", ",", 
+       "0.772735413276312`"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0.8946993224261532`", ",", "0.33317239033471835`", ",", 
+       "0.18506924610577014`"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0.3888166711608847`", ",", "0.7576682357118247`", ",", 
+       "0.3579637674598426`"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0.9326051824833432`", ",", "0.5140290040326012`", ",", 
+       "0.6275575199473242`"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0.14417540536090212`", ",", "0.4265990617140374`", ",", 
+       "0.31621088269277986`"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0.9379300460042275`", ",", "0.010997671703025791`", ",", 
+       "0.6563257495436381`"}], "}"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"9", ",", "5", ",", "10"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"10", ",", "5", ",", "4"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "9", ",", "10"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"8", ",", "10", ",", "4"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"6", ",", "10", ",", "8"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"6", ",", "2", ",", "10"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "3", ",", "2"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "9", ",", "2"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "5", ",", "9"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "7", ",", "5"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"4", ",", "7", ",", "8"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"5", ",", "7", ",", "4"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "7", ",", "3"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "2", ",", "6"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"6", ",", "7", ",", "1"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"8", ",", "7", ",", "6"}], "}"}]}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.990538501404557*^9},
+ CellLabel->"Out[4]=",ExpressionUUID->"fd27d05a-c0d6-4816-a057-beceb0c560f5"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Each surface triangle is a list of three integers. These integers refer to \
+the coordinates. You can plot them by using ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["GraphicsComplex"]], "paclet:ref/GraphicsComplex"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "9121867d-1108-4a84-8929-0be8d6b863b3"],
+ ":"
+}], "ExampleText",
+ CellID->498979497,ExpressionUUID->"52816068-3953-4c4f-9e27-ef2e8b6e3809"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Graphics3D", "[", 
+  RowBox[{"GraphicsComplex", "[", 
+   RowBox[{"pts", ",", 
+    RowBox[{"Polygon", "[", "surface", "]"}]}], "]"}], "]"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->21784116,ExpressionUUID->"9ed0fe65-9a8a-4c5c-8c56-a95185938af2"],
+
+Cell[BoxData[
+ Graphics3DBox[
+  GraphicsComplex3DBox[{{0.40089808734961263`, 0.5614439694468978, 
+   0.0985383048795676}, {0.32745937128811775`, 0.31267084335072104`, 
+   0.09427583522909044}, {0.15510734904511114`, 0.7367097688197513, 
+   0.34133610148567883`}, {0.8208720120062087, 0.41457163146095577`, 
+   0.9227847467797989}, {0.08964178542071699, 0.6280275410355016, 
+   0.772735413276312}, {0.8946993224261532, 0.33317239033471835`, 
+   0.18506924610577014`}, {0.3888166711608847, 0.7576682357118247, 
+   0.3579637674598426}, {0.9326051824833432, 0.5140290040326012, 
+   0.6275575199473242}, {0.14417540536090212`, 0.4265990617140374, 
+   0.31621088269277986`}, {0.9379300460042275, 0.010997671703025791`, 
+   0.6563257495436381}}, 
+   Polygon3DBox[{{9, 5, 10}, {10, 5, 4}, {2, 9, 10}, {8, 10, 4}, {6, 10, 8}, {
+    6, 2, 10}, {1, 3, 2}, {3, 9, 2}, {3, 5, 9}, {3, 7, 5}, {4, 7, 8}, {5, 7, 
+    4}, {1, 7, 3}, {1, 2, 6}, {6, 7, 1}, {8, 7, 6}}]],
+  ImageSize->{341.197451855953, 314.9852571517246},
+  ImageSizeRaw->Automatic,
+  ViewPoint->{2.809444321783799, -1.719201237276501, 0.7754803082888149},
+  ViewVertical->{0.44206915785578355`, 0.005719655301445358, 
+   0.8969627334599309}]], "Output",
+ CellChangeTimes->{3.990538501407167*^9},
+ CellLabel->"Out[5]=",ExpressionUUID->"24cf8f2e-2deb-46a3-bbcb-1ed46bbc4b35"]
+}, Open  ]],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "\t", "ExampleDelimiter",ExpressionUUID->
+   "28cc3966-5008-45a6-af65-e28a64f38641"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1153409703,ExpressionUUID->"e193f289-2bd1-4bb2-a680-f32b7485901a"]
+},
+WindowSize->{808, 805},
+WindowMargins->{{12, Automatic}, {Automatic, 24}},
+TaggingRules-><|"Openers" -> <|"ExampleSection" -> <|"0" -> Closed|>|>|>,
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"8723fbb1-ed5a-413a-b214-308be66321cd"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 1396, 36, 30, "ExampleSection",ExpressionUUID->"20d73de0-ff36-4c3b-837b-b803a9ad856b",
+ CellID->247352488],
+Cell[1953, 58, 174, 3, 36, "Input",ExpressionUUID->"21fbd50a-9dfc-488e-b3a1-f594b62f60c1",
+ CellID->122886544],
+Cell[2130, 63, 152, 1, 25, "ExampleText",ExpressionUUID->"4b678000-c656-4f45-be74-97581d574dfe",
+ CellID->428239877],
+Cell[CellGroupData[{
+Cell[2307, 68, 453, 12, 62, "Input",ExpressionUUID->"e7119d34-8a97-4b62-b235-9c5ce8d7893d",
+ CellID->451088752],
+Cell[2763, 82, 1110, 20, 261, "Output",ExpressionUUID->"8a8a59d6-5e4b-40e1-8b72-9518a564df91"]
+}, Open  ]],
+Cell[3888, 105, 368, 7, 30, "ExampleText",ExpressionUUID->"30900768-8c2a-469e-a307-d37d63cb12c8",
+ CellID->680971973],
+Cell[CellGroupData[{
+Cell[4281, 116, 249, 6, 36, "Input",ExpressionUUID->"636d2f48-3ca0-46e8-bc7f-bafbf6e70421",
+ CellID->12813029],
+Cell[4533, 124, 2858, 80, 220, "Output",ExpressionUUID->"fd27d05a-c0d6-4816-a057-beceb0c560f5"]
+}, Open  ]],
+Cell[7406, 207, 505, 13, 48, "ExampleText",ExpressionUUID->"52816068-3953-4c4f-9e27-ef2e8b6e3809",
+ CellID->498979497],
+Cell[CellGroupData[{
+Cell[7936, 224, 270, 6, 36, "Input",ExpressionUUID->"9ed0fe65-9a8a-4c5c-8c56-a95185938af2",
+ CellID->21784116],
+Cell[8209, 232, 1322, 22, 414, "Output",ExpressionUUID->"24cf8f2e-2deb-46a3-bbcb-1ed46bbc4b35"]
+}, Open  ]],
+Cell[9546, 257, 243, 5, 28, "ExampleDelimiter",ExpressionUUID->"e193f289-2bd1-4bb2-a680-f32b7485901a",
+ CellID->1153409703]
+}
+]
+*)
+
