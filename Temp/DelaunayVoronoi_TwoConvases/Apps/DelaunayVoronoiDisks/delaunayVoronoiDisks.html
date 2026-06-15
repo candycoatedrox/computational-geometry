@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  
+	<script>
+		const JSPATH="../../Js/";  // ORIENTATIVE - NOT USED
+	</script>
+		
+	<!-- ============================================================   EXTERNAL LIBS ============ -->
+	
+	<script src="../../Js/External/delaunator.js"></script>
+	<script src="../../Js/External/path.js"></script>
+	<script src="../../Js/External/polygon.js"></script>
+	<script src="../../Js/External/delaunay.js"></script>
+	<script src="../../Js/External/voronoi.js"></script>
+  
+	<!-- ============================================================   GLOBAL LIBS: JS ============ -->
+	
+	<!-- .......... CODE -->
+	
+	<script src="../../Js/Code/Auxiliary/lists.js"></script>
+	<script src="../../Js/Code/Auxiliary/ForSuProject/auxiliary.js"></script>
+	
+  
+	<script>
+	  // for approximate numerical calculations - closeness to zero; collinearity etc.
+	  const EPS = 0.000001; 
+	</script>	  
+	<script src="../../Js/Code/Geometry/circles.js"></script>
+	<script src="../../Js/Code/Geometry/delaunayVoronoi.js"></script>	
+	<script src="../../Js/Code/Geometry/orientation.js"></script>
+	<script src="../../Js/Code/Geometry/proximity.js"></script>	
+	<script src="../../Js/Code/Geometry/visibility.js"></script>
+	
+  
+	<!-- .......... GUI -->
+	<script src="../../Js/GUI/MouseListeners/pointsLocatorListeners.js"></script>
+  
+	<!-- .......... GRAPHICS: CONSTANTS and OBJECTS -->
+  	<script src="../../Js/Graphics/Constants/generalConstants.js"></script> 
+	<script src="../../Js/Graphics/Objects/generalObjects.js"></script>   
+	
+	<!-- .......... GRAPHICS: SCENES -->
+	<script src="../../Js/Graphics/Scenes/allPointsOnOneSideOfSegmentScene.js"></script>
+	<script src="../../Js/Graphics/Scenes/arrowScene.js"></script>
+	<script src="../../Js/Graphics/Scenes/circumcircleScene.js"></script>
+	<script src="../../Js/Graphics/Scenes/closedPolylineScene.js"></script>
+	
+	<script src="../../Js/Graphics/Scenes/delaunayDisksScene.js"></script>
+	<script src="../../Js/Graphics/Scenes/delaunayCirclesScene.js"></script>
+	<script src="../../Js/Graphics/Scenes/delaunayScene.js"></script>
+	
+	<script src="../../Js/Graphics/Scenes/delaunayVoronoiScene.js"></script>
+	
+	<script src="../../Js/Graphics/Scenes/hamiltonScene.js"></script>
+	
+	<script src="../../Js/Graphics/Scenes/orientedPolylineScene.js"></script>
+	<script src="../../Js/Graphics/Scenes/orientedClosedPolylineScene.js"></script>
+	<script src="../../Js/Graphics/Scenes/pointInTriangleScene.js"></script>
+	<script src="../../Js/Graphics/Scenes/polygonScene.js"></script> 
+	<script src="../../Js/Graphics/Scenes/pointsScene.js"></script>
+	<script src="../../Js/Graphics/Scenes/segmentCrossingScene.js"></script> 
+	
+	<script src="../../Js/Graphics/Scenes/starScene.js"></script>
+	 
+	<script src="../../Js/Graphics/Scenes/templateScene.js"></script>
+	<script src="../../Js/Graphics/Scenes/triangleOrientationScene.js"></script>
+	<script src="../../Js/Graphics/Scenes/visibilityInPolygonScene.js"></script>
+	
+	<script src="../../Js/Graphics/Scenes/voronoiCirclesScene.js"></script>
+	<script src="../../Js/Graphics/Scenes/voronoiDisksScene.js"></script>
+	<script src="../../Js/Graphics/Scenes/voronoiScene.js"></script>
+	
+	<!-- <script src="Graphics/Scenes/drawScenes.js"></script> -->
+	
+	<!-- ============================================================    LOCAL LIBS     ============ -->
+	
+	<!-- .......... GRAPHICS -->
+	
+	<script src="Graphics/Constants/projectConstants.js"></script> 
+	<script src="Graphics/Objects/projectObjects.js"></script>
+		
+	<!-- ..........  GUI -->
+	
+	<script src="GUI/MouseListenerActions/mouseDownAction.js"></script>
+	<script src="GUI/MouseListenerActions/mouseMoveAction.js"></script>
+	<script src="GUI/MouseListenerActions/mouseUpAction.js"></script>
+	
+	<!-- <script src="GUI/listeners.js"></script> -->
+  
+</head>
+
+<body>
+<h1>Interactive Delaunay - Voronoi </h1>
+<h2><a href="../../../log.html">Log</a></h2>
+
+	<script>
+		// VARIABLES: GLOBAL TO THE APP
+		var points = [[200,200],[100,200],[200,100]];
+		var dragging = -1;
+	
+		// to be computed 
+		var delaunay; 
+		var voronoi;
+		var triangles;
+		var circles;
+	
+	</script>
+
+	<!-- Set up canvas with mouse listeners -->
+	<canvas id="canvasDel" width="400" height="400" style="border:1px solid #aaa"></canvas>
+	<canvas id="canvasVor" width="400" height="400" style="border:1px solid #aaa"></canvas>
+	<script>
+		const canvasDel=document.getElementById("canvasDel");	
+		const canvasVor=document.getElementById("canvasVor");	
+	
+		const twoCanvases=[canvasDel,canvasVor];
+		
+		addMouseListenersToTwoCanvases(twoCanvases);
+	
+	</script>
+	
+	<script>
+		// COMPUTE DATA for drawing	
+		[delaunay,voronoi,triangles] = computeDelaunayVoronoiData(points,[canvasDel.width,canvasDel.height]);
+		circles=computeCircumCircles(points,triangles);
+		
+		// UPDATE VIEW
+		drawDelaunayDisksScene(canvasDel,points,triangles,circles);
+		// drawVoronoiScene(canvasVor,points,voronoi);
+		drawVoronoiDisksScene(canvasVor,points,voronoi,circles);
+		
+		// drawDelaunayDisksScene(canvasDelDisks,points,triangles,circles);
+		// drawVoronoiDisksScene(canvasVorDisks,points,voronoi,circles);
+	
+	</script>
+
+</body>
+</html>
