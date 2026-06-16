@@ -61,9 +61,7 @@ class GraphEditorApp {
 		originC.fromCanvas(this.canvas);
 		let axesC = new Axes(100,-100);
 
-		let vertC = new Points();
-        let labels = [];
-        let edges = [];
+		let graph = new GraphE();
 
         let mouse = new Point(0,0);
 
@@ -73,9 +71,7 @@ class GraphEditorApp {
             axes: axesC,
             range: rangeC,
 
-			vertices: vertC,
-            labels: labels,
-            edges: edges,
+			graph: graph,
 
             mouse: mouse
 		};
@@ -102,16 +98,16 @@ class GraphEditorApp {
             vertices: vertW
 		};
 
-        this.createVertex(225,75);
-        this.createVertex(200,350);
-        this.createVertex(600,175);
-        this.createVertex(425,400);
-        this.createVertex(500,300);
-        this.createEdge(0,2);
-        this.createEdge(0,4);
-        this.createEdge(1,2);
-        this.createEdge(1,3);
-        this.updateVertexLabels();
+        this.addVertex(225,75);
+        this.addVertex(200,350);
+        this.addVertex(600,175);
+        this.addVertex(425,400);
+        this.addVertex(500,300);
+        this.dataC.graph.addEdge(0,2);
+        this.dataC.graph.addEdge(0,4);
+        this.dataC.graph.addEdge(1,2);
+        this.dataC.graph.addEdge(1,3);
+        //this.dataC.graph.updateLabels();
 		
 		// gui: set up actions
 		this.setupShowEvents();
@@ -128,23 +124,6 @@ class GraphEditorApp {
     }
 	
 	// computations
-    // edges
-    get edgeIndices() {
-        let indices = [];
-        for (let i = 0; i < this.dataC.edges.length; i++) {
-            let e = [];
-            e.push(this.dataC.vertices.indexOf(this.dataC.edges[i].tail));
-            e.push(this.dataC.vertices.indexOf(this.dataC.edges[i].head));
-            indices.push(e);
-        }
-        return indices;
-    }
-    get maxEdges() {
-        return Combinations.nChoose2(this.dataC.vertices.length);
-    }
-    get possibleEdges() {
-        return Combinations.allIndexPairs(this.dataC.vertices.length);
-    }
 
 	// view
 	// graphics
@@ -164,40 +143,34 @@ class GraphEditorApp {
 		if (this.show.origin.checked) {
 			this.dataC.origin.draw(this.graphics);
 		}
-		
-		if (this.show.origin.checked) {
-			this.dataC.origin.draw(this.graphics);
-		}
 
         if (this.show.edges.checked) {
-            for (let i = 0; i < this.dataC.edges.length; i++) {
-                this.dataC.edges[i].draw(this.graphics);
-            }
+            this.dataC.graph.drawEdges(this.graphics);
 
             if (this.creatingEdge) {
-                Draw.edge(this.graphics, this.dataC.vertices[this.locatorId], this.dataC.mouse, THEMETEAL);
+                Draw.edge(this.graphics, this.dataC.graph.vertices[this.locatorId], this.dataC.mouse, THEMETEAL);
             }
         }
 		
 		if (this.show.vertices.checked) {
             // maybe draw the highlighted point in a diff color while creating edge??
-			this.dataC.vertices.draw(this.graphics, this.dataC.labels);
+			this.dataC.graph.drawVertices(this.graphics);
 		}
 	}
 
 	// info
 	updateInfo() {
         // coordinates
-        const ptsC = this.dataC.vertices;
+        const ptsC = this.dataC.graph.vertices;
         const ptsW = this.dataW.vertices;
-        const labs = this.dataC.labels;
+        const labs = this.dataC.graph.labels;
 
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
 		this.infoField.innerHTML = res;
 
         // edges
-        const edges = this.edgeIndices;
+        const edges = this.dataC.graph.edges;
 
         const eList = Utils.groupsToListString(edges, labs);
 
@@ -217,13 +190,13 @@ class GraphEditorApp {
 		this.dataC.box.fromCanvas(this.canvas);
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
-		this.dataC.vertices.snapToCanvas(this.canvas);
+		this.dataC.graph.snapToCanvas(this.canvas);
         
 		let boxPtsC = this.dataC.box.pts;	
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.box.setPoints(boxPtsW);
 		this.dataW.range.set(this.canvas);
-        this.dataW.vertices.setAll(ConvertPoints.canvasToWorldCoords(this.dataC.vertices, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis));
+        this.dataW.vertices.setAll(ConvertPoints.canvasToWorldCoords(this.dataC.graph.vertices, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis));
 
 		this.scene();
 		this.updateInfo();
@@ -231,50 +204,18 @@ class GraphEditorApp {
 
     // manage vertices and edges
     // vertices
-	createVertex(xC, yC, index = this.dataC.vertices.length) {
+	addVertex(xC, yC, index = this.dataC.graph.nVertices) {
 		const ptW = ConvertPoint.canvasToWorldCoords({x:xC, y:yC}, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-        this.dataC.vertices.splice(index, 0, new Point(xC,yC));
+        this.dataC.graph.addVertex(xC, yC, index);
         this.dataW.vertices.splice(index, 0, new Point(ptW.x, ptW.y));
 	}
-    deleteVertex(index) {
-        // delete any connected edges
-        let v = this.dataC.vertices[index];
-        for (let i = 0; i < this.dataC.edges.length; i++) {
-            if (this.dataC.edges[i].includes(v)) {
-                this.dataC.edges.splice(i,1);
-                i--; // don't skip the next edge!
-            }
-        }
-
-        this.dataC.vertices.splice(index,1); 				// delete the point
-        this.dataW.vertices.splice(index,1);
-        this.updateVertexLabels();	// relabel all points
+    deleteVertex(i) {
+        this.dataC.graph.deleteVertex(i);
+        this.dataW.vertices.splice(i,1); 				// delete the point
     }
-	clearVertices() {
-		this.dataC.vertices.length = 0;
-		this.dataW.vertices.length = 0;
-        this.dataC.edges.length = 0;
-	}
-    updateVertexLabels() {
-        this.dataC.labels = Utils.stdRange1(this.dataC.vertices.length);
-        this.dataC.labels = this.dataC.labels.map(n => { return 'p' + n; });
-    }
-    // edges
-    createEdge(i, j) {
-        if (i === j) {
-            return false;
-        } else {
-            // no duplicate edges
-            for (let n = 0; n < this.dataC.edges.length; n++) {
-                if (this.dataC.edges[n].isBetween(this.dataC.vertices[i], this.dataC.vertices[j])) return false;
-            }
-
-            this.dataC.edges.push(new Segment(this.dataC.vertices[i], this.dataC.vertices[j]));
-            return true;
-        }
-    }
-    clearEdges() {
-        this.dataC.edges.length = 0;
+    clearVertices() {
+        this.dataC.graph.clearVertices();
+        this.dataW.vertices.length = 0;
     }
 	
 	// set up gui
@@ -292,20 +233,20 @@ class GraphEditorApp {
 		this.buttons.a.addEventListener("click", () => {
             this.clearVertices();
 
-            this.createVertex(300,380);
-            this.createVertex(250,275);
-            this.createVertex(340,600);
-            this.createVertex(90,580);
-            this.createVertex(50,225);
-            this.createVertex(550,475);
-            this.createVertex(340,510);
-            this.createEdge(0,3);
-            this.createEdge(4,3);
-            this.createEdge(4,2);
-            this.createEdge(4,6);
-            this.createEdge(2,3);
-            this.createEdge(2,5);
-            this.updateVertexLabels();
+            this.addVertex(300,380);
+            this.addVertex(250,275);
+            this.addVertex(340,600);
+            this.addVertex(90,580);
+            this.addVertex(50,225);
+            this.addVertex(550,475);
+            this.addVertex(340,510);
+            this.dataC.graph.addEdge(0,3);
+            this.dataC.graph.addEdge(4,3);
+            this.dataC.graph.addEdge(4,2);
+            this.dataC.graph.addEdge(4,6);
+            this.dataC.graph.addEdge(2,3);
+            this.dataC.graph.addEdge(2,5);
+            //this.dataC.graph.updateLabels();
 
 			this.computeAndRefresh();
 		});
@@ -313,12 +254,12 @@ class GraphEditorApp {
 		this.buttons.b.addEventListener("click", () => {
             this.clearVertices();
 
-            this.createVertex(80,290);
-            this.createVertex(450,340);
-            this.createVertex(580,140);
-            this.createVertex(210,210);
-            this.createEdge(0,1);
-            this.updateVertexLabels();
+            this.addVertex(80,290);
+            this.addVertex(450,340);
+            this.addVertex(580,140);
+            this.addVertex(210,210);
+            this.dataC.graph.addEdge(0,1);
+            //this.dataC.graph.updateLabels();
 
 			this.computeAndRefresh();
 		});
@@ -326,19 +267,19 @@ class GraphEditorApp {
 		
 		this.buttons.randomVertex.addEventListener("click", () => {
             let pt = Utils.makeRandomPoint(this.canvas);
-			this.createVertex(pt.x, pt.y);
-            this.updateVertexLabels();
+			this.addVertex(pt.x, pt.y);
+            //this.dataC.graph.updateLabels();
 			this.computeAndRefresh();
 		});
 		
 		this.buttons.randomEdge.addEventListener("click", () => {
-            if (this.dataC.edges.length === this.maxEdges) return; // cannot create any more edges
+            if (this.dataC.graph.nEdges === this.dataC.graph.maxEdges) return; // cannot create any more edges
 
-            let allEdges = this.possibleEdges;
+            let allEdges = this.dataC.graph.possibleEdges;
             let validEdge = false;
             while (!validEdge) {
                 let i = Math.floor(Utils.rand(0, allEdges.length));
-                if (this.createEdge(allEdges[i][0], allEdges[i][1])) validEdge = true; // successfully created new non-duplicate edge
+                if (this.dataC.graph.addEdge(allEdges[i][0], allEdges[i][1])) validEdge = true; // successfully created new non-duplicate edge
             }
 
 			this.computeAndRefresh();
@@ -350,26 +291,22 @@ class GraphEditorApp {
 
             this.clearVertices();
             for (let i = 0; i < nPts; i++) {
-				this.createVertex(pts[i].x, pts[i].y);
+				this.addVertex(pts[i].x, pts[i].y);
             }
-            this.updateVertexLabels();
+            //this.dataC.graph.updateLabels();
 
-            if (this.generateParams.edges.checked) {
-                let nEdges = 0;
-                if (nPts >= 2) {
-                    nEdges = Math.floor(Utils.rand(0, this.maxEdges + 1));
-                }
-
-                let allEdges = this.possibleEdges;
-                if (nEdges === this.maxEdges) {
+            if (this.generateParams.edges.checked && nPts >= 2) {
+                let nEdges = Math.floor(Utils.rand(0, this.dataC.graph.maxEdges + 1));
+                let allEdges = this.dataC.graph.possibleEdges;
+                if (nEdges === this.dataC.graph.maxEdges) {
                     for (let i = 0; i < nEdges; i++) {
-                        this.createEdge(allEdges[i][0], allEdges[i][1]);
+                        this.dataC.graph.addEdge(allEdges[i][0], allEdges[i][1]);
                     }
                 } else {
                     // generate nEdges unique edges
                     for (let i = 0; i < nEdges; i++) {
                         let j = Math.floor(Utils.rand(0, allEdges.length));
-                        if (!this.createEdge(allEdges[j][0], allEdges[j][1])) i--; // failed to create duplicate edge
+                        if (!this.dataC.graph.addEdge(allEdges[j][0], allEdges[j][1])) i--; // failed to create duplicate edge
                     }
                 }
             }
@@ -380,23 +317,23 @@ class GraphEditorApp {
 
 		this.buttons.clear.addEventListener("click", () => {
 			this.clearVertices();
-            this.updateVertexLabels();
+            //this.dataC.graph.updateLabels();
 			this.computeAndRefresh();
 		});
 
 		this.buttons.reset.addEventListener("click", () => {
             this.clearVertices();
 
-            this.createVertex(225,75);
-            this.createVertex(200,350);
-            this.createVertex(600,175);
-            this.createVertex(425,400);
-            this.createVertex(500,300);
-            this.createEdge(0,2);
-            this.createEdge(0,4);
-            this.createEdge(1,2);
-            this.createEdge(1,3);
-            this.updateVertexLabels();
+            this.addVertex(225,75);
+            this.addVertex(200,350);
+            this.addVertex(600,175);
+            this.addVertex(425,400);
+            this.addVertex(500,300);
+            this.dataC.graph.addEdge(0,2);
+            this.dataC.graph.addEdge(0,4);
+            this.dataC.graph.addEdge(1,2);
+            this.dataC.graph.addEdge(1,3);
+            //this.dataC.graph.updateLabels();
 
 			this.computeAndRefresh();
 		});
@@ -429,23 +366,23 @@ class GraphEditorApp {
 			
 			// find id of existing nearby point
 			this.locatorId = null;
-			this.dataC.vertices.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) this.locatorId = i; });
+			this.dataC.graph.vertices.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) this.locatorId = i; });
 
             if (this.editState == "vertex") {
                 if (e.detail === 1) // it was a single click
                 {
                     if (this.locatorId === null) // not near an existing point: insert a new point and label
                     {
-                        this.locatorId = this.dataC.vertices.length;
-                        this.createVertex(mx, my, this.locatorId);
-                        this.updateVertexLabels();
-                    } 
+                        this.locatorId = this.dataC.graph.nVertices;
+                        this.addVertex(mx, my, this.locatorId);
+                        //this.dataC.graph.updateLabels();
+                    }
                     // else, do nothing now - but check the mouse-move-event on the clicked-on point	
-                } 
+                }
                 else if (e.detail === 2) // it was a double click
-                {				
+                {
                     // if on an existing point, delete the point, else ignore the double click
-                    if (this.dataC.vertices.length >= 1) { 
+                    if (this.dataC.graph.nVertices >= 1) { 
                         this.deleteVertex(this.locatorId);
                         this.locatorId = null;
                     }
@@ -461,11 +398,11 @@ class GraphEditorApp {
                     if (e.detail === 2) { // it was a double click
                         // check if near edge
                         const m = {x:mx, y:my};
-                        this.dataC.edges.forEach((s,i) => { if (s.distanceToPoint(m) < 14) this.locatorId = i; });
+                        this.dataC.graph.edges.forEach((s,i) => { if (s.distanceToPoint(m) < 14) this.locatorId = i; });
 
                         // if on an existing edge, delete the edge, else ignore the double click
                         if (this.locatorId !== null) {
-                            this.dataC.edges.splice(this.locatorId, 1); // delete the edge
+                            this.dataC.graph.deleteEdge(this.locatorId); // delete the edge
                             this.locatorId = null;
                         }
                     }
@@ -486,7 +423,7 @@ class GraphEditorApp {
             if (this.creatingEdge) {
                 this.dataC.mouse.set(mx,my);
             } else {
-                this.dataC.vertices[this.locatorId].set(mx,my);
+                this.dataC.graph.setVertex(this.locatorId,mx,my);
             }
 			
 			// visualize the effect
@@ -501,10 +438,10 @@ class GraphEditorApp {
                 const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
 
                 let headId = null;
-                this.dataC.vertices.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) headId = i; });
+                this.dataC.graph.vertices.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) headId = i; });
 
                 if (headId !== null && headId !== this.locatorId) { // user has dragged the edge to a separate point
-                    this.createEdge(this.locatorId, headId); // attempt to create an edge between the points (does not allow duplicates)
+                    this.dataC.graph.addEdge(this.locatorId, headId); // attempt to create an edge between the points (does not allow duplicates)
                 }
                 // else, don't create an edge and cancel edge creation anyway
 

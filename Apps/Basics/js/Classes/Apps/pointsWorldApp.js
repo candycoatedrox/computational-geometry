@@ -108,10 +108,6 @@ class PointsWorldApp {
 			this.dataC.origin.draw(this.graphics);
 		}
 		
-		if (this.show.origin.checked) { 
-			this.dataC.origin.draw(this.graphics);
-		}
-		
 		if (this.show.points.checked) { 
 			this.dataC.points.draw(this.graphics, this.dataC.labels);
 		}

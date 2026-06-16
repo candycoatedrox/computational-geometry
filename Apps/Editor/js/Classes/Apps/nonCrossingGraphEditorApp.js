@@ -165,10 +165,6 @@ class NonCrossingGraphEditorApp {
 		if (this.show.origin.checked) {
 			this.dataC.origin.draw(this.graphics);
 		}
-		
-		if (this.show.origin.checked) {
-			this.dataC.origin.draw(this.graphics);
-		}
 
         if (this.show.edges.checked) {
             for (let i = 0; i < this.dataC.edges.length; i++) {
@@ -379,12 +375,8 @@ class NonCrossingGraphEditorApp {
             }
             this.updateVertexLabels();
 
-            if (this.generateParams.edges.checked) {
-                let nEdges = 0;
-                if (nPts >= 2) {
-                    nEdges = Math.floor(Utils.rand(0, this.maxEdges + 1));
-                }
-
+            if (this.generateParams.edges.checked && nPts >= 2) {
+                let nEdges = Math.floor(Utils.rand(0, this.maxEdges + 1));
                 let allEdges = this.possibleEdges;
                 if (nEdges === this.maxEdges) {
                     for (let i = 0; i < nEdges; i++) {

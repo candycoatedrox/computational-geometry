@@ -207,10 +207,6 @@ class FaceGraphEditorApp {
 		if (this.show.origin.checked) {
 			this.dataC.origin.draw(this.graphics);
 		}
-		
-		if (this.show.origin.checked) {
-			this.dataC.origin.draw(this.graphics);
-		}
 
         if (this.show.faces.checked) {
             for (let i = 0; i < this.dataC.faces.length; i++) {

@@ -16,27 +16,52 @@ class GraphE {
     get nEdges() {
         return this.edges.length;
     }
-    get edgeToString(i) {
+    edgeToString(i) {
         return Utils.groupToString(this.edges[i], this.labels);
     }
     get edgesToListString() {
         return Utils.groupsToListString(this.edges, this.labels);
     }
+    
+    get maxEdges() {
+        return Combinations.nChoose2(this.nVertices);
+    }
+    get possibleEdges() {
+        return Combinations.allIndexPairs(this.nVertices);
+    }
 
     // vertices
-    addVertex(x,y) {
-        this.vertices.push(new Point(x,y));
+    addVertex(x,y, index = this.nVertices) {
+        if (index === this.nVertices) {
+            this.vertices.push(new Point(x,y));
+        } else {
+            this.vertices.splice(index, 0, new Point(x,y));
+
+            // shift all edges
+            for (let i = 0; i < this.nEdges; i++) {
+                let e = this.edges[j];
+                if (e[0] >= index) e[0]++;
+                if (e[1] >= index) e[1]++;
+            }
+        }
+        
         this.updateLabels();
+    }
+    addVertexCoords(coords, index = this.nVertices) {
+        this.addVertex(coords.x, coords.y, index);
     }
     setVertex(i,x,y) {
         this.vertices[i].set(x,y);
+    }
+    setVertexCoords(i, coords) {
+        this.vertices[i].coords = coords;
     }
     deleteVertex(i) {
         // delete any connected edges, update edges with new indices
         for (let j = 0; j < this.nEdges; j++) {
             let e = this.edges[j];
             if (e.includes(i)) {
-                this.dataC.edges.splice(j,1); // delete the edge
+                this.edges.splice(j,1); // delete the edge
                 j--; // don't skip the next edge!
             } else {
                 if (e[0] > i) e[0]--;
@@ -51,6 +76,10 @@ class GraphE {
         this.vertices.length = 0;
         this.edges.length = 0;
         this.labels.length = 0;
+    }
+
+    snapToCanvas(canvas) {
+        this.vertices.snapToCanvas(canvas);
     }
 
     // labels
@@ -81,7 +110,7 @@ class GraphE {
     }
     verticesAreConnected(i,j) {
         for (let n = 0; n < this.nEdges; n++) {
-            if (this.edgeIsBetween(i,j)) return true;
+            if (this.edgeIsBetween(n,i,j)) return true;
         }
         return false;
     }
@@ -89,23 +118,16 @@ class GraphE {
     // draw
     drawVertices(ctx, labeled = true, color = POINTCOLOR, size = POINTSIZE) {
         let labs = labeled ? this.labels : [];
-        vertices.draw(ctx, labs, color, size);
+        this.vertices.draw(ctx, labs, color, size);
     }
     drawEdges(ctx, color = EDGECOLOR, width = EDGETHICKNESS) {
         for (let i = 0; i < this.nEdges; i++) {
-            Draw.segment(ctx, this[this.edges[i][0]], this[this.edges[i][1]], color, width);
+            Draw.segment(ctx, this.vertices[this.edges[i][0]], this.vertices[this.edges[i][1]], color, width);
         }
     }
     draw(ctx, edgeColor = EDGECOLOR, vertexColor = POINTCOLOR, edgeWidth = EDGETHICKNESS, vertexSize = POINTSIZE) {
         this.drawEdges(ctx, edgeColor, edgeWidth);
         this.drawVertices(ctx, vertexColor, vertexSize);
-    }
-    
-    maxEdges() {
-        return Combinations.nChoose2(this.nVertices);
-    }
-    possibleEdges() {
-        return Combinations.allIndexPairs(this.nVertices);
     }
 
     getEdgeIndicesFromVertex(i) {

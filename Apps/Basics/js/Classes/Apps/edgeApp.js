@@ -137,10 +137,6 @@ class EdgeApp {
 		if (this.show.origin.checked) { 
 			this.dataC.origin.draw(this.graphics);
 		}
-		
-		if (this.show.origin.checked) { 
-			this.dataC.origin.draw(this.graphics);
-		}
 
 		if (this.show.edge.checked && this.dataC.ptsActive === 2) {
 			switch (this.edgeType) {

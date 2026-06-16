@@ -173,10 +173,6 @@ class TreeEditorApp {
 		if (this.show.origin.checked) {
 			this.dataC.origin.draw(this.graphics);
 		}
-		
-		if (this.show.origin.checked) {
-			this.dataC.origin.draw(this.graphics);
-		}
 
         if (this.show.edges.checked) {
             let deletedColor = COLORS.setAlpha(NEGATIVECOLOR);
