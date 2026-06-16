@@ -111,49 +111,6 @@ class GraphE {
         this.edges.length = 0;
     }
 
-    getVerticesFromEdge(i) {
-        const e = this.edges[i];
-        const tailV = this.vertices[e[0]];
-        const headV = this.vertices[e[1]];
-        return {tail:tailV, head:headV};
-    }
-    edgeIncludesPoint(i,p) {
-        let vertices = this.getVerticesFromEdge(i);
-        return vertices.tail.equals(p) || vertices.head.equals(p);
-    }
-    edgeDistanceToPoint(i,p) {
-        let vertices = this.getVerticesFromEdge(i);
-        return Geometry1.pointLineDistance(p, vertices.tail, vertices.head);
-    }
-    edgeIsBetween(i,v1,v2) {
-        return this.edges[i].includes(v1) && this.edges[i].includes(v2);
-    }
-    verticesAreConnected(i,j) {
-        for (let n = 0; n < this.nEdges; n++) {
-            if (this.edgeIsBetween(n,i,j)) return true;
-        }
-        return false;
-    }
-
-    // draw
-    drawVertices(ctx, labeled = true, color = POINTCOLOR, size = POINTSIZE) {
-        let labs = labeled ? this.labels : [];
-        this.vertices.draw(ctx, labs, color, size);
-    }
-    drawEdge(ctx, i, color = EDGECOLOR, width = EDGETHICKNESS) {
-        let vertices = this.getVerticesFromEdge(i);
-        Draw.edge(ctx, vertices.tail, vertices.head, color, width);
-    }
-    drawEdges(ctx, color = EDGECOLOR, width = EDGETHICKNESS) {
-        for (let i = 0; i < this.nEdges; i++) {
-            this.drawEdge(ctx, i, color, width);
-        }
-    }
-    draw(ctx, edgeColor = EDGECOLOR, vertexColor = POINTCOLOR, edgeWidth = EDGETHICKNESS, vertexSize = POINTSIZE) {
-        this.drawEdges(ctx, edgeColor, edgeWidth);
-        this.drawVertices(ctx, vertexColor, vertexSize);
-    }
-
     getEdgeIndicesFromVertex(i) {
         let e = [];
         for (let j = 0; j < this.nEdges; j++) {
@@ -180,6 +137,31 @@ class GraphE {
         return v;
     }
 
+    getVerticesFromEdge(i) {
+        const e = this.edges[i];
+        const tailV = this.vertices[e[0]];
+        const headV = this.vertices[e[1]];
+        return {tail:tailV, head:headV};
+    }
+    edgeIncludesPoint(i,p) {
+        let vertices = this.getVerticesFromEdge(i);
+        return vertices.tail.equals(p) || vertices.head.equals(p);
+    }
+    edgeDistanceToPoint(i,p) {
+        let vertices = this.getVerticesFromEdge(i);
+        return Geometry1.pointLineDistance(p, vertices.tail, vertices.head);
+    }
+
+    edgeIsBetween(i,v1,v2) {
+        return this.edges[i].includes(v1) && this.edges[i].includes(v2);
+    }
+    verticesAreConnected(i,j) {
+        for (let n = 0; n < this.nEdges; n++) {
+            if (this.edgeIsBetween(n,i,j)) return true;
+        }
+        return false;
+    }
+
     // checks
     intersectsAnyEdge(p,q) {
         for (let i = 0; i < this.nEdges; i++) {
@@ -203,6 +185,25 @@ class GraphE {
             }
         }
         return indices;
+    }
+
+    // draw
+    drawVertices(ctx, labeled = true, color = POINTCOLOR, size = POINTSIZE) {
+        let labs = labeled ? this.labels : [];
+        this.vertices.draw(ctx, labs, color, size);
+    }
+    drawEdge(ctx, i, color = EDGECOLOR, width = EDGETHICKNESS) {
+        let vertices = this.getVerticesFromEdge(i);
+        Draw.edge(ctx, vertices.tail, vertices.head, color, width);
+    }
+    drawEdges(ctx, color = EDGECOLOR, width = EDGETHICKNESS) {
+        for (let i = 0; i < this.nEdges; i++) {
+            this.drawEdge(ctx, i, color, width);
+        }
+    }
+    draw(ctx, edgeColor = EDGECOLOR, vertexColor = POINTCOLOR, edgeWidth = EDGETHICKNESS, vertexSize = POINTSIZE) {
+        this.drawEdges(ctx, edgeColor, edgeWidth);
+        this.drawVertices(ctx, vertexColor, vertexSize);
     }
 
     // conversion

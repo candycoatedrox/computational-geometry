@@ -54,7 +54,7 @@ const Combinations = {
   },
 
   // all combinations of rMin-rMax (inclusive) indices
-  allIndexCombinations(n, rMin, rMax = n) {
+  allIndexCombinations(n, rMin = 1, rMax = n) {
     // clamp rMin and rMax to range 1-n
     rMin = Utils.clamp(rMin,1,n);
     rMax = Utils.clamp(rMax,1,n);
