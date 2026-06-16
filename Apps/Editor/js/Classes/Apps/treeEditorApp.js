@@ -18,6 +18,8 @@ class TreeEditorApp {
 	};
 	
 	buttons = {
+		test: document.getElementById("buttonTEST-treeEditorApp"),
+
 		a: document.getElementById("buttonA-treeEditorApp"),
 		b: document.getElementById("buttonB-treeEditorApp"),
 
@@ -442,6 +444,18 @@ labs = ${labs}`);
 	}
 	// buttons
 	setupButtonEvents() {
+        
+		this.buttons.test.addEventListener("click", () => {
+            let visitCount = this.dataC.graph.depthFirstSearch((i,c) => {
+                let v = this.dataC.graph.vertices[i];
+                console.log("current vertex " + this.dataC.graph.labels[i] + ": (" + v.x + "," + v.y + ")");
+                return c+1;
+            }, 0);
+            console.log(`visitCount = ${visitCount}`);
+		});
+
+
+
 		this.buttons.a.addEventListener("click", () => {
             this.clearVertices();
 
@@ -605,7 +619,7 @@ labs = ${labs}`);
                         this.addVertex(mx, my, this.locatorId);
                         //this.dataC.graph.updateLabels();
                     } else {
-                        this.edgesToDelete = this.dataC.graph.edges.map(() => false); // create array with false value for each edge
+                        this.edgesToDelete = this.dataC.graph.edges.map(() => false); // create array with a value of false for each edge
                     }
                     // else, do nothing now - but check the mouse-move-event on the clicked-on point	
                 } 

@@ -212,7 +212,7 @@ class GraphE {
         graph.vertices.push(...this.vertices);
 
         let adjacencies = this.vertices.map(() => { return []; });
-        for (let i = 0; i < this.nEdges; j++) {
+        for (let i = 0; i < this.nEdges; i++) {
             adjacencies[this.edges[i][0]].push(this.edges[i][1]);
             adjacencies[this.edges[i][1]].push(this.edges[i][0]);
         }
@@ -222,8 +222,15 @@ class GraphE {
     }
 
     // depth-first search
-    depthFirstSearch(execute) {
+    // at each vertex, current = execute(i, current, ...params) is run
+    // current is returned after being modified by all neighbors
+    depthFirstSearch(execute, startValue, ...params) {
+        return this.depthFirstSearchWithStart(0, execute, startValue, ...params);
+    }
 
+    depthFirstSearchWithStart(start, execute, startValue, ...params) {
+        const graphA = this.adjacencyGraph();
+        return graphA.depthFirstSearch(start, execute, startValue, ...params);
     }
 
 }

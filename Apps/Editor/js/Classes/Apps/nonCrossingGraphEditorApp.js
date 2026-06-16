@@ -378,7 +378,7 @@ class NonCrossingGraphEditorApp {
                         this.addVertex(mx, my, this.locatorId);
                         //this.dataC.graph.updateLabels();
                     } else {
-                        this.edgesToDelete = this.dataC.graph.edges.map(() => false); // create array with false value for each edge
+                        this.edgesToDelete = this.dataC.graph.edges.map(() => false); // create array with a value of false for each edge
                     }
                     // else, do nothing now - but check the mouse-move-event on the clicked-on point	
                 } 

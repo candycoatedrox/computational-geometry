@@ -58,12 +58,28 @@ class GraphA {
     }
 
     // depth-first search
-    depthFirstSearch(execute) {
-        
+    depthFirstSearch(start, execute, startValue, ...params) {
+        let visited = this.vertices.map(() => false); // create array with a value of false for each vertex
+        return this.depthFirstSearchRec(start, visited, execute, startValue, ...params);
     }
 
-    depthFirstSearchRec(i, visited, execute) {
+    depthFirstSearchRec(i, visited, execute, currentValue, ...params) {
+        if (visited[i]) {
+            return currentValue;
+        } else {
+            visited[i] = true;
 
+            let current = execute(i, currentValue, ...params);
+            let neighbors = this.getVerticesConnectedTo(i);
+            for (let j = 0; j < neighbors.length; j++) {
+                if (!visited[neighbors[j]]) {
+                    current = this.depthFirstSearchRec(neighbors[j], visited, execute, current, ...params);
+                }
+            }
+            return current;
+        }
+
+        // run execute(vertex, i, current, ...params)
     }
 
 }
