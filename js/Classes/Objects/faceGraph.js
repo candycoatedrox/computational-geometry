@@ -132,7 +132,7 @@ class FaceGraph extends GraphE {
     faceIncludesPoint(i,p) {
         let vertices = this.getVerticesFromFace(i);
         for (let j = 0; j < vertices.length; j++) {
-            if (vertices[j] === p) return true;
+            if (vertices[j].equals(p)) return true;
         }
         return false;
     }

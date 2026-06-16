@@ -68,8 +68,7 @@ class TreeEditorApp {
 		originC.fromCanvas(this.canvas);
 		let axesC = new Axes(100,-100);
 
-		let graph = new GraphE();
-        let vertGroups = [];
+		let tree = new Tree();
 
         let mouse = new Point(0,0);
 
@@ -79,8 +78,7 @@ class TreeEditorApp {
             axes: axesC,
             range: rangeC,
 
-			graph: graph,
-            groups: vertGroups,
+			tree: tree,
 
             mouse: mouse
 		};
@@ -113,12 +111,12 @@ class TreeEditorApp {
         this.addVertex(535,415);
         this.addVertex(170,100);
         this.addVertex(555,320);
-        this.addEdge(0,2);
-        this.addEdge(0,4);
-        this.addEdge(1,3);
-        this.addEdge(1,5);
-        this.addEdge(1,2);
-        //this.dataC.graph.updateLabels();
+        this.dataC.tree.addEdge(0,2);
+        this.dataC.tree.addEdge(0,4);
+        this.dataC.tree.addEdge(1,3);
+        this.dataC.tree.addEdge(1,5);
+        this.dataC.tree.addEdge(1,2);
+        //this.dataC.tree.updateLabels();
 		
 		// gui: set up actions
 		this.setupShowEvents();
@@ -157,46 +155,37 @@ class TreeEditorApp {
 
         if (this.show.edges.checked) {
             let deletedColor = COLORS.setAlpha(NEGATIVECOLOR);
-            for (let i = 0; i < this.dataC.graph.nEdges; i++) {
-                let color = EDGECOLOR;
-                if (this.nearEdge === i) {
-                    if (this.edgeCanBeDeleted(i)) color = deletedColor;
-                } else if (this.edgesToDelete[i]) {
-                    color = deletedColor;
-                }
-                this.dataC.graph.drawEdge(this.graphics, i, color);
+            for (let i = 0; i < this.dataC.tree.nEdges; i++) {
+                let color = (this.edgesToDelete[i]) ? deletedColor : EDGECOLOR;
+                this.dataC.tree.drawEdge(this.graphics, i, color);
             }
 
             if (this.creatingEdge) {
-                let color = (this.dataC.graph.intersectsAnyEdge(this.dataC.graph.vertices[this.locatorId], this.dataC.mouse)) ? NEGATIVECOLOR : THEMETEAL;
-                Draw.edge(this.graphics, this.dataC.graph.vertices[this.locatorId], this.dataC.mouse, color);
+                let color = (this.dataC.tree.intersectsAnyEdge(this.dataC.tree.vertices[this.locatorId], this.dataC.mouse)) ? NEGATIVECOLOR : THEMETEAL;
+                Draw.edge(this.graphics, this.dataC.tree.vertices[this.locatorId], this.dataC.mouse, color);
             }
         }
 		
 		if (this.show.vertices.checked) {
             // maybe draw the highlighted point in a diff color while creating edge??
-			this.dataC.graph.drawVertices(this.graphics);
+			this.dataC.tree.drawVertices(this.graphics);
 		}
 	}
 
 	// info
 	updateInfo() {
         // coordinates
-        const ptsC = this.dataC.graph.vertices;
+        const ptsC = this.dataC.tree.vertices;
         const ptsW = this.dataW.vertices;
-        const labs = this.dataC.graph.labels;
+        const labs = this.dataC.tree.labels;
 
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
 		this.infoField.innerHTML = res;
 
         // edges & groups
-        const groups = this.dataC.groups;
-
-        const eList = this.dataC.graph.edgesToListString;
-        console.log(`groups = ${Utils.nestedArrayToString(groups)}
-labs = ${labs}`);
-        const gList = Utils.nestedGroupsToListString(groups, labs);
+        const eList = this.dataC.tree.edgesToListString;
+        const gList = this.dataC.tree.groupsToListString;
 
         this.edgeList.innerHTML = eList;
         this.groupList.innerHTML = gList;
@@ -215,13 +204,13 @@ labs = ${labs}`);
 		this.dataC.box.fromCanvas(this.canvas);
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
-		this.dataC.graph.snapToCanvas(this.canvas);
+		this.dataC.tree.snapToCanvas(this.canvas);
         
 		let boxPtsC = this.dataC.box.pts;	
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.box.setPoints(boxPtsW);
 		this.dataW.range.set(this.canvas);
-        this.dataW.vertices.setAll(ConvertPoints.canvasToWorldCoords(this.dataC.graph.vertices, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis));
+        this.dataW.vertices.setAll(ConvertPoints.canvasToWorldCoords(this.dataC.tree.vertices, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis));
 
 		this.scene();
 		this.updateInfo();
@@ -229,208 +218,15 @@ labs = ${labs}`);
 
     // manage vertices and edges
     // vertices
-	addVertex(xC, yC, index = this.dataC.graph.nVertices) {
+	addVertex(xC, yC, index = this.dataC.tree.nVertices) {
 		const ptW = ConvertPoint.canvasToWorldCoords({x:xC, y:yC}, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-        this.dataC.graph.addVertex(xC,yC,index);
+        this.dataC.tree.addVertex(xC,yC,index);
         this.dataW.vertices.splice(index, 0, new Point(ptW.x, ptW.y));
-        this.dataC.groups.push(index);
 	}
-    deleteVertex(i) {
-        // delete any connected edges
-        let clearedEdges = false;
-        for (let j = 0; j < this.dataC.graph.nEdges; j++) {
-            if (this.dataC.graph.edges[j].includes(i)) {
-                if (this.edgeCanBeDeleted(j)) {
-                    this.deleteEdge(j);
-                    j--; // don't skip the next edge!
-                } else {
-                    // unfortunately we just have to delete all edges at this point or we can't delete the vertex
-                    clearedEdges = true;
-                    this.clearEdges();
-                    Utils.displayErrorMessage("Deleted all edges in order to delete the vertex.", this.errorDisplay);
-                }
-            }
-        }
-
-        this.dataC.graph.deleteVertex(i); 				// delete the point
-        this.dataW.vertices.splice(i,1);
-        //this.dataC.graph.updateLabels();	// relabel all points
-
-        // update groups
-        if (clearedEdges) {
-            this.resetGroups();
-        } else {
-            let gIndex = this.dataC.groups.indexOf(i);
-            if (gIndex !== -1) this.dataC.groups.splice(gIndex, 1); // delete the point from groups
-
-            // update group indices accordingly if the vertex was not last in the list
-            if (i < this.dataC.graph.nVertices) {
-                this.updateGroupIndicesForDeletion(i, this.dataC.groups);
-            }
-        }
-    }
-    updateGroupIndicesForDeletion(deletedIndex, group) {
-        for (let i = 0; i < group.length; i++) {
-            if (typeof group[i] === "number") { // base case
-                if (group[i] > deletedIndex) group[i]--;
-            } else { // subgroup
-                this.updateGroupIndicesForDeletion(deletedIndex, group[i]);
-            }
-        }
-    }
 	clearVertices() {
-		this.dataC.graph.clearVertices();
+		this.dataC.tree.clearVertices();
 		this.dataW.vertices.length = 0;
-        this.dataC.groups.length = 0;
 	}
-    getVertexByPath(...indices) {
-        let parent = this.dataC.groups;
-        for (let i = 0; i < indices.length; i++) {
-            parent = parent[indices[i]];
-        }
-        return parent;
-    }
-    setGroupByPath(newValue, ...indices) {
-        let parent = this.dataC.groups;
-        for (let i = 0; i < indices.length - 1; i++) {
-            parent = parent[indices[i]];
-        }
-
-        let finalIndex = indices[indices.length - 1];
-        parent[finalIndex] = newValue;
-    }
-    groupIndexOfVertex(i) {
-        return this.groupIndexOfVertexRec(i, this.dataC.groups);
-    }
-    groupIndexOfVertexRec(i, parentGroup) {
-        if (!Array.isArray(parentGroup)) {
-            return [-1]; // vertex is not here
-        } else if (parentGroup.includes(i)) {
-            let j = parentGroup.indexOf(i);
-            return [j];
-        } else {
-            for (let j = 0; j < parentGroup.length; j++) {
-                let path = this.groupIndexOfVertexRec(i, parentGroup[j]);
-                if (!path.includes(-1)) {
-                    path.splice(0,0,j);
-                    return path;
-                }
-            }
-            
-            return [-1]; // vertex is not in this group
-        }
-    }
-    highestGroupIndexOfVertex(i) {
-        return this.groupIndexOfVertex(i)[0];
-    }
-    verticesPartOfSameGroup(i,j) {
-        return this.highestGroupIndexOfVertex(i) === this.highestGroupIndexOfVertex(j);
-    }
-    deepestSharedGroupIndex(i,j) {
-        let iGroup = this.groupIndexOfVertex(i);
-        let jGroup = this.groupIndexOfVertex(j);
-        if (iGroup[0] !== jGroup[0]) { // vertices do not share a group
-            return [-1];
-        } else {
-            let g = [];
-            for (let n = 0; n < iGroup.length; n++) {
-                if (iGroup[n] === jGroup[n]) {
-                    g.push(iGroup[n]);
-                } else {
-                    return g;
-                }
-            }
-        }
-    }
-    // edges
-    addEdge(i,j) {
-        let tailGroup = this.highestGroupIndexOfVertex(i);
-        let headGroup = this.highestGroupIndexOfVertex(j);
-        if (tailGroup === headGroup) return false; // new edge would create a cycle or duplicate
-
-        if (!this.dataC.graph.addNonCrossingEdge(i,j)) return false; // new edge would create a crossing
-
-        // combine groups
-        if (tailGroup < headGroup) {
-            let newGroup = [this.dataC.groups[tailGroup], this.dataC.groups[headGroup]];
-            console.log(`newGroup = ${Utils.nestedArrayToString(newGroup)}`);
-            this.dataC.groups.splice(tailGroup, 1, newGroup);
-            this.dataC.groups.splice(headGroup, 1);
-        } else {
-            let newGroup = [this.dataC.groups[headGroup], this.dataC.groups[tailGroup]];
-            console.log(`newGroup = ${Utils.nestedArrayToString(newGroup)}`);
-            this.dataC.groups.splice(headGroup, 1, newGroup);
-            this.dataC.groups.splice(tailGroup, 1);
-        }
-        return true;
-    }
-    deleteEdge(i) {
-        const v1 = this.dataC.graph.edges[i][0];
-        const v2 = this.dataC.graph.edges[i][1];
-        
-        const v1Path = this.groupIndexOfVertex(v1);
-        const v2Path = this.groupIndexOfVertex(v2);
-        const sharedPath = this.deepestSharedGroupIndex(v1, v2);
-        const sharedGroup = this.getVertexByPath(...sharedPath);
-        const highestSharedIndex = sharedPath[0];
-
-        if (sharedPath.length === 1) {
-            console.log("shared index is only highest");
-            // just disconnect the halves of the group
-            let subA = this.dataC.groups[highestSharedIndex][0];
-            let subB = this.dataC.groups[highestSharedIndex][1];
-            this.dataC.groups.splice(highestSharedIndex, 1, subA, subB);
-            this.dataC.graph.deleteEdge(i); // delete the edge
-        } else {
-            console.log("shared index is more than highest");
-            const v1Connections = this.dataC.graph.getVerticesConnectedTo(v1);
-            const v2Connections = this.dataC.graph.getVerticesConnectedTo(v2);
-            
-            // whether either vertex will be "orphaned" once the edge is deleted
-            let v1Orphaned = v1Connections.length === 1;
-            let v2Orphaned = v2Connections.length === 1;
-            if (v1Orphaned || v2Orphaned) {
-                // replace shared group with non-orphaned component, removing orphaned vertex entirely
-                let orphanedFinalIndex = (v1Orphaned) ? v1Path[v1Path.length - 1] : v2Path[v2Path.length - 1];
-                let nonOrphanedGroup = (orphanedFinalIndex === 0) ? sharedGroup[1] : sharedGroup[0];
-                this.setGroupByPath(nonOrphanedGroup, ...sharedPath);
-
-                // insert orphaned vertex into dataC.groups, after highest shared group
-                if (v1Orphaned) {
-                    console.log("v1 is orphaned");
-                    this.dataC.groups.splice(highestSharedIndex + 1, 0, v1);
-                } else {
-                    console.log("v2 is orphaned");
-                    this.dataC.groups.splice(highestSharedIndex + 1, 0, v2);
-                }
-
-                this.dataC.graph.deleteEdge(i); // delete the edge
-            } else {
-                console.log("no orphan");
-                Utils.displayErrorMessage("Only the most recently added edge and edges connected to leaves can be deleted.", this.errorDisplay);
-            }
-        }
-    }
-    clearEdges() {
-        this.dataC.graph.clearEdges();
-        this.dataC.groups = Utils.stdRange(this.dataC.graph.nVertices);
-    }
-    edgeCanBeDeleted(i) {
-        const v1 = this.dataC.graph.edges[i][0];
-        const v2 = this.dataC.graph.edges[i][1];
-
-        const sharedPath = this.deepestSharedGroupIndex(v1, v2);
-        if (sharedPath.length === 1) return true; // most recently added edge
-        
-        const v1Connections = this.dataC.graph.getVerticesConnectedTo(v1);
-        const v2Connections = this.dataC.graph.getVerticesConnectedTo(v2);
-        if (v1Connections.length === 1 || v2Connections.length === 1) return true; // edge is connected to a leaf
-
-        return false;
-    }
-    resetGroups() {
-        this.dataC.groups = Utils.stdRange(this.dataC.graph.nVertices);
-    }
 	
 	// set up gui
 	// checkboxes
@@ -446,9 +242,9 @@ labs = ${labs}`);
 	setupButtonEvents() {
         
 		this.buttons.test.addEventListener("click", () => {
-            let visitCount = this.dataC.graph.depthFirstSearch((i,c) => {
-                let v = this.dataC.graph.vertices[i];
-                console.log("current vertex " + this.dataC.graph.labels[i] + ": (" + v.x + "," + v.y + ")");
+            let visitCount = this.dataC.tree.depthFirstSearch((i,c) => {
+                let v = this.dataC.tree.vertices[i];
+                console.log("current vertex " + this.dataC.tree.labels[i] + ": (" + v.x + "," + v.y + ")");
                 return c+1;
             }, 0);
             console.log(`visitCount = ${visitCount}`);
@@ -464,11 +260,11 @@ labs = ${labs}`);
             this.addVertex(600,175);
             this.addVertex(425,400);
             this.addVertex(500,300);
-            this.addEdge(0,2);
-            this.addEdge(0,4);
-            this.addEdge(1,2);
-            this.addEdge(1,3);
-            //this.dataC.graph.updateLabels();
+            this.dataC.tree.addEdge(0,2);
+            this.dataC.tree.addEdge(0,4);
+            this.dataC.tree.addEdge(1,2);
+            this.dataC.tree.addEdge(1,3);
+            //this.dataC.tree.updateLabels();
 
 			this.computeAndRefresh();
 		});
@@ -484,14 +280,14 @@ labs = ${labs}`);
             this.addVertex(555,320);
             this.addVertex(535,80);
             this.addVertex(620,85);
-            this.addEdge(0,2);
-            this.addEdge(0,4);
-            this.addEdge(1,3);
-            this.addEdge(1,5);
-            this.addEdge(1,2);
-            this.addEdge(6,7);
-            this.addEdge(2,6);
-            //this.dataC.graph.updateLabels();
+            this.dataC.tree.addEdge(0,2);
+            this.dataC.tree.addEdge(0,4);
+            this.dataC.tree.addEdge(1,3);
+            this.dataC.tree.addEdge(1,5);
+            this.dataC.tree.addEdge(1,2);
+            this.dataC.tree.addEdge(6,7);
+            this.dataC.tree.addEdge(2,6);
+            //this.dataC.tree.updateLabels();
 
 			this.computeAndRefresh();
 		});
@@ -500,16 +296,16 @@ labs = ${labs}`);
 		this.buttons.randomVertex.addEventListener("click", () => {
             let pt = Utils.makeRandomPoint(this.canvas);
 			this.addVertex(pt.x, pt.y);
-            //this.dataC.graph.updateLabels();
+            //this.dataC.tree.updateLabels();
 			this.computeAndRefresh();
 		});
 		
 		this.buttons.randomEdge.addEventListener("click", () => {
-            if (this.dataC.graph.nEdges === this.dataC.graph.maxEdges) return; // cannot create any more edges
+            if (this.dataC.tree.nEdges === this.dataC.tree.maxEdges) return; // cannot create any more edges
 
-            let allEdges = this.dataC.graph.possibleEdges;
+            let allEdges = this.dataC.tree.possibleEdges;
             let i = Math.floor(Utils.rand(0, allEdges.length));
-            if (!this.addEdge(allEdges[i][0], allEdges[i][1])) { // failed to create duplicate, crossing, or cycle
+            if (!this.dataC.tree.addEdge(allEdges[i][0], allEdges[i][1])) { // failed to create duplicate, crossing, or cycle
                 Utils.displayErrorMessage("Failed to create edge due to a duplicate, crossing, or cycle.", this.errorDisplay);
             }
 
@@ -524,24 +320,24 @@ labs = ${labs}`);
             for (let i = 0; i < nPts; i++) {
 				this.addVertex(pts[i].x, pts[i].y);
             }
-            //this.dataC.graph.updateLabels();
+            //this.dataC.tree.updateLabels();
 
             if (this.generateParams.edges.checked) {
                 let nEdges = 0;
                 if (nPts >= 2) {
-                    nEdges = Math.floor(Utils.rand(0, this.dataC.graph.maxEdges + 1));
+                    nEdges = Math.floor(Utils.rand(0, this.dataC.tree.maxEdges + 1));
                 }
 
-                let allEdges = this.dataC.graph.possibleEdges;
-                if (nEdges === this.dataC.graph.maxEdges) {
+                let allEdges = this.dataC.tree.possibleEdges;
+                if (nEdges === this.dataC.tree.maxEdges) {
                     for (let i = 0; i < nEdges; i++) {
-                        this.addEdge(allEdges[i][0], allEdges[i][1]);
+                        this.dataC.tree.addEdge(allEdges[i][0], allEdges[i][1]);
                     }
                 } else {
                     // attempt to generate nEdges unique edges
                     for (let i = 0; i < nEdges; i++) {
                         let j = Math.floor(Utils.rand(0, allEdges.length));
-                        this.addEdge(allEdges[j][0], allEdges[j][1]);
+                        this.dataC.tree.addEdge(allEdges[j][0], allEdges[j][1]);
                     }
                 }
             }
@@ -551,13 +347,13 @@ labs = ${labs}`);
 
 
 		this.buttons.clearEdges.addEventListener("click", () => {
-			this.clearEdges();
+			this.dataC.tree.clearEdges();
 			this.computeAndRefresh();
 		});
 
 		this.buttons.clear.addEventListener("click", () => {
 			this.clearVertices();
-            //this.dataC.graph.updateLabels();
+            //this.dataC.tree.updateLabels();
 			this.computeAndRefresh();
 		});
 
@@ -570,12 +366,12 @@ labs = ${labs}`);
             this.addVertex(535,415);
             this.addVertex(170,100);
             this.addVertex(555,320);
-            this.addEdge(0,2);
-            this.addEdge(0,4);
-            this.addEdge(1,3);
-            this.addEdge(1,5);
-            this.addEdge(1,2);
-            //this.dataC.graph.updateLabels();
+            this.dataC.tree.addEdge(0,2);
+            this.dataC.tree.addEdge(0,4);
+            this.dataC.tree.addEdge(1,3);
+            this.dataC.tree.addEdge(1,5);
+            this.dataC.tree.addEdge(1,2);
+            //this.dataC.tree.updateLabels();
 
 			this.computeAndRefresh();
 		});
@@ -608,26 +404,26 @@ labs = ${labs}`);
 			
 			// find id of existing nearby point
 			this.locatorId = null;
-			this.dataC.graph.vertices.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) this.locatorId = i; });
+			this.dataC.tree.vertices.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) this.locatorId = i; });
 
             if (this.editState == "vertex") {
                 if (e.detail === 1) // it was a single click
                 {
                     if (this.locatorId === null) // not near an existing point: insert a new point and label
                     {
-                        this.locatorId = this.dataC.graph.nVertices;
+                        this.locatorId = this.dataC.tree.nVertices;
                         this.addVertex(mx, my, this.locatorId);
-                        //this.dataC.graph.updateLabels();
+                        //this.dataC.tree.updateLabels();
                     } else {
-                        this.edgesToDelete = this.dataC.graph.edges.map(() => false); // create array with a value of false for each edge
+                        this.edgesToDelete = this.dataC.tree.edges.map(() => false); // create array with a value of false for each edge
                     }
                     // else, do nothing now - but check the mouse-move-event on the clicked-on point	
                 } 
                 else if (e.detail === 2) // it was a double click
                 {				
                     // if on an existing point, delete the point, else ignore the double click
-                    if (this.dataC.graph.nVertices >= 1) { 
-                        this.deleteVertex(this.locatorId);
+                    if (this.dataC.tree.nVertices >= 1) { 
+                        this.dataC.tree.deleteVertex(this.locatorId);
                         this.locatorId = null;
                     }
                 };
@@ -643,11 +439,11 @@ labs = ${labs}`);
                     if (e.detail === 2) { // it was a double click
                         // check if near edge
                         const m = {x:mx, y:my};
-                        this.dataC.graph.edges.forEach((e,i) => { if (this.dataC.graph.edgeDistanceToPoint(i,m) < 14) this.locatorId = i; });
+                        this.dataC.tree.edges.forEach((e,i) => { if (this.dataC.tree.edgeDistanceToPoint(i,m) < 14) this.locatorId = i; });
 
                         // if on an existing edge, delete the edge, else ignore the double click
                         if (this.locatorId !== null) {
-                            this.deleteEdge(this.locatorId);
+                            this.dataC.tree.deleteEdge(this.locatorId);
                             this.locatorId = null;
                         }
                     }
@@ -668,7 +464,7 @@ labs = ${labs}`);
                     // check if near edge
                     this.nearEdge = null;
                     const m = {x:mx, y:my};
-                    this.dataC.graph.edges.forEach((e,i) => { if (this.dataC.graph.edgeDistanceToPoint(i,m) < 14) this.nearEdge = i; });
+                    this.dataC.tree.edges.forEach((e,i) => { if (this.dataC.tree.edgeDistanceToPoint(i,m) < 14) this.nearEdge = i; });
                     this.refresh();
                 }
                 return; 			// no specific point to move - ignore the dragging
@@ -683,13 +479,13 @@ labs = ${labs}`);
                 // if near point that would create a cycle set a variable to draw red
 
             } else {
-                this.dataC.graph.vertices[this.locatorId].set(mx,my);
+                this.dataC.tree.vertices[this.locatorId].set(mx,my);
 
                 // mark edges for deletion if they cross
-                this.edgesToDelete = this.dataC.graph.edges.map(() => false);
-                for (let i = 0; i < this.dataC.graph.nEdges; i++) {
-                    if (this.dataC.graph.edges[i].includes(this.locatorId)) {
-                        let crossingEdges = this.dataC.graph.getEdgesIntersectingEdge(i);
+                this.edgesToDelete = this.dataC.tree.edges.map(() => false);
+                for (let i = 0; i < this.dataC.tree.nEdges; i++) {
+                    if (this.dataC.tree.edges[i].includes(this.locatorId)) {
+                        let crossingEdges = this.dataC.tree.getEdgesIntersectingEdge(i);
                         if (crossingEdges.length !== 0) {
                             this.edgesToDelete[i] = true;
                             for (let j = 0; j < crossingEdges.length; j++) {
@@ -712,10 +508,10 @@ labs = ${labs}`);
                 const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
 
                 let headId = null;
-                this.dataC.graph.vertices.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) headId = i; });
+                this.dataC.tree.vertices.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) headId = i; });
 
                 if (headId !== null && headId !== this.locatorId) { // user has dragged the edge to a separate point
-                    this.addEdge(this.locatorId, headId); // attempt to create an edge between the points (does not allow duplicates or crossings)
+                    this.dataC.tree.addEdge(this.locatorId, headId); // attempt to create an edge between the points (does not allow duplicates or crossings)
                 }
                 // else, don't create an edge and cancel edge creation anyway
 
@@ -726,9 +522,9 @@ labs = ${labs}`);
                 this.computeAndRefresh();
             } else {
                 if (this.locatorId !== null) {
-                    for (let i = this.dataC.graph.nEdges - 1; i >= 0; i--) { // start from end of list
+                    for (let i = this.dataC.tree.nEdges - 1; i >= 0; i--) { // start from end of list
                         if (this.edgesToDelete[i]) { // this edge is marked for deletion due to crossings
-                            this.deleteEdge(i);
+                            this.dataC.tree.deleteEdge(i);
                         }
                     }
                     this.edgesToDelete = [];
