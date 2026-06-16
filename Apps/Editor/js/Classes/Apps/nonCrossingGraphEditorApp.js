@@ -146,8 +146,8 @@ class NonCrossingGraphEditorApp {
 		}
 
         if (this.show.edges.checked) {
+            let deletedColor = COLORS.setAlpha(NEGATIVECOLOR);
             for (let i = 0; i < this.dataC.graph.nEdges; i++) {
-                let deletedColor = COLORS.setAlpha(NEGATIVECOLOR);
                 let color = (this.edgesToDelete[i]) ? deletedColor : EDGECOLOR;
                 this.dataC.graph.drawEdge(this.graphics, i, color);
             }
