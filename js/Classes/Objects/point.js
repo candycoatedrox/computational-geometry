@@ -30,6 +30,10 @@ class Point {
 		this.addTo(vec.x, vec.y);
 	}
 
+	equals(p) {
+		return this.x === p.x && this.y === p.y;
+	}
+
 	snapToCanvas(canvas) {
 		// add a second version of this for world coordinates -- centers around origin instead of (0,0) in canvas coords
 		const r = canvas.getBoundingClientRect();

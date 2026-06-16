@@ -61,7 +61,7 @@ class GraphE {
         for (let j = 0; j < this.nEdges; j++) {
             let e = this.edges[j];
             if (e.includes(i)) {
-                this.edges.splice(j,1); // delete the edge
+                this.deleteEdge(j); // delete the edge
                 j--; // don't skip the next edge!
             } else {
                 if (e[0] > i) e[0]--;
@@ -98,6 +98,12 @@ class GraphE {
             return true;
         }
     }
+    addNonCrossingEdge(i,j) {
+        let tail = this.vertices[i];
+        let head = this.vertices[j];
+        if (this.intersectsAnyEdge(tail, head)) return false; // new edge would create a crossing
+        return this.addEdge(i,j);
+    }
     deleteEdge(i) {
         this.edges.splice(i,1);
     }
@@ -105,6 +111,20 @@ class GraphE {
         this.edges.length = 0;
     }
 
+    getVerticesFromEdge(i) {
+        const e = this.edges[i];
+        const tailV = this.vertices[e[0]];
+        const headV = this.vertices[e[1]];
+        return {tail:tailV, head:headV};
+    }
+    edgeIncludesPoint(i,p) {
+        let vertices = this.getVerticesFromEdge(i);
+        return vertices.tail.equals(p) || vertices.head.equals(p);
+    }
+    edgeDistanceToPoint(i,p) {
+        let vertices = this.getVerticesFromEdge(i);
+        return Geometry1.pointLineDistance(p, vertices.tail, vertices.head);
+    }
     edgeIsBetween(i,v1,v2) {
         return this.edges[i].includes(v1) && this.edges[i].includes(v2);
     }
@@ -120,9 +140,13 @@ class GraphE {
         let labs = labeled ? this.labels : [];
         this.vertices.draw(ctx, labs, color, size);
     }
+    drawEdge(ctx, i, color = EDGECOLOR, width = EDGETHICKNESS) {
+        let vertices = this.getVerticesFromEdge(i);
+        Draw.edge(ctx, vertices.tail, vertices.head, color, width);
+    }
     drawEdges(ctx, color = EDGECOLOR, width = EDGETHICKNESS) {
         for (let i = 0; i < this.nEdges; i++) {
-            Draw.segment(ctx, this.vertices[this.edges[i][0]], this.vertices[this.edges[i][1]], color, width);
+            this.drawEdge(ctx, i, color, width);
         }
     }
     draw(ctx, edgeColor = EDGECOLOR, vertexColor = POINTCOLOR, edgeWidth = EDGETHICKNESS, vertexSize = POINTSIZE) {
@@ -159,8 +183,8 @@ class GraphE {
     // checks
     intersectsAnyEdge(p,q) {
         for (let i = 0; i < this.nEdges; i++) {
-            let e = this.edges[i];
-            if (!e.includes(p) && !e.includes(q) && Geometry1.lineSegIntersection(e.tail, e.head, p, q) !== null) {
+            let vertices = this.getVerticesFromEdge(i);
+            if (!this.edgeIncludesPoint(i,p) && !this.edgeIncludesPoint(i,q) && Geometry1.lineSegIntersection(vertices.tail, vertices.head, p, q) !== null) {
                 return true;
             }
         }
@@ -168,11 +192,13 @@ class GraphE {
     }
     getEdgesIntersectingEdge(i) {
         let indices = [];
-        let thisEdge = this.edges[i];
+        let vThis = this.getVerticesFromEdge(i);
+
         for (let j = 0; j < this.nEdges; j++) {
             if (j === i) continue;
-            let e = this.edges[j];
-            if (!e.includes(thisEdge.tail) && !e.includes(thisEdge.head) && Geometry1.lineSegIntersection(e.tail, e.head, thisEdge.tail, thisEdge.head) !== null) {
+
+            let vOther = this.getVerticesFromEdge(j);
+            if (!this.edgeIncludesPoint(i,vOther.tail) && !this.edgeIncludesPoint(i,vOther.head) && Geometry1.lineSegIntersection(vOther.tail, vOther.head, vThis.tail, vThis.tail) !== null) {
                 indices.push(j);
             }
         }

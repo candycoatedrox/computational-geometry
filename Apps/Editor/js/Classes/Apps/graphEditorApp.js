@@ -398,7 +398,7 @@ class GraphEditorApp {
                     if (e.detail === 2) { // it was a double click
                         // check if near edge
                         const m = {x:mx, y:my};
-                        this.dataC.graph.edges.forEach((s,i) => { if (s.distanceToPoint(m) < 14) this.locatorId = i; });
+                        this.dataC.graph.edges.forEach((e,i) => { if (this.dataC.graph.edgeDistanceToPoint(i,m) < 14) this.locatorId = i; });
 
                         // if on an existing edge, delete the edge, else ignore the double click
                         if (this.locatorId !== null) {
