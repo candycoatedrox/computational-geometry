@@ -176,9 +176,7 @@ class NonCrossingGraphEditorApp {
 		this.infoField.innerHTML = res;
 
         // edges
-        const edges = this.dataC.graph.edges;
-
-        const eList = Utils.groupsToListString(edges, labs);
+        const eList = this.dataC.graph.edgesToListString;
 
         this.edgeList.innerHTML = eList;
 	}

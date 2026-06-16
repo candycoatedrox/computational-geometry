@@ -31,22 +31,30 @@ class FaceGraph extends GraphE {
     // vertices
     deleteVertex(i) {
         // remove vertex from any connected faces
-        for (let i = 0; i < this.faces.length; i++) {
-            let j = this.faces[i].indexOf(i);
-            if (j !== -1) { // vertex is included in face
-                this.faces[i].splice(j,1); // remove vertex from face
-                if (this.faces[i].length < 3) { // fewer than 3 vertices left, delete face
-                    this.faces.splice(i,1);
-                    i--; // don't skip the next face!
+        facesLoop: for (let j = 0; j < this.nFaces; j++) {
+            let f = this.faces[j];
+            if (f.includes(i)) {
+                let index = this.faces[j].indexOf(i);
+                f.splice(index,1); // remove vertex from face
+                if (f.length < 3) { // fewer than 3 vertices left, delete face
+                    this.deleteFace(j);
+                    j--; // don't skip the next face!
+                    continue facesLoop;
                 } else {
-                    for (let n = 0; n < this.faces.length; n++) {
-                        if (n !== i && this.faceIsBetween(i, this.faces[n])) { // face is now a duplicate
-                            this.faces.splice(i,1);
-                            i--; // don't skip the next face!
-                            break;
+                    console.log("more than 3 vertices left");
+                    for (let n = 0; n < this.nFaces; n++) {
+                        if (n !== j && this.faceIsBetween(j, ...this.faces[n])) { // face is now a duplicate
+                            this.deleteFace(j);
+                            j--; // don't skip the next face!
+                            continue facesLoop;
                         }
                     }
                 }
+            }
+
+            // face is not deleted; update with new indices
+            for (let n = 0; n < f.length; n++) {
+                if (f[n] > i) f[n]--;
             }
         }
 
