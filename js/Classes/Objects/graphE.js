@@ -119,11 +119,7 @@ class GraphE {
         return e;
     }
     getEdgesFromVertex(i) {
-        let e = [];
-        for (let j = 0; j < this.nEdges; j++) {
-            if (this.edges[j].includes(i)) e.push(this.edges[j]);
-        }
-        return e;
+        return this.edges.filter(e => e.includes(i));
     }
     getVerticesConnectedTo(i) {
         let v = [];
@@ -156,10 +152,7 @@ class GraphE {
         return this.edges[i].includes(v1) && this.edges[i].includes(v2);
     }
     verticesAreConnected(i,j) {
-        for (let n = 0; n < this.nEdges; n++) {
-            if (this.edgeIsBetween(n,i,j)) return true;
-        }
-        return false;
+        return this.edges.some((e,n) => this.edgeIsBetween(n,i,j));
     }
 
     // checks
@@ -223,14 +216,24 @@ class GraphE {
 
     // depth-first search
     // at each vertex, current = execute(i, current, ...params) is run
-    // current is returned after being modified by all neighbors
-    depthFirstSearch(execute, startValue, ...params) {
-        return this.depthFirstSearchWithStart(0, execute, startValue, ...params);
+    // if returns = true, current is returned after being modified by all neighbors
+    // else, current is passed to neighbors but not modified
+    depthFirstSearch(returnsValue, execute, startValue, ...params) {
+        return this.depthFirstSearchWithStart(0, returnsValue, execute, startValue, ...params);
+    }
+    depthFirstSearchWithStart(start, returnsValue, execute, startValue, ...params) {
+        const graphA = this.adjacencyGraph();
+        return graphA.depthFirstSearch(start, returnsValue, execute, startValue, ...params);
     }
 
-    depthFirstSearchWithStart(start, execute, startValue, ...params) {
+    // path search
+    // similar to DFS, but runs through every possible path through the group (starting from the given index)
+    pathSearch(returnsValue, execute, startValue, ...params) {
+        return this.depthFirstSearchWithStart(0, returnsValue, execute, startValue, ...params);
+    }
+    pathSearchWithStart(start, returnsValue, execute, startValue, ...params) {
         const graphA = this.adjacencyGraph();
-        return graphA.depthFirstSearch(start, execute, startValue, ...params);
+        return graphA.pathSearch(start, returnsValue, execute, startValue, ...params);
     }
 
 }

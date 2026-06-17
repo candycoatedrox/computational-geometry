@@ -113,7 +113,6 @@ const Utils = {
 
 		return false;
 	},
-
 	withoutDuplicates(arr) {
 		output = [];
 		for (let i = 0; i < arr.length; i++) {
@@ -121,6 +120,14 @@ const Utils = {
 		}
 		return output;
 	},
+
+	arraysHaveCommonElements(arr1,arr2) { return arr1.some(e => arr2.includes(e)); },
+	arrayIsSubsetOf(arr1,arr2) { return arr1.every(e => arr2.includes(e)); },
+	arraysElementsAreSame(arr1,arr2) { return this.arrayIsSubsetOf(arr1,arr2) && this.arrayIsSubsetOf(arr2,arr1); },
+	arraysAreEqual(arr1,arr2) { return arr1.every((e,i) => arr2[i] === e); },
+	
+	arraysUnion(arr1,arr2) { return this.withoutDuplicates(arr1.concat(arr2)); },
+	arraysIntersection(arr1,arr2) { return arr1.filter(e => arr2.includes(e)); },
 
 	// To String: for printing point coordinates
 	pointsToString(fieldId, pts){
@@ -207,6 +214,14 @@ const Utils = {
 			str += labs[group[i]];
 		}
 		str += "]";
+		return str;
+	},
+	groupsToString(groups, labs) {
+		let str = "";
+		for (let i = 0; i < groups.length; i++) {
+			if (i !== 0) str += "\n";
+			str += this.groupToString(groups[i], labs);
+		}
 		return str;
 	},
 	groupToListString(group, labs) {

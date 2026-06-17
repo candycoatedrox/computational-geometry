@@ -11,10 +11,10 @@ class Tree extends GraphE {
         for (let i = 0; i < this.nVertices; i++) {
             if (!visited[i]) {
                 let group = [];
-                this.depthFirstSearchWithStart(i, (i,c, group, visited) => {
+                this.depthFirstSearchWithStart(i, false, (i,v,n,c, group, visited) => {
                     visited[i] = true;
                     group.push(i);
-                }, false, group, visited);
+                }, null, group, visited);
                 g.push(group);
             }
         }
@@ -23,9 +23,9 @@ class Tree extends GraphE {
     }
     groupOfVertex(i) {
         let group = [];
-        this.depthFirstSearchWithStart(i, (i,c,g) => {
+        this.depthFirstSearchWithStart(i, false, (i,v,n,c,g) => {
             g.push(i);
-        }, false, group);
+        }, null, group);
         return group;
     }
     get nGroups() {
@@ -66,7 +66,7 @@ class Tree extends GraphE {
     }
 
     verticesAreInSameGroup(a,b) {
-        return this.depthFirstSearchWithStart(a, (i,c,target) => {
+        return this.depthFirstSearchWithStart(a, true, (i,v,n,c,target) => {
             if (c) { // already found target
                 return true;
             } else {

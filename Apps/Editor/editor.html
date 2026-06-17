@@ -38,6 +38,7 @@
 		<script src="../../js/Classes/Objects/graphA.js"></script>
 		<script src="../../js/Classes/Objects/faceGraph.js"></script>
 		<script src="../../js/Classes/Objects/tree.js"></script>
+		<script src="../../js/Classes/Objects/planarGraph.js"></script>
 		
 		
 		<!-- Code -->
@@ -69,6 +70,7 @@
 	<script src="js/Classes/Apps/faceGraphEditorApp.js"></script>
 	<script src="js/Classes/Apps/nonCrossingGraphEditorApp.js"></script>
 	<script src="js/Classes/Apps/treeEditorApp.js"></script>
+	<script src="js/Classes/Apps/planarGraphEditorApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
 <div>
@@ -117,6 +119,7 @@
 	<button data-tab="faceGraphEditorApp">Face Graph</button>
 	<button data-tab="nonCrossingGraphEditorApp">Non-Crossing Graph</button>
 	<button data-tab="treeEditorApp">Tree</button>
+	<button data-tab="planarGraphEditorApp">Planar Graph</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -461,6 +464,92 @@
 	</div>
 </div>
 
+<!-- >═══════════════════════════════════════════════════
+     TAB 5 — PLANAR GRAPH EDITOR APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container" id="tab-planarGraphEditorApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-planarGraphEditorApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize and edit a planar graph
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-planarGraphEditorApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-planarGraphEditorApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-planarGraphEditorApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-planarGraphEditorApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showVertices-planarGraphEditorApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showEdges-planarGraphEditorApp" checked> Edges</label>
+			<label><input type="checkbox" id="showFaces-planarGraphEditorApp" checked> Faces</label>
+		</div>
+		<div class="panel-section">
+			<h3>FACE COLORS</h3>
+			<label><input type="radio" id="colorMulti-planarGraphEditorApp" name="color-planarGraphEditorApp" checked> Multicolor</label>
+			<label><input type="radio" id="colorSingle-planarGraphEditorApp" name="color-planarGraphEditorApp"> Single Color</label>
+		</div>
+		<div class="panel-section">
+			<h3>MODE</h3>
+			<label><input type="radio" id="modeVertex-planarGraphEditorApp" name="mode-planarGraphEditorApp" value="vertex" checked> Edit Vertices</label>
+			<label><input type="radio" id="modeEdge-planarGraphEditorApp" name="mode-planarGraphEditorApp" value="edge"> Edit Edges</label>
+			<br>
+			<label><input type="radio" id="modeView-planarGraphEditorApp" name="mode-planarGraphEditorApp" value="view"> View</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="planarGraphEditorApp-list" id="planarGraphEditorApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<!-- edges & faces -->
+			<div class="column">
+				<h3>EDGES</h3>
+				<div class="planarGraphEditorApp-list" id="planarGraphEditorApp-edges">
+				</div>
+			</div>
+			<div class="column">
+				<h3>FACES</h3>
+				<div class="planarGraphEditorApp-list" id="planarGraphEditorApp-faces">
+				</div>
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonA-planarGraphEditorApp">Example A</button>
+				<button class="pill" id="buttonB-planarGraphEditorApp">Example B</button>
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonRandomVertex-planarGraphEditorApp">Add Random Vertex</button>
+				<button class="pill" id="buttonRandomEdge-planarGraphEditorApp">Add Random Edge</button>
+				<button class="pill" id="buttonGenerate-planarGraphEditorApp">Generate Random</button>
+				<select id="nVertices-planarGraphEditorApp" name="nVertices-planarGraphEditorApp">
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5" selected>5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="15">15</option>
+					<option value="20">20</option>
+				</select>
+				<label><input type="checkbox" id="genEdges-planarGraphEditorApp" checked> Create Edges</label>
+			</div>
+			<br>
+			<div class="ctrl-row">
+				<button class="pill danger" id="buttonClearEdges-treeEditorApp">Clear Edges</button>
+				<button class="pill danger" id="buttonClear-planarGraphEditorApp">Clear Graph</button>
+				<button class="pill danger" id="buttonReset-planarGraphEditorApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 	
 <!-- .................................................................................................
      JS: INITIALIZE and START EXECUTION of ACTIVE TAB-APP 
@@ -472,6 +561,7 @@
 		var FACEGRAPHEDITORAPP = new FaceGraphEditorApp();
 		var NONCROSSINGGRAPHEDITORAPP = new NonCrossingGraphEditorApp();
 		var TREEEDITORAPP = new TreeEditorApp();
+		var PLANARGRAPHEDITORAPP = new PlanarGraphEditorApp();
 	</script>
 </div>	
 <!-- Draw active app -->	

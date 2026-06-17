@@ -534,7 +534,7 @@ class FaceGraphEditorApp {
 
                             // if on an existing face, delete the face, else ignore the double click
                             if (this.locatorId !== null) {
-                                this.dataC.graph.deleteFace(); // delete the face
+                                this.dataC.graph.deleteFace(this.locatorId); // delete the face
                                 this.locatorId = null;
                             }
                         }

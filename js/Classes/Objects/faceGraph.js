@@ -30,31 +30,43 @@ class FaceGraph extends GraphE {
 
     // vertices
     deleteVertex(i) {
-        // remove vertex from any connected faces
-        facesLoop: for (let j = 0; j < this.nFaces; j++) {
+        // update faces with new indices, mark faces with vertex for splicing/deletion
+        let connectedFaces = [];
+        for (let j = 0; j < this.nFaces; j++) {
             let f = this.faces[j];
-            if (f.includes(i)) {
-                let index = this.faces[j].indexOf(i);
+            for (let n = 0; n < f.length; n++) {
+                if (f[n] === i) {
+                    connectedFaces.push(j);
+                    f[n] = -1;
+                } else if (f[n] > i) {
+                    f[n]--;
+                }
+            }
+        }
+
+        // remove vertex from any connected faces
+        for (let j = 0; j < this.nFaces; j++) {
+            if (connectedFaces.includes(j)) {
+                let f = this.faces[j];
+
+                let index = f.indexOf(-1);
                 f.splice(index,1); // remove vertex from face
+                console.log(`spliced face: ${f}`);
                 if (f.length < 3) { // fewer than 3 vertices left, delete face
                     this.deleteFace(j);
                     j--; // don't skip the next face!
-                    continue facesLoop;
+                    continue;
                 } else {
                     console.log("more than 3 vertices left");
                     for (let n = 0; n < this.nFaces; n++) {
                         if (n !== j && this.faceIsBetween(j, ...this.faces[n])) { // face is now a duplicate
+                            console.log("deleting duplicate face...");
                             this.deleteFace(j);
                             j--; // don't skip the next face!
-                            continue facesLoop;
+                            break;
                         }
                     }
                 }
-            }
-
-            // face is not deleted; update with new indices
-            for (let n = 0; n < f.length; n++) {
-                if (f[n] > i) f[n]--;
             }
         }
 
@@ -92,11 +104,7 @@ class FaceGraph extends GraphE {
         return f;
     }
     getFacesFromVertex(i) {
-        let f = [];
-        for (let j = 0; j < this.nFaces; j++) {
-            if (this.faces[j].includes(i)) f.push(this.faces[j]);
-        }
-        return f;
+        return this.faces.filter(f => f.includes(i));
     }
     getVerticesConnectedByFace(i) {
         let v = [];
@@ -113,12 +121,7 @@ class FaceGraph extends GraphE {
     }
 
     getVerticesFromFace(i) {
-        const f = this.faces[i];
-        let v = [];
-        for (let j = 0; j < f.length; j++) {
-            v.push(this.vertices[f[j]]);
-        }
-        return v;
+        return this.faces[i].map(j => this.vertices[j]);
     }
     getEdgesFromFace(i) {
         const f = this.faces[i];
@@ -131,17 +134,11 @@ class FaceGraph extends GraphE {
     }
     faceIncludesPoint(i,p) {
         let vertices = this.getVerticesFromFace(i);
-        for (let j = 0; j < vertices.length; j++) {
-            if (vertices[j].equals(p)) return true;
-        }
-        return false;
+        return vertices.some(v => v.equals(p));
     }
     faceIncludesEdge(i,e) {
         let edges = this.getEdgesFromFace(i);
-        for (let j = 0; j < edges.length; j++) {
-            if (edges[j].includes(e[0]) && edges[j].includes(e[1])) return true;
-        }
-        return false;
+        return edges.some(edge => edge.includes(e[0]) && edge.includes(e[1]));
     }
     faceContainsPoint(i,p) {
         let vertices = this.getVerticesFromFace(i);
@@ -149,17 +146,47 @@ class FaceGraph extends GraphE {
     }
 
     faceIsBetween(i, ...indices) {
-        let ind = Utils.withoutDuplicates(indices);
-        let f = this.faces[i];
-        if (ind.length !== f.length) return false;
-        for (let i = 0; i < ind.length; i++) {
-            if (!f.includes(ind[i])) return false;
-        }
-        return true;
+        return Utils.arraysElementsAreSame(this.faces[i], indices);
     }
     faceExistsBetween(...indices) {
-        for (let i = 0; i < this.nFaces; i++) {
-            if (this.faceIsBetween(i, ...indices)) return true;
+        return this.faces.some((f,i) => this.faceIsBetween(i, ...indices));
+    }
+    verticesAreConnectedByFace(i,j) {
+        return this.faces.some(f => f.includes(i) && f.includes(j));
+    }
+
+    // check for sub/superfaces
+    faceIsSubfaceOf(i,j) {
+        if (i === j) return false;
+        
+        const fi = this.faces[i], fj = this.faces[j];
+        if (Utils.arraysIntersection(fi,fj).length >= 2) {
+            if (this.faceIsBetween(i, ...fj)) {
+                return true;
+            } else {
+                for (let n = 0; n < fi.length; n++) {
+                    console.log(`face ${fj} geometrically contains point ${fi[n]}: ${Geometry1.pointInPolygon(this.vertices[fi[n]], fj)}`);
+                    if (fj.includes(fi[n])) console.log(`face ${fj} includes point ${fi[n]}!`);
+                    if (!fj.includes(fi[n]) && !Geometry1.pointInPolygon(this.vertices[fi[n]], fj)) {
+                        console.log(`face ${fj} does not contain face ${fi}...`);
+                        return false;
+                    }
+                }
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    faceHasAnySubface(i) {
+        for (let j = 0; j < this.nFaces; j++) {
+            if (i !== j && this.faceIsSubfaceOf(j,i)) return true;
+        }
+        return false;
+    }
+    faceHasAnySuperface(i) {
+        for (let j = 0; j < this.nFaces; j++) {
+            if (i !== j && this.faceIsSubfaceOf(i,j)) return true;
         }
         return false;
     }

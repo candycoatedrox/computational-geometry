@@ -58,28 +58,68 @@ class GraphA {
     }
 
     // depth-first search
-    depthFirstSearch(start, execute, startValue, ...params) {
+    depthFirstSearch(start, returnsValue, execute, startValue, ...params) {
         let visited = this.vertices.map(() => false); // create array with a value of false for each vertex
-        return this.depthFirstSearchRec(start, visited, execute, startValue, ...params);
+        return this.depthFirstSearchRec(start, visited, returnsValue, execute, startValue, ...params);
     }
-
-    depthFirstSearchRec(i, visited, execute, currentValue, ...params) {
+    depthFirstSearchRec(i, visited, returnsValue, execute, currentValue, ...params) {
         if (visited[i]) {
             return currentValue;
         } else {
             visited[i] = true;
-
-            let current = execute(i, currentValue, ...params);
             let neighbors = this.getVerticesConnectedTo(i);
+            let current = execute(i, visited, neighbors, currentValue, ...params);
             for (let j = 0; j < neighbors.length; j++) {
                 if (!visited[neighbors[j]]) {
-                    current = this.depthFirstSearchRec(neighbors[j], visited, execute, current, ...params);
+                    if (returnsValue) {
+                        current = this.depthFirstSearchRec(neighbors[j], visited, returnsValue, execute, current, ...params);
+                    } else {
+                        this.depthFirstSearchRec(neighbors[j], visited, returnsValue, execute, current, ...params);
+                    }
                 }
             }
-            return current;
+
+            if (returnsValue) {
+                return current;
+            } else {
+                return;
+            }
         }
 
-        // run execute(vertex, i, current, ...params)
+        // runs execute(i, visited, neighbors, current, ...params)
+    }
+
+    // path search
+    // similar to DFS, but runs through every possible path through the group (starting from the given index)
+    pathSearch(start, returnsValue, execute, startValue, ...params) {
+        let path = [];
+        return this.pathSearchRec(start, path, returnsValue, execute, startValue, ...params);
+    }
+    pathSearchRec(i, prevPath, returnsValue, execute, currentValue, ...params) {
+        if (prevPath.includes(i)) {
+            return currentValue;
+        } else {
+            const path = prevPath.concat(i);
+            let neighbors = this.getVerticesConnectedTo(i);
+            let current = execute(i, path, neighbors, currentValue, ...params);
+            for (let j = 0; j < neighbors.length; j++) {
+                if (!path.includes(neighbors[j])) {
+                    if (returnsValue) {
+                        current = this.pathSearchRec(neighbors[j], path, returnsValue, execute, current, ...params);
+                    } else {
+                        this.pathSearchRec(neighbors[j], path, returnsValue, execute, current, ...params);
+                    }
+                }
+            }
+
+            if (returnsValue) {
+                return current;
+            } else {
+                return;
+            }
+        }
+
+        // runs execute(i, path, neighbors, current, ...params)
     }
 
 }
