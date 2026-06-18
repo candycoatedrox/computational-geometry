@@ -35,7 +35,7 @@ const Area2D = {
 			  area = 0;
 		  }
 		  return area;
-	  }	
+	  }
 }
 
 const Orientation = {	
@@ -308,6 +308,10 @@ const Geometry1 = {
     const qx = a.x + t * abx, qy = a.y + t * aby;
     return Math.hypot(p.x - qx, p.y - qy);
   },
+
+  polygonArea(poly) {
+    return Math.abs(this.signedArea(poly));
+  },
   
 	polygonEdges(poly) {
 		return poly.map((A, i) => ({
@@ -317,13 +321,12 @@ const Geometry1 = {
 		}));
 	},
 
+  polygonPerimeter(poly, edges) {
+    return Utils.sumArray(this.polygonSideLengths(poly, edges));
+  },
+
   polygonSideLengths(poly, edges) {
-    let s = [];
-    for (let i = 0; i < edges.length; i++) {
-      s.push(this.distance(poly[edges[i][0]], poly[edges[i][1]]));
-    }
-    
-    return s;
+    return edges.map(e => this.distance(poly[e[0]], poly[e[1]]));
   },
 
 	projectionT(p, a, b) {

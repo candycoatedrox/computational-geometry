@@ -121,13 +121,24 @@ const Utils = {
 		return output;
 	},
 
+	// Array comparisons & operations
 	arraysHaveCommonElements(arr1,arr2) { return arr1.some(e => arr2.includes(e)); },
 	arrayIsSubsetOf(arr1,arr2) { return arr1.every(e => arr2.includes(e)); },
 	arraysElementsAreSame(arr1,arr2) { return this.arrayIsSubsetOf(arr1,arr2) && this.arrayIsSubsetOf(arr2,arr1); },
-	arraysAreEqual(arr1,arr2) { return arr1.every((e,i) => arr2[i] === e); },
+	arraysAreEqual(arr1,arr2) { return arr1.every((e,i) => arr2[i] == e); },
 	
 	arraysUnion(arr1,arr2) { return this.withoutDuplicates(arr1.concat(arr2)); },
 	arraysIntersection(arr1,arr2) { return arr1.filter(e => arr2.includes(e)); },
+
+	includesArray(arr1,arr2) { return arr1.some(e => this.arraysAreEqual(e,arr2)); },
+	indexOfArray(arr1,arr2) {
+		for (let i = 0; i < arr1.length; i++) {
+			if (this.arraysAreEqual(arr1[i],arr2)) return i;
+		}
+		return -1;
+	},
+
+	sumArray(arr) { return arr.reduce((a,c) => a + c, 0); },
 
 	// To String: for printing point coordinates
 	pointsToString(fieldId, pts){

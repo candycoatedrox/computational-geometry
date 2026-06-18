@@ -33,6 +33,9 @@ class Point {
 	equals(p) {
 		return this.x === p.x && this.y === p.y;
 	}
+	static equals(p1, p2) {
+		return p1.x === p2.x && p1.y === p2.y;
+	}
 
 	snapToCanvas(canvas) {
 		// add a second version of this for world coordinates -- centers around origin instead of (0,0) in canvas coords
@@ -79,6 +82,10 @@ class Point {
 		const dx = a.x - this.x;
 		const dy = a.y - this.y;
 		return {x:dx, y:dy};
+	}
+
+	toString() {
+		return `(${this.x}, ${this.y})`;
 	}
   
 }

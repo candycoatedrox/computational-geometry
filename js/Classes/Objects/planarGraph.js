@@ -29,19 +29,19 @@ class PlanarGraph extends FaceGraph {
     updateFaces() {
         // find all cycles using path search
         let cycles = this.getAllCycles();
-        console.log(cycles);
+        //console.log(cycles);
 
         // clear and add faces
         this.clearFaces();
         for (let i = 0; i < cycles.length; i++) { // TEMP!! testing cycle detection
             this.addFace(...cycles[i]);
         }
-        console.log(this.faces);
+        //console.log(this.faces);
 
         // cut out duplicates and superfaces
         for (let i = 0; i < this.nFaces; i++) {
             if (this.faceHasAnySubface(i)) {
-                console.log(`deleting face ${i} (${this.faces[i]})`);
+                //console.log(`deleting face ${i} (${this.faces[i]})`);
                 this.deleteFace(i);
                 i--; // don't skip the next face!
             }
@@ -63,12 +63,7 @@ class PlanarGraph extends FaceGraph {
                         let n = neighbors[j];
                         if (path.includes(n)) {
                             let c = path.slice(path.indexOf(n));
-                            if (c.length >= 3) {
-                                console.log(`face found from indices ${i} to ${n}!
-path = ${path}
-cycle = ${c}`);
-                                cyclesInGroup.push(c);
-                            }
+                            if (c.length >= 3) cyclesInGroup.push(c);
                         }
                     }
                 }, null, cyclesInGroup, visited);

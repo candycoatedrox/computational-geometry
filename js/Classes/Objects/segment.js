@@ -20,10 +20,25 @@ class Segment {
   	  	Draw.arrow(ctx, this.tail, this.head, color, width);
 	}
 
+	equals(s) {
+		return this.isBetween(other.tail, other.head);
+	}
+	static equals(s1,s2) {
+		return s1.includes(s2[0]) && s1.includes(s2[1]);
+	}
+	static equalsFromPoints(p,q,a,b) {
+		if (Point.equals(p,a)) {
+			return Point.equals(q,b);
+		} else if (Point.equals(p,b)) {
+			return Point.equals(q,a);
+		} else {
+			return false;
+		}
+	}
+
 	includes(p) {
 		return (this.tail == p) || (this.head == p);
 	}
-
 	isBetween(p, q) {
 		return this.includes(p) && this.includes(q);
 	}

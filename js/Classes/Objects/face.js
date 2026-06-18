@@ -12,16 +12,37 @@ class Face extends Points {
         }
     }
 
+    // getters
+    get edges() {
+        return this.map((p,i) => [i, (i+1) % this.length]);
+    }
+    get edgePoints() {
+        return this.map((p,i) => [p, p[(i+1) % this.length]]);
+    }
+
+    // area
+    area() {
+        return Geometry1.polygonArea(this);
+    }
+    signedArea() {
+        return Geometry1.signedArea(this);
+    }
+
+    // comparisons
+    includesEdge(a,b) {
+        return this.edgePoints.some(e => e.isBetween(a,b));
+    }
 	isBetween(...pts) {
 		if (pts.length !== this.length) return false;
-        for (let i = 0; i < pts.length; i++) {
-            if (!this.includes(pts[i])) return false;
-        }
-        return true;
+        return Utils.arraysElementsAreSame(this, pts);
 	}
 
+    // contains
     containsPoint(P) {
         return Geometry1.pointInPolygon(P, this);
+    }
+    containsSegment(A, B) {
+        return Geometry1.isSegmentInsidePolygon(this, A, B);
     }
 
     printable() {

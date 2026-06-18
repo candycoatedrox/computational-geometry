@@ -51,16 +51,16 @@ class FaceGraph extends GraphE {
 
                 let index = f.indexOf(-1);
                 f.splice(index,1); // remove vertex from face
-                console.log(`spliced face: ${f}`);
+                //console.log(`spliced face: ${f}`);
                 if (f.length < 3) { // fewer than 3 vertices left, delete face
                     this.deleteFace(j);
                     j--; // don't skip the next face!
                     continue;
                 } else {
-                    console.log("more than 3 vertices left");
+                    //console.log("more than 3 vertices left");
                     for (let n = 0; n < this.nFaces; n++) {
                         if (n !== j && this.faceIsBetween(j, ...this.faces[n])) { // face is now a duplicate
-                            console.log("deleting duplicate face...");
+                            //console.log("deleting duplicate face...");
                             this.deleteFace(j);
                             j--; // don't skip the next face!
                             break;
@@ -106,7 +106,7 @@ class FaceGraph extends GraphE {
     getFacesFromVertex(i) {
         return this.faces.filter(f => f.includes(i));
     }
-    getVerticesConnectedByFace(i) {
+    getVerticesConnectedByFaceTo(i) {
         let v = [];
         for (let j = 0; j < this.nFaces; j++) {
             let f = this.faces[j];
@@ -125,12 +125,7 @@ class FaceGraph extends GraphE {
     }
     getEdgesFromFace(i) {
         const f = this.faces[i];
-        let e = [];
-        for (let a = 0; a < f.length; a++) {
-            let b = (a !== f.length - 1) ? a+1 : 0;
-            e.push([f[a],f[b]]);
-        }
-        return e;
+        return f.map((p,i) => [p, f[(i+1) % f.length]]);
     }
     faceIncludesPoint(i,p) {
         let vertices = this.getVerticesFromFace(i);
@@ -145,6 +140,9 @@ class FaceGraph extends GraphE {
         return Geometry1.pointInPolygon(p, vertices);
     }
 
+    faceIncludesAll(i, ...indices) {
+        return Utils.arrayIsSubsetOf(indices, this.faces[i]);
+    }
     faceIsBetween(i, ...indices) {
         return Utils.arraysElementsAreSame(this.faces[i], indices);
     }
@@ -155,23 +153,40 @@ class FaceGraph extends GraphE {
         return this.faces.some(f => f.includes(i) && f.includes(j));
     }
 
+    sharedEdgesBetweenFaces(i, j) {
+        return this.getEdgesFromFace(i).filter(e => this.faceIncludesEdge(j,e));
+    }
+    edgesNotSharedWithOtherFace(i, j) {
+        return this.getEdgesFromFace(i).filter(e => !this.faceIncludesEdge(j,e));
+    }
+
     // check for sub/superfaces
+    // note: this assumes face J is convex, and only checks if face I is FULLY INSIDE or FULLY OUTSIDE face J.
+    // trying to get a proper isPolygonInsidePolygon function working while accounting for shared points was becoming a NIGHTMARE, and I don't need it to understand convex polygons to get planar graphs working...!
     faceIsSubfaceOf(i,j) {
         if (i === j) return false;
         
-        const fi = this.faces[i], fj = this.faces[j];
+        const fi = this.faces[i], fj = this.faces[j], jVertices = this.getVerticesFromFace(j);
         if (Utils.arraysIntersection(fi,fj).length >= 2) {
             if (this.faceIsBetween(i, ...fj)) {
                 return true;
             } else {
                 for (let n = 0; n < fi.length; n++) {
-                    console.log(`face ${fj} geometrically contains point ${fi[n]}: ${Geometry1.pointInPolygon(this.vertices[fi[n]], fj)}`);
-                    if (fj.includes(fi[n])) console.log(`face ${fj} includes point ${fi[n]}!`);
-                    if (!fj.includes(fi[n]) && !Geometry1.pointInPolygon(this.vertices[fi[n]], fj)) {
-                        console.log(`face ${fj} does not contain face ${fi}...`);
+                    //console.log(`face ${fj} geometrically contains point ${fi[n]}: ${Geometry1.pointInPolygon(this.vertices[fi[n]], jVertices)}`);
+                    //if (fj.includes(fi[n])) console.log(`face ${fj} includes point ${fi[n]}!`);
+                    if (!fj.includes(fi[n]) && !Geometry1.pointInPolygon(this.vertices[fi[n]], jVertices)) {
+                        //console.log(`face ${fj} does not contain face ${fi}...`);
                         return false;
                     }
                 }
+
+                let nonShared = this.edgesNotSharedWithOtherFace(i,j);
+                //console.log(nonShared);
+                for (let n = 0; n < nonShared.length; n++) {
+                    let a = this.vertices[nonShared[n][0]], b = this.vertices[nonShared[n][1]];
+                    if (!Geometry1.pointInPolygon(Geometry1.midpoint(a,b), jVertices)) return false;
+                }
+
                 return true;
             }
         } else {
