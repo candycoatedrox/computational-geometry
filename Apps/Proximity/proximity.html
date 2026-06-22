@@ -12,6 +12,15 @@
      JS LIBRARIES: FUNCTION DEFS
 ...................................................................................................... -->
 <!-- Js GLOBAL/COMMON functions: Classes, Code, common Gui                             GLOBAL INCLUDES -->
+		
+		<!-- ============================================================   EXTERNAL LIBS ============ -->
+		
+		<script src="../../Js/External/delaunator.js"></script>
+		<script src="../../Js/External/path.js"></script>
+		<script src="../../Js/External/delaunayPolygon.js"></script>
+		<script src="../../Js/External/delaunay.js"></script>
+		<script src="../../Js/External/voronoi.js"></script>
+
 		<!-- Classes: Objects -->
 		
 		<script src="../../js/Classes/Objects/point.js"></script>
@@ -33,12 +42,19 @@
 		<script src="../../js/Classes/Objects/triangle.js"></script>
 		<script src="../../js/Classes/Objects/face.js"></script>
 		<script src="../../js/Classes/Objects/polygon.js"></script>
+
+		<script src="../../js/Classes/Objects/graphE.js"></script>
+		<script src="../../js/Classes/Objects/graphA.js"></script>
+		<script src="../../js/Classes/Objects/faceGraph.js"></script>
+		<script src="../../js/Classes/Objects/tree.js"></script>
+		<script src="../../js/Classes/Objects/planarGraph.js"></script>
 		
 		
 		<!-- Code -->
 		<script src="../../js/Code/Auxiliary/utils.js"></script>
 		<script src="../../js/Code/Geometry/geometry.js"></script>
 		<script src="../../js/Code/Math/math.js"></script>
+		<script src="../../js/Code/Combinatorics/combinatorics.js"></script>
 		
 		<!-- Graphics -->
 		<script src="../../js/Graphics/colors.js"></script>
@@ -59,8 +75,7 @@
 	<script src="js/Gui/redrawActiveApp.js"></script>
 			
 	<!-- Mini-apps -->
-	<script src="js/Classes/Apps/selfIntersectionApp.js"></script>
-	<script src="js/Classes/Apps/pointInPolygonApp.js"></script>
+	<script src="js/Classes/Apps/delaunayApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
 <div>
@@ -93,9 +108,9 @@
 		<span class="badge"><a href=../RefFrame/refFrame.html>Ref Frame</a></span>
 		<span class="badge"><a href=../Basics/basics.html>Basics</a></span>
 		<span class="badge"><a href=../Triangle/triangle.html>Triangle</a></span>
-		<span class="badge"><a href=polygon.html>POLYGON</a></span>
+		<span class="badge"><a href=../Polygon/polygon.html>Polygon</a></span>
 		<span class="badge"><a href=../Editor/editor.html>Editor</a></span>
-		<span class="badge"><a href=../Proximity/proximity.html>Proximity</a></span>
+		<span class="badge"><a href=proximity.html>PROXIMITY</a></span>
     </div>
   </div>
   <button class="theme-toggle" onclick="toggleTheme()">
@@ -106,8 +121,7 @@
 
 <!-- Navigation app - tabs  -->
 <nav> 
-	<button class="active" data-tab="selfIntersectionApp">Self Intersection</button>
-	<button data-tab="pointInPolygonApp">Point in Polygon</button>
+	<button class="active" data-tab="delaunayApp">Delaunay</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -135,42 +149,51 @@
 
 
 <!-- >═══════════════════════════════════════════════════
-     TAB 1 — SELF INTERSECTION APP
+     TAB 1 — PLANAR GRAPH EDITOR APP
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container active" id="tab-selfIntersectionApp">
+<div class="demo-container active" id="tab-delaunayApp">
 	<div class="canvas-wrap">
-		<canvas id="canvas-selfIntersectionApp" width="300" height="300"></canvas>
+		<canvas id="canvas-delaunayApp" width="300" height="300"></canvas>
 		<div class="canvas-hint">
-			Visualize a polygon and its self-intersections
+			Visualize the Delaunay triangulation of a graph
 		</div>
 	</div>
 	<div class="side-panel">
 		<div class="panel-section">
 			<h3>SHOW</h3>
-			<label><input type="checkbox" id="showBox-selfIntersectionApp" checked> Box</label>
-			<label><input type="checkbox" id="showOrigin-selfIntersectionApp" checked> Origin</label>
-			<label><input type="checkbox" id="showAxes-selfIntersectionApp" checked> Axes</label>
-			<label><input type="checkbox" id="showGrid-selfIntersectionApp" checked> Grid</label>
+			<label><input type="checkbox" id="showBox-delaunayApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-delaunayApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-delaunayApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-delaunayApp" checked> Grid</label>
 			<br>
-			<label><input type="checkbox" id="showVertices-selfIntersectionApp" checked> Vertices</label>
-			<label><input type="checkbox" id="showSegments-selfIntersectionApp" checked> Line Segments</label>
-			<label><input type="checkbox" id="showFill-selfIntersectionApp" checked> Fill</label>
-			<br>
-			<label><input type="checkbox" id="showIntersections-selfIntersectionApp" checked> Intersections</label>
+			<label><input type="checkbox" id="showVertices-delaunayApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showEdges-delaunayApp" checked> Edges</label>
 		</div>
 		<div class="panel-section">
 			<h3>Coordinates</h3>
-			<div class="selfIntersectionApp-list" id="selfIntersectionApp-points">
+			<div class="delaunayApp-list" id="delaunayApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<!-- edges & faces -->
+			<div class="column">
+				<h3>EDGES</h3>
+				<div class="delaunayApp-list" id="delaunayApp-edges">
+				</div>
 			</div>
 		</div>
 		<div class="panel-section">
 			<h3>EXAMPLES</h3>
+			<div class="error-display" id="delaunayApp-errors">
+			</div>
 			<div class="ctrl-row">
-				<button class="pill" id="buttonIntersect-selfIntersectionApp">Self-Intersecting</button>
-				<button class="pill" id="buttonSeparate-selfIntersectionApp">Non-Intersecting</button>
-				<button class="pill" id="buttonAddRandom-selfIntersectionApp">Add Random Point</button>
-				<button class="pill" id="buttonRandom-selfIntersectionApp">Generate Random</button>
-				<select id="nVertices-selfIntersectionApp" name="nVertices-selfIntersectionApp">
+				<button class="pill" id="buttonA-delaunayApp">Example A</button>
+				<button class="pill" id="buttonB-delaunayApp">Example B</button>
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonRandomVertex-delaunayApp">Add Random Vertex</button>
+				<button class="pill" id="buttonGenerate-delaunayApp">Generate Random</button>
+				<select id="nVertices-delaunayApp" name="nVertices-delaunayApp">
 					<option value="3">3</option>
 					<option value="4">4</option>
 					<option value="5" selected>5</option>
@@ -182,61 +205,11 @@
 					<option value="15">15</option>
 					<option value="20">20</option>
 				</select>
-				<button class="pill danger" id="buttonClear-selfIntersectionApp">Clear Vertices</button>
-				<button class="pill danger" id="buttonReset-selfIntersectionApp">Reset</button>
 			</div>
-		</div>
-	</div>
-</div>
-
-<!-- >═══════════════════════════════════════════════════
-     TAB 2 — POINT IN POLYGON APP
-═══════════════════════════════════════════════════ -->
-<div class="demo-container" id="tab-pointInPolygonApp">
-	<div class="canvas-wrap">
-		<canvas id="canvas-pointInPolygonApp" width="300" height="300"></canvas>
-		<div class="canvas-hint">
-			Visualize a point within a polygon
-		</div>
-	</div>
-	<div class="side-panel">
-		<div class="panel-section">
-			<h3>SHOW</h3>
-			<label><input type="checkbox" id="showBox-pointInPolygonApp" checked> Box</label>
-			<label><input type="checkbox" id="showOrigin-pointInPolygonApp" checked> Origin</label>
-			<label><input type="checkbox" id="showAxes-pointInPolygonApp" checked> Axes</label>
-			<label><input type="checkbox" id="showGrid-pointInPolygonApp" checked> Grid</label>
 			<br>
-			<label><input type="checkbox" id="showVertices-pointInPolygonApp" checked> Vertices</label>
-			<label><input type="checkbox" id="showSegments-pointInPolygonApp" checked> Line Segments</label>
-			<label><input type="checkbox" id="showFill-pointInPolygonApp" checked> Fill</label>
-			<br>
-			<label><input type="checkbox" id="showPoint-pointInPolygonApp" checked> Point</label>
-		</div>
-		<div class="panel-section">
-			<h3>Coordinates</h3>
-			<div class="pointInPolygonApp-list" id="pointInPolygonApp-points">
-			</div>
-		</div>
-		<div class="panel-section">
-			<h3>EXAMPLES</h3>
 			<div class="ctrl-row">
-				<button class="pill" id="buttonInside-pointInPolygonApp">Inside</button>
-				<button class="pill" id="buttonOutside-pointInPolygonApp">Outside</button>
-				<button class="pill" id="buttonRandom-pointInPolygonApp">Generate Random Polygon</button>
-				<select id="nVertices-pointInPolygonApp" name="nVertices-pointInPolygonApp">
-					<option value="3">3</option>
-					<option value="4">4</option>
-					<option value="5" selected>5</option>
-					<option value="6">6</option>
-					<option value="7">7</option>
-					<option value="8">8</option>
-					<option value="9">9</option>
-					<option value="10">10</option>
-					<option value="15">15</option>
-					<option value="20">20</option>
-				</select>
-				<button class="pill danger" id="buttonReset-pointInPolygonApp">Reset</button>
+				<button class="pill danger" id="buttonClear-delaunayApp">Clear Graph</button>
+				<button class="pill danger" id="buttonReset-delaunayApp">Reset</button>
 			</div>
 		</div>
 	</div>
@@ -249,8 +222,7 @@
 <!-- Initialize global variables for each mini-app object -->	
 <div>
 	<script>
-		var SELFINTERSECTIONAPP = new SelfIntersectionApp();
-		var POINTINPOLYGONAPP = new PointInPolygonApp();
+		var DELAUNAYAPP = new DelaunayApp();
 	</script>
 </div>	
 <!-- Draw active app -->	

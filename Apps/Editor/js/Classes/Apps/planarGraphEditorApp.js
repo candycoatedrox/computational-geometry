@@ -255,6 +255,7 @@ class PlanarGraphEditorApp {
 		this.show.grid.addEventListener("change", () => this.refresh());
 		this.show.vertices.addEventListener("change", () => this.refresh());
 		this.show.edges.addEventListener("change", () => this.refresh());
+		this.show.faces.addEventListener("change", () => this.refresh());
 	}
 	// buttons
 	setupButtonEvents() {
