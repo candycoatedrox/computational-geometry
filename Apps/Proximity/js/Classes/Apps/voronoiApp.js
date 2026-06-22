@@ -121,7 +121,6 @@ class VoronoiApp {
         }
 		
 		if (this.show.vertices.checked) {
-            // maybe draw the highlighted point in a diff color while creating edge??
 			this.dataC.graph.drawVertices(this.graphics);
 		}
 		

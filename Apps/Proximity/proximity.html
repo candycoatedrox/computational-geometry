@@ -79,6 +79,7 @@
 	<!-- Mini-apps -->
 	<script src="js/Classes/Apps/delaunayApp.js"></script>
 	<script src="js/Classes/Apps/voronoiApp.js"></script>
+	<script src="js/Classes/Apps/delaunayVoronoiSharedApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
 <div>
@@ -126,6 +127,7 @@
 <nav> 
 	<button class="active" data-tab="delaunayApp">Delaunay</button>
 	<button data-tab="voronoiApp">Voronoi</button>
+	<button data-tab="delaunayVoronoiSharedApp">Delaunay-Voronoi (Single Canvas)</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -276,6 +278,75 @@
 	</div>
 </div>
 
+<!-- >═══════════════════════════════════════════════════
+     TAB 3 — DELAUNAY-VORONOI SHARED CANVAS APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container" id="tab-delaunayVoronoiSharedApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-delaunayVoronoiSharedApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize the Delaunay triangulation and Voronoi diagram of a graph, together
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-delaunayVoronoiSharedApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-delaunayVoronoiSharedApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-delaunayVoronoiSharedApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-delaunayVoronoiSharedApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showVertices-delaunayVoronoiSharedApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showDelaunay-delaunayVoronoiSharedApp" checked> Delaunay</label>
+			<br>
+			<label><input type="checkbox" id="showVoronoi-delaunayVoronoiSharedApp" checked> Voronoi</label>
+			<label><input type="checkbox" id="showFaces-delaunayVoronoiSharedApp" checked> Voronoi Faces</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="delaunayVoronoiSharedApp-list" id="delaunayVoronoiSharedApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<!-- edges & faces -->
+			<div class="column">
+				<h3>EDGES</h3>
+				<div class="delaunayVoronoiSharedApp-list" id="delaunayVoronoiSharedApp-edges">
+				</div>
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="error-display" id="delaunayVoronoiSharedApp-errors">
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonA-delaunayVoronoiSharedApp">Example A</button>
+				<button class="pill" id="buttonB-delaunayVoronoiSharedApp">Example B</button>
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonRandomVertex-delaunayVoronoiSharedApp">Add Random Vertex</button>
+				<button class="pill" id="buttonGenerate-delaunayVoronoiSharedApp">Generate Random</button>
+				<select id="nVertices-delaunayVoronoiSharedApp" name="nVertices-delaunayVoronoiSharedApp">
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5" selected>5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="15">15</option>
+					<option value="20">20</option>
+				</select>
+			</div>
+			<br>
+			<div class="ctrl-row">
+				<button class="pill danger" id="buttonReset-delaunayVoronoiSharedApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 	
 <!-- .................................................................................................
      JS: INITIALIZE and START EXECUTION of ACTIVE TAB-APP 
@@ -285,6 +356,7 @@
 	<script>
 		var DELAUNAYAPP = new DelaunayApp();
 		var VORONOIAPP = new VoronoiApp();
+		var DELAUNAYVORONOISHAREDAPP = new DelaunayVoronoiSharedApp();
 	</script>
 </div>	
 <!-- Draw active app -->	

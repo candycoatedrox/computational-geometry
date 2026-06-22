@@ -5,5 +5,6 @@ function redrawActiveApp(){
 	setTimeout(() => {
 		if (activeTab === 'delaunayApp') DELAUNAYAPP.computeAndRefresh();
 		if (activeTab === 'voronoiApp') VORONOIAPP.computeAndRefresh();
+		if (activeTab === 'delaunayVoronoiSharedApp') DELAUNAYVORONOISHAREDAPP.computeAndRefresh();
   }, 100);
 }

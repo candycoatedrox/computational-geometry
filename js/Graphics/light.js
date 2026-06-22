@@ -28,6 +28,9 @@ const LIGHT = {
     neutralColor: COLORS.black,
     neutralColor2: COLORS.darkGray,
 
+    themeFaintGray: COLORS.lightGray,
+    themeBoldGray: COLORS.darkGray,
+
     themeAmber: COLORS.amber,
     themePurple: COLORS.purple,
     themeTeal: COLORS.teal,

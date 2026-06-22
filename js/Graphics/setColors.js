@@ -34,6 +34,9 @@ function setColors() {
 	NEGATIVECOLOR2 = colorSet.negativeColor2;
 	NEUTRALCOLOR = colorSet.neutralColor;
 	NEUTRALCOLOR2 = colorSet.neutralColor2;
+
+	THEMEFAINTGRAY = colorSet.themeFaintGray;
+	THEMEBOLDGRAY = colorSet.themeBoldGray;
 	
 	THEMEAMBER = colorSet.themeAmber;
 	THEMEPURPLE = colorSet.themePurple;

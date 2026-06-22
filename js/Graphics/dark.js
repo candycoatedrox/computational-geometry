@@ -28,6 +28,9 @@ const DARK = {
     neutralColor: COLORS.white,
     neutralColor2: COLORS.lightGray,
 
+    themeFaintGray: COLORS.darkGray,
+    themeBoldGray: COLORS.lightGray,
+
     themeAmber: COLORS.amber,
     themePurple: COLORS.purple,
     themeTeal: COLORS.teal,

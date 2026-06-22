@@ -63,6 +63,9 @@ var NEUTRALCOLOR;
 var NEUTRALCOLOR2;
 
 //----------------------------------------------------------------       GENERIC: general colors
+var THEMEFAINTGRAY;
+var THEMEBOLDGRAY;
+
 var THEMEAMBER;
 var THEMEPURPLE;
 var THEMETEAL;

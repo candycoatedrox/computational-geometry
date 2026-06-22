@@ -1,33 +1,36 @@
-class DelaunayApp {
+class DelaunayVoronoiSharedApp {
 	// constants: global names of i/o fields 
-	canvas = document.getElementById('canvas-delaunayApp');
-	infoField = document.getElementById('delaunayApp-points');
-    errorDisplay = document.getElementById('delaunayApp-errors');
-    edgeList = document.getElementById('delaunayApp-edges');
+	canvas = document.getElementById('canvas-delaunayVoronoiSharedApp');
+	infoField = document.getElementById('delaunayVoronoiSharedApp-points');
+    errorDisplay = document.getElementById('delaunayVoronoiSharedApp-errors');
+    edgeList = document.getElementById('delaunayVoronoiSharedApp-edges');
 
     // gui
 	show = {
-		box: document.getElementById("showBox-delaunayApp"),
-		origin: document.getElementById("showOrigin-delaunayApp"),
-		axes: document.getElementById("showAxes-delaunayApp"),
-		grid: document.getElementById("showGrid-delaunayApp"),
+		box: document.getElementById("showBox-delaunayVoronoiSharedApp"),
+		origin: document.getElementById("showOrigin-delaunayVoronoiSharedApp"),
+		axes: document.getElementById("showAxes-delaunayVoronoiSharedApp"),
+		grid: document.getElementById("showGrid-delaunayVoronoiSharedApp"),
 
-		vertices: document.getElementById("showVertices-delaunayApp"),
-		edges: document.getElementById("showEdges-delaunayApp")
+		vertices: document.getElementById("showVertices-delaunayVoronoiSharedApp"),
+		delaunay: document.getElementById("showDelaunay-delaunayVoronoiSharedApp"),
+
+		voronoi: document.getElementById("showVoronoi-delaunayVoronoiSharedApp"),
+		faces: document.getElementById("showFaces-delaunayVoronoiSharedApp")
 	};
 	
 	buttons = {
-		a: document.getElementById("buttonA-delaunayApp"),
-		b: document.getElementById("buttonB-delaunayApp"),
+		a: document.getElementById("buttonA-delaunayVoronoiSharedApp"),
+		b: document.getElementById("buttonB-delaunayVoronoiSharedApp"),
 
-		randomVertex: document.getElementById("buttonRandomVertex-delaunayApp"),
-		generate: document.getElementById("buttonGenerate-delaunayApp"),
+		randomVertex: document.getElementById("buttonRandomVertex-delaunayVoronoiSharedApp"),
+		generate: document.getElementById("buttonGenerate-delaunayVoronoiSharedApp"),
 
-		reset: document.getElementById("buttonReset-delaunayApp")
+		reset: document.getElementById("buttonReset-delaunayVoronoiSharedApp")
 	};
 
     generateParams = {
-        vertices: document.getElementById("nVertices-delaunayApp")
+        vertices: document.getElementById("nVertices-delaunayVoronoiSharedApp")
     };
 	
 	// data
@@ -109,10 +112,6 @@ class DelaunayApp {
 			this.dataC.range.drawGrid(this.graphics, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		}
 		
-		if (this.show.box.checked) {
-			this.dataC.box.draw(this.graphics);
-		}
-		
 		if (this.show.axes.checked) {
 			this.dataC.axes.draw(this.graphics,this.dataC.origin);
 		}
@@ -121,12 +120,25 @@ class DelaunayApp {
 			this.dataC.origin.draw(this.graphics);
 		}
 
-        if (this.show.edges.checked) {
-            this.dataC.graph.drawEdges(this.graphics);
+		// IF FACES CHECKED:
+		// draw multicolor faces for each cell AND draw the respective point in the corresponding color!!
+		// else draw points in white/default
+		// DRAW DELAUNAY ON TOP OF FACES
+
+        if (this.show.delaunay.checked) {
+            this.dataC.graph.drawEdges(this.graphics, THEMETEAL, EDGETHICKNESS-2);
+        }
+
+        if (this.show.voronoi.checked) {
+            this.dataC.graph.drawVoronoiCells(this.graphics, THEMEBOLDGRAY, EDGETHICKNESS-2);
         }
 		
 		if (this.show.vertices.checked) {
 			this.dataC.graph.drawVertices(this.graphics);
+		}
+		
+		if (this.show.box.checked) {
+			this.dataC.box.draw(this.graphics);
 		}
 	}
 
@@ -161,7 +173,7 @@ class DelaunayApp {
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
 		this.dataC.graph.snapToCanvas(this.canvas);
-        this.dataC.graph.updateDelaunay();
+        this.dataC.graph.updateDelaunayVoronoi(this.canvas);
         
 		let boxPtsC = this.dataC.box.pts;	
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
@@ -197,7 +209,9 @@ class DelaunayApp {
 		this.show.axes.addEventListener("change", () => this.refresh());
 		this.show.grid.addEventListener("change", () => this.refresh());
 		this.show.vertices.addEventListener("change", () => this.refresh());
-		this.show.edges.addEventListener("change", () => this.refresh());
+		this.show.delaunay.addEventListener("change", () => this.refresh());
+		this.show.voronoi.addEventListener("change", () => this.refresh());
+		this.show.faces.addEventListener("change", () => this.refresh());
 	}
 	// buttons
 	setupButtonEvents() {
