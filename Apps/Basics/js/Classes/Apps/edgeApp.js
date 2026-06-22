@@ -336,7 +336,7 @@ class EdgeApp {
 				// else, do nothing now - but check the mouse-move-event on the clicked-on point	
 			} 
 			else if (e.detail === 2) // it was a double click
-			{				
+			{
 				// if on an existing point, delete the point, else ignore the double click
 				if (activePts.length >= 1) {
 					if (this.locatorId === 0 && activePts.length === 2) { // delete head

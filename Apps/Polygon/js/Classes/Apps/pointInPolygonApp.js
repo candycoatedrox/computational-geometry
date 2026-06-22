@@ -295,7 +295,7 @@ class PointInPolygonApp {
 				// else, do nothing now - but check the mouse-move-event on the clicked-on point	
 			} 
 			else if (e.detail === 2) // it was a double click
-			{				
+			{
 				// if on an existing point, delete the point, else ignore the double click
                 // user cannot delete points if there are 3 or fewer points in the polygon
 				if (this.dataC.polygon.length >= 4 && this.locatorId !== this.dataC.polygon.length) { 

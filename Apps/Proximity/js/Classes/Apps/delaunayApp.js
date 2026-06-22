@@ -23,7 +23,6 @@ class DelaunayApp {
 		randomVertex: document.getElementById("buttonRandomVertex-delaunayApp"),
 		generate: document.getElementById("buttonGenerate-delaunayApp"),
 
-		clear: document.getElementById("buttonClear-delaunayApp"),
 		reset: document.getElementById("buttonReset-delaunayApp")
 	};
 
@@ -51,9 +50,7 @@ class DelaunayApp {
 		originC.fromCanvas(this.canvas);
 		let axesC = new Axes(100,-100);
 
-		let graph = new PlanarGraph();
-
-        let mouse = new Point(0,0);
+		let graph = new GraphE();
 
 		this.dataC = {
             box: boxC,
@@ -61,9 +58,7 @@ class DelaunayApp {
             axes: axesC,
             range: rangeC,
 
-			graph: graph,
-
-            mouse: mouse
+			graph: graph
 		};
 
 		let boxPtsC = boxC.pts;	
@@ -88,20 +83,9 @@ class DelaunayApp {
             vertices: vertW
 		};
 
-        this.addVertex(225,75);
         this.addVertex(200,350);
         this.addVertex(600,175);
         this.addVertex(425,400);
-        this.addVertex(400,255);
-        this.addVertex(55,175);
-        this.dataC.graph.addEdge(0,1);
-        this.dataC.graph.addEdge(0,2);
-        this.dataC.graph.addEdge(0,4);
-        this.dataC.graph.addEdge(0,5);
-        this.dataC.graph.addEdge(1,3);
-        this.dataC.graph.addEdge(1,4);
-        this.dataC.graph.addEdge(2,3);
-        //this.dataC.graph.updateLabels();
 		
 		// gui: set up actions
 		this.setupShowEvents();
@@ -138,9 +122,7 @@ class DelaunayApp {
 		}
 
         if (this.show.edges.checked) {
-            for (let i = 0; i < this.dataC.graph.nEdges; i++) {
-                this.dataC.graph.drawEdge(this.graphics, i);
-            }
+            this.dataC.graph.drawEdges(this.graphics);
         }
 		
 		if (this.show.vertices.checked) {
@@ -180,6 +162,20 @@ class DelaunayApp {
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
 		this.dataC.graph.snapToCanvas(this.canvas);
+
+        let delaunayPts = this.dataC.graph.vertices.map(p => [p.x, p.y]); // convert points to format used by Delaunay
+        let delaunay = Delaunay.from(delaunayPts); // get delaunay
+        let triangles = delaunay.triangles; // get triangles
+
+        this.dataC.graph.clearEdges();
+        if (triangles.length >= 3) { // convert triangles to edges on graph
+            for (let i = 0; i < triangles.length; i += 3) {
+                let t1 = triangles[i], t2 = triangles[i+1], t3 = triangles[i+2];
+                this.dataC.graph.addEdge(t1, t2);
+                this.dataC.graph.addEdge(t2, t3);
+                this.dataC.graph.addEdge(t1, t3);
+            }
+        }
         
 		let boxPtsC = this.dataC.box.pts;	
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
@@ -229,16 +225,6 @@ class DelaunayApp {
             this.addVertex(50,225);
             this.addVertex(550,475);
             this.addVertex(340,510);
-            this.dataC.graph.addEdge(0,1);
-            this.dataC.graph.addEdge(0,3);
-            this.dataC.graph.addEdge(0,6);
-            this.dataC.graph.addEdge(1,4);
-            this.dataC.graph.addEdge(2,3);
-            this.dataC.graph.addEdge(2,5);
-            this.dataC.graph.addEdge(3,4);
-            this.dataC.graph.addEdge(3,6);
-            this.dataC.graph.addEdge(5,6);
-            //this.dataC.graph.updateLabels();
 
 			this.computeAndRefresh();
 		});
@@ -249,19 +235,10 @@ class DelaunayApp {
             this.addVertex(80,340);
             this.addVertex(450,390);
             this.addVertex(225,520);
-            this.dataC.graph.addEdge(0,1);
-            this.dataC.graph.addEdge(0,2);
-            this.dataC.graph.addEdge(2,1);
             this.addVertex(280,110);
             this.addVertex(500,120);
             this.addVertex(210,260);
             this.addVertex(580,190);
-            this.dataC.graph.addEdge(3,4);
-            this.dataC.graph.addEdge(4,6);
-            this.dataC.graph.addEdge(6,5);
-            this.dataC.graph.addEdge(5,3);
-            this.dataC.graph.addEdge(4,5);
-            //this.dataC.graph.updateLabels();
 
 			this.computeAndRefresh();
 		});
@@ -286,29 +263,12 @@ class DelaunayApp {
 		});
 
 
-		this.buttons.clear.addEventListener("click", () => {
-			this.clearVertices();
-            //this.dataC.graph.updateLabels();
-			this.computeAndRefresh();
-		});
-
 		this.buttons.reset.addEventListener("click", () => {
             this.clearVertices();
 
-            this.addVertex(225,75);
             this.addVertex(200,350);
             this.addVertex(600,175);
             this.addVertex(425,400);
-            this.addVertex(400,255);
-            this.addVertex(55,175);
-            this.dataC.graph.addEdge(0,1);
-            this.dataC.graph.addEdge(0,2);
-            this.dataC.graph.addEdge(0,4);
-            this.dataC.graph.addEdge(0,5);
-            this.dataC.graph.addEdge(1,3);
-            this.dataC.graph.addEdge(1,4);
-            this.dataC.graph.addEdge(2,3);
-            //this.dataC.graph.updateLabels();
 
 			this.computeAndRefresh();
 		});
@@ -331,21 +291,21 @@ class DelaunayApp {
                 {
                     this.locatorId = this.dataC.graph.nVertices;
                     this.addVertex(mx, my, this.locatorId);
-                    //this.dataC.graph.updateLabels();
                 } else {
                     this.edgesToDelete = this.dataC.graph.edges.map(() => false); // create array with a value of false for each edge
                 }
                 // else, do nothing now - but check the mouse-move-event on the clicked-on point	
             } 
             else if (e.detail === 2) // it was a double click
-            {				
+            {
                 // if on an existing point, delete the point, else ignore the double click
-                if (this.dataC.graph.nVertices >= 1) { 
+                // user cannot delete points if there are 3 or fewer points in the graph
+                if (this.dataC.graph.nVertices >= 4) { 
                     this.deleteVertex(this.locatorId);
                     this.locatorId = null;
                 }
             };
-				
+
 			// visualize the effect
 			this.computeAndRefresh();
 		});
