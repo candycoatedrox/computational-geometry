@@ -50,7 +50,7 @@ class DelaunayApp {
 		originC.fromCanvas(this.canvas);
 		let axesC = new Axes(100,-100);
 
-		let graph = new GraphE();
+		let graph = new DelaunayGraph();
 
 		this.dataC = {
             box: boxC,
@@ -162,20 +162,7 @@ class DelaunayApp {
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
 		this.dataC.graph.snapToCanvas(this.canvas);
-
-        let delaunayPts = this.dataC.graph.vertices.map(p => [p.x, p.y]); // convert points to format used by Delaunay
-        let delaunay = Delaunay.from(delaunayPts); // get delaunay
-        let triangles = delaunay.triangles; // get triangles
-
-        this.dataC.graph.clearEdges();
-        if (triangles.length >= 3) { // convert triangles to edges on graph
-            for (let i = 0; i < triangles.length; i += 3) {
-                let t1 = triangles[i], t2 = triangles[i+1], t3 = triangles[i+2];
-                this.dataC.graph.addEdge(t1, t2);
-                this.dataC.graph.addEdge(t2, t3);
-                this.dataC.graph.addEdge(t1, t3);
-            }
-        }
+        this.dataC.graph.updateDelaunay();
         
 		let boxPtsC = this.dataC.box.pts;	
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
