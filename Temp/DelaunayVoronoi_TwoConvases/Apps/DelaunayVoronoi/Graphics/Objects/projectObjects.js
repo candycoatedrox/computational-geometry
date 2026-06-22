@@ -6,6 +6,8 @@ function drawVoronoiEdges(ctx, voronoi, color=VOREDGECOLOR) {
   	ctx.strokeStyle = color;
   	for (let i = 0; i < points.length; i++) {
     	const path = voronoi.renderCell(i);
+		console.log(path);
+		console.log(voronoi._clip(i));
     	const p = new Path2D(path);
     	ctx.stroke(p);
   	}

@@ -1,33 +1,32 @@
-class DelaunayApp {
+class VoronoiApp {
 	// constants: global names of i/o fields 
-	canvas = document.getElementById('canvas-delaunayApp');
-	infoField = document.getElementById('delaunayApp-points');
-    errorDisplay = document.getElementById('delaunayApp-errors');
-    edgeList = document.getElementById('delaunayApp-edges');
+	canvas = document.getElementById('canvas-voronoiApp');
+	infoField = document.getElementById('voronoiApp-points');
+    errorDisplay = document.getElementById('voronoiApp-errors');
 
     // gui
 	show = {
-		box: document.getElementById("showBox-delaunayApp"),
-		origin: document.getElementById("showOrigin-delaunayApp"),
-		axes: document.getElementById("showAxes-delaunayApp"),
-		grid: document.getElementById("showGrid-delaunayApp"),
+		box: document.getElementById("showBox-voronoiApp"),
+		origin: document.getElementById("showOrigin-voronoiApp"),
+		axes: document.getElementById("showAxes-voronoiApp"),
+		grid: document.getElementById("showGrid-voronoiApp"),
 
-		vertices: document.getElementById("showVertices-delaunayApp"),
-		edges: document.getElementById("showEdges-delaunayApp")
+		vertices: document.getElementById("showVertices-voronoiApp"),
+		edges: document.getElementById("showEdges-voronoiApp")
 	};
 	
 	buttons = {
-		a: document.getElementById("buttonA-delaunayApp"),
-		b: document.getElementById("buttonB-delaunayApp"),
+		a: document.getElementById("buttonA-voronoiApp"),
+		b: document.getElementById("buttonB-voronoiApp"),
 
-		randomVertex: document.getElementById("buttonRandomVertex-delaunayApp"),
-		generate: document.getElementById("buttonGenerate-delaunayApp"),
+		randomVertex: document.getElementById("buttonRandomVertex-voronoiApp"),
+		generate: document.getElementById("buttonGenerate-voronoiApp"),
 
-		reset: document.getElementById("buttonReset-delaunayApp")
+		reset: document.getElementById("buttonReset-voronoiApp")
 	};
 
     generateParams = {
-        vertices: document.getElementById("nVertices-delaunayApp")
+        vertices: document.getElementById("nVertices-voronoiApp")
     };
 	
 	// data
@@ -109,10 +108,6 @@ class DelaunayApp {
 			this.dataC.range.drawGrid(this.graphics, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		}
 		
-		if (this.show.box.checked) {
-			this.dataC.box.draw(this.graphics);
-		}
-		
 		if (this.show.axes.checked) {
 			this.dataC.axes.draw(this.graphics,this.dataC.origin);
 		}
@@ -122,12 +117,16 @@ class DelaunayApp {
 		}
 
         if (this.show.edges.checked) {
-            this.dataC.graph.drawEdges(this.graphics);
+            this.dataC.graph.drawVoronoiCells(this.graphics);
         }
 		
 		if (this.show.vertices.checked) {
             // maybe draw the highlighted point in a diff color while creating edge??
 			this.dataC.graph.drawVertices(this.graphics);
+		}
+		
+		if (this.show.box.checked) {
+			this.dataC.box.draw(this.graphics);
 		}
 	}
 
@@ -141,11 +140,6 @@ class DelaunayApp {
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
 		this.infoField.innerHTML = res;
-
-        // edges
-        const eList = this.dataC.graph.edgesToListString;
-
-        this.edgeList.innerHTML = eList;
 	}
 	
 	// actions for gui, affecting the view
@@ -162,9 +156,9 @@ class DelaunayApp {
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
 		this.dataC.graph.snapToCanvas(this.canvas);
-        this.dataC.graph.updateDelaunay();
-        
-		let boxPtsC = this.dataC.box.pts;	
+        this.dataC.graph.updateVoronoi(this.canvas);
+
+		let boxPtsC = this.dataC.box.pts;
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.box.setPoints(boxPtsW);
 		this.dataW.range.set(this.canvas);

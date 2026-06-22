@@ -109,6 +109,7 @@
 	<script>
 		// COMPUTE DATA for drawing	
 		[delaunay,voronoi,triangles] = computeDelaunayVoronoiData(points,[canvasDel.width,canvasDel.height]);
+		console.log(voronoi);
 		
 		// UPDATE VIEW
 		drawDelaunayScene(canvasDel,points,triangles);

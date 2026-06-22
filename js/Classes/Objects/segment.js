@@ -39,8 +39,14 @@ class Segment {
 	includes(p) {
 		return (this.tail == p) || (this.head == p);
 	}
+	includesCoords(p) {
+		return Point.equals(this.tail, p) || Point.equals(this.head, p);
+	}
 	isBetween(p, q) {
 		return this.includes(p) && this.includes(q);
+	}
+	isBetweenCoords(p, q) {
+		return this.includesCoords(p) && this.includesCoords(q);
 	}
 	
 	length() {

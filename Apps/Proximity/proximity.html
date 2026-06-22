@@ -49,7 +49,7 @@
 		<script src="../../js/Classes/Objects/tree.js"></script>
 		<script src="../../js/Classes/Objects/planarGraph.js"></script>
 		
-		<script src="../../js/Classes/Objects/delaunayGraph.js"></script>
+		<script src="../../js/Classes/Objects/delaunayVoronoiGraph.js"></script>
 		
 		
 		<!-- Code -->
@@ -78,6 +78,7 @@
 			
 	<!-- Mini-apps -->
 	<script src="js/Classes/Apps/delaunayApp.js"></script>
+	<script src="js/Classes/Apps/voronoiApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
 <div>
@@ -124,6 +125,7 @@
 <!-- Navigation app - tabs  -->
 <nav> 
 	<button class="active" data-tab="delaunayApp">Delaunay</button>
+	<button data-tab="voronoiApp">Voronoi</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -151,7 +153,7 @@
 
 
 <!-- >═══════════════════════════════════════════════════
-     TAB 1 — PLANAR GRAPH EDITOR APP
+     TAB 1 — DELAUNAY APP
 ═══════════════════════════════════════════════════ -->
 <div class="demo-container active" id="tab-delaunayApp">
 	<div class="canvas-wrap">
@@ -216,6 +218,64 @@
 	</div>
 </div>
 
+<!-- >═══════════════════════════════════════════════════
+     TAB 2 — VORONOI APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container" id="tab-voronoiApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-voronoiApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize the Voronoi diagram of a graph
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-voronoiApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-voronoiApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-voronoiApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-voronoiApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showVertices-voronoiApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showEdges-voronoiApp" checked> Edges</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="voronoiApp-list" id="voronoiApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="error-display" id="voronoiApp-errors">
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonA-voronoiApp">Example A</button>
+				<button class="pill" id="buttonB-voronoiApp">Example B</button>
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonRandomVertex-voronoiApp">Add Random Vertex</button>
+				<button class="pill" id="buttonGenerate-voronoiApp">Generate Random</button>
+				<select id="nVertices-voronoiApp" name="nVertices-voronoiApp">
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5" selected>5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="15">15</option>
+					<option value="20">20</option>
+				</select>
+			</div>
+			<br>
+			<div class="ctrl-row">
+				<button class="pill danger" id="buttonReset-voronoiApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 	
 <!-- .................................................................................................
      JS: INITIALIZE and START EXECUTION of ACTIVE TAB-APP 
@@ -224,6 +284,7 @@
 <div>
 	<script>
 		var DELAUNAYAPP = new DelaunayApp();
+		var VORONOIAPP = new VoronoiApp();
 	</script>
 </div>	
 <!-- Draw active app -->	

@@ -4,5 +4,6 @@ function redrawActiveApp(){
 	setColors();
 	setTimeout(() => {
 		if (activeTab === 'delaunayApp') DELAUNAYAPP.computeAndRefresh();
+		if (activeTab === 'voronoiApp') VORONOIAPP.computeAndRefresh();
   }, 100);
 }
