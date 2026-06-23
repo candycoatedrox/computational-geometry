@@ -42,8 +42,6 @@ class DelaunayVoronoiGraph extends PlanarGraph {
                 this.addEdge(t1, t3);
             }
         }
-
-        this.updateFaces();
     }
 
     // voronoi
@@ -143,6 +141,20 @@ class DelaunayVoronoiGraph extends PlanarGraph {
                 this.drawVoronoiCellFace(ctx, i, color);
             }
         }
+    }
+
+    // conversion
+    // UNTESTED!
+    planarGraphFromVoronoi() {
+        let graph = new PlanarGraph();
+        graph.vertices.push(...this.voronoiPoints);
+
+        for (let i = 0; i < this.voronoiEdges.length; i++) {
+            let e = this.voronoiEdges[i];
+            graph.addEdge(e[0], e[1]);
+        }
+
+        return graph;
     }
 
 }
