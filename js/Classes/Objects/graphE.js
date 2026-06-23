@@ -182,8 +182,15 @@ class GraphE {
 
     // draw
     drawVertices(ctx, labeled = true, color = POINTCOLOR, size = POINTSIZE) {
-        let labs = labeled ? this.labels : [];
-        this.vertices.draw(ctx, labs, color, size);
+        if (color == "multi") {
+            for (let i = 0; i < this.nVertices; i++) {
+                let lab = labeled ? this.labels[i] : '';
+                this.vertices[i].draw(ctx, lab, FACECOLORS[i % FACECOLORS.length]);
+            }
+        } else {
+            let labs = labeled ? this.labels : [];
+            this.vertices.draw(ctx, labs, color, size);
+        }
     }
     drawEdge(ctx, i, color = EDGECOLOR, width = EDGETHICKNESS) {
         let vertices = this.getVerticesFromEdge(i);

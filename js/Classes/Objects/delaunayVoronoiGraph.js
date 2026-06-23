@@ -130,5 +130,17 @@ class DelaunayVoronoiGraph extends GraphE {
         this.drawVoronoiCells(ctx, edgeColor, edgeWidth);
         this.drawVertices(ctx, vertexColor, vertexSize);
     }
+    drawVoronoiCellFace(ctx, i, color = COLORS.setAlpha(FACECOLOR)) {
+        Draw.face(ctx, this.voronoiPoints, this.voronoiCells[i], color);
+    }
+    drawVoronoiCellFaces(ctx, color = "multi") {
+        for (let i = 0; i < this.nVertices; i++) {
+            if (color == "multi") {
+                this.drawVoronoiCellFace(ctx, i, COLORS.setAlpha(FACECOLORS[i % FACECOLORS.length], 0.3));
+            } else {
+                this.drawVoronoiCellFace(ctx, i, color);
+            }
+        }
+    }
 
 }

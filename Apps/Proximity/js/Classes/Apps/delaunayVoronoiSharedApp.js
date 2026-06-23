@@ -125,16 +125,24 @@ class DelaunayVoronoiSharedApp {
 		// else draw points in white/default
 		// DRAW DELAUNAY ON TOP OF FACES
 
-        if (this.show.delaunay.checked) {
-            this.dataC.graph.drawEdges(this.graphics, THEMETEAL, EDGETHICKNESS-2);
-        }
+		if (this.show.faces.checked) {
+			this.dataC.graph.drawVoronoiCellFaces(this.graphics);
+		}
 
         if (this.show.voronoi.checked) {
             this.dataC.graph.drawVoronoiCells(this.graphics, THEMEBOLDGRAY, EDGETHICKNESS-2);
         }
+
+        if (this.show.delaunay.checked) {
+            this.dataC.graph.drawEdges(this.graphics, EDGECOLOR, EDGETHICKNESS-2);
+        }
 		
 		if (this.show.vertices.checked) {
-			this.dataC.graph.drawVertices(this.graphics);
+			if (this.show.faces.checked) {
+				this.dataC.graph.drawVertices(this.graphics, true, "multi");
+			} else {
+				this.dataC.graph.drawVertices(this.graphics);
+			}
 		}
 		
 		if (this.show.box.checked) {
