@@ -120,11 +120,6 @@ class DelaunayVoronoiSharedApp {
 			this.dataC.origin.draw(this.graphics);
 		}
 
-		// IF FACES CHECKED:
-		// draw multicolor faces for each cell AND draw the respective point in the corresponding color!!
-		// else draw points in white/default
-		// DRAW DELAUNAY ON TOP OF FACES
-
 		if (this.show.faces.checked) {
 			this.dataC.graph.drawVoronoiCellFaces(this.graphics);
 		}
