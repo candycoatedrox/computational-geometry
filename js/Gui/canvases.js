@@ -18,6 +18,15 @@ function setupCanvasInWrap(canvas) {
   return canvas;
 }
 
+function setupDualCanvasInWrap(canvas) {
+	const wrap = canvas.parentElement;
+	if (canvas.width !== wrap.clientWidth / 2 || canvas.height !== wrap.clientHeight) {
+		canvas.width = wrap.clientWidth / 2;
+		canvas.height = wrap.clientHeight;
+	}
+	return canvas;
+}
+
 function clearCanvas(cv){
 	const w = cv.width, h = cv.height;
 	const ctx = cv.getContext('2d');
@@ -39,6 +48,11 @@ function prepareCanvas(cv){
 
 function initCanvasGraphics(canvas){	
 	const cv = setupCanvasInWrap(canvas);
+	return clearCanvas(cv);
+}
+
+function initDualCanvasGraphics(canvas) {
+	const cv = setupDualCanvasInWrap(canvas);
 	return clearCanvas(cv);
 }
 

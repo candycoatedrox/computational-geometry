@@ -6,5 +6,6 @@ function redrawActiveApp(){
 		if (activeTab === 'delaunayApp') DELAUNAYAPP.computeAndRefresh();
 		if (activeTab === 'voronoiApp') VORONOIAPP.computeAndRefresh();
 		if (activeTab === 'delaunayVoronoiSharedApp') DELAUNAYVORONOISHAREDAPP.computeAndRefresh();
+		if (activeTab === 'delaunayVoronoiSplitApp') DELAUNAYVORONOISPLITAPP.computeAndRefresh();
   }, 100);
 }

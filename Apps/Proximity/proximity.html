@@ -80,6 +80,7 @@
 	<script src="js/Classes/Apps/delaunayApp.js"></script>
 	<script src="js/Classes/Apps/voronoiApp.js"></script>
 	<script src="js/Classes/Apps/delaunayVoronoiSharedApp.js"></script>
+	<script src="js/Classes/Apps/delaunayVoronoiSplitApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
 <div>
@@ -128,6 +129,7 @@
 	<button class="active" data-tab="delaunayApp">Delaunay</button>
 	<button data-tab="voronoiApp">Voronoi</button>
 	<button data-tab="delaunayVoronoiSharedApp">Delaunay-Voronoi (Single Canvas)</button>
+	<button data-tab="delaunayVoronoiSplitApp">Delaunay-Voronoi (Separate Canvases)</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -347,6 +349,76 @@
 	</div>
 </div>
 
+<!-- >═══════════════════════════════════════════════════
+     TAB 4 — DELAUNAY-VORONOI SEPARATE CANVASES APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container" id="tab-delaunayVoronoiSplitApp">
+	<div class="canvas-wrap">
+		<canvas class="dual" id="canvasDel-delaunayVoronoiSplitApp" width="300" height="300"></canvas>
+		<canvas class="dual" id="canvasVor-delaunayVoronoiSplitApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize the Delaunay triangulation and Voronoi diagram of a graph side-by-side
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-delaunayVoronoiSplitApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-delaunayVoronoiSplitApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-delaunayVoronoiSplitApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-delaunayVoronoiSplitApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showVertices-delaunayVoronoiSplitApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showDelaunay-delaunayVoronoiSplitApp" checked> Delaunay</label>
+			<br>
+			<label><input type="checkbox" id="showVoronoi-delaunayVoronoiSplitApp" checked> Voronoi</label>
+			<label><input type="checkbox" id="showFaces-delaunayVoronoiSplitApp" checked> Voronoi Faces</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="delaunayVoronoiSplitApp-list" id="delaunayVoronoiSplitApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<!-- edges & faces -->
+			<div class="column">
+				<h3>EDGES (DELAUNAY)</h3>
+				<div class="delaunayVoronoiSplitApp-list" id="delaunayVoronoiSplitApp-edges">
+				</div>
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="error-display" id="delaunayVoronoiSplitApp-errors">
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonA-delaunayVoronoiSplitApp">Example A</button>
+				<button class="pill" id="buttonB-delaunayVoronoiSplitApp">Example B</button>
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonRandomVertex-delaunayVoronoiSplitApp">Add Random Vertex</button>
+				<button class="pill" id="buttonGenerate-delaunayVoronoiSplitApp">Generate Random</button>
+				<select id="nVertices-delaunayVoronoiSplitApp" name="nVertices-delaunayVoronoiSplitApp">
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5" selected>5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="15">15</option>
+					<option value="20">20</option>
+				</select>
+			</div>
+			<br>
+			<div class="ctrl-row">
+				<button class="pill danger" id="buttonReset-delaunayVoronoiSplitApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 	
 <!-- .................................................................................................
      JS: INITIALIZE and START EXECUTION of ACTIVE TAB-APP 
@@ -357,6 +429,7 @@
 		var DELAUNAYAPP = new DelaunayApp();
 		var VORONOIAPP = new VoronoiApp();
 		var DELAUNAYVORONOISHAREDAPP = new DelaunayVoronoiSharedApp();
+		var DELAUNAYVORONOISPLITAPP = new DelaunayVoronoiSplitApp();
 	</script>
 </div>	
 <!-- Draw active app -->	

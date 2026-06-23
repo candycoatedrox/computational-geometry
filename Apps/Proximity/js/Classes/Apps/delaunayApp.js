@@ -277,8 +277,6 @@ class DelaunayApp {
                 {
                     this.locatorId = this.dataC.graph.nVertices;
                     this.addVertex(mx, my, this.locatorId);
-                } else {
-                    this.edgesToDelete = this.dataC.graph.edges.map(() => false); // create array with a value of false for each edge
                 }
                 // else, do nothing now - but check the mouse-move-event on the clicked-on point	
             } 
