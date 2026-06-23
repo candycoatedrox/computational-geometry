@@ -17,10 +17,12 @@ class DelaunayVoronoiSplitApp {
 		grid: document.getElementById("showGrid-delaunayVoronoiSplitApp"),
 
 		vertices: document.getElementById("showVertices-delaunayVoronoiSplitApp"),
+		
 		delaunay: document.getElementById("showDelaunay-delaunayVoronoiSplitApp"),
+		delFaces: document.getElementById("showDelFaces-delaunayVoronoiSplitApp"),
 
 		voronoi: document.getElementById("showVoronoi-delaunayVoronoiSplitApp"),
-		faces: document.getElementById("showFaces-delaunayVoronoiSplitApp")
+		vorFaces: document.getElementById("showVorFaces-delaunayVoronoiSplitApp")
 	};
 	
 	buttons = {
@@ -133,13 +135,17 @@ class DelaunayVoronoiSplitApp {
 			this.dataC.origin.draw(this.graphics.voronoi);
 		}
 
-		if (this.show.faces.checked) {
+		if (this.show.vorFaces.checked) {
 			this.dataC.graph.drawVoronoiCellFaces(this.graphics.voronoi);
 		}
 
         if (this.show.voronoi.checked) {
-            this.dataC.graph.drawVoronoiCells(this.graphics.voronoi, THEMEBOLDGRAY, EDGETHICKNESS-2);
+            this.dataC.graph.drawVoronoiCells(this.graphics.voronoi, EDGECOLOR, EDGETHICKNESS-2);
         }
+
+		if (this.show.delFaces.checked) {
+			this.dataC.graph.drawFaces(this.graphics.delaunay);
+		}
 
         if (this.show.delaunay.checked) {
             this.dataC.graph.drawEdges(this.graphics.delaunay, EDGECOLOR, EDGETHICKNESS-2);
@@ -147,7 +153,8 @@ class DelaunayVoronoiSplitApp {
 		
 		if (this.show.vertices.checked) {
 			this.dataC.graph.drawVertices(this.graphics.delaunay);
-			if (this.show.faces.checked) {
+
+			if (this.show.vorFaces.checked) {
 				this.dataC.graph.drawVertices(this.graphics.voronoi, true, "multi");
 			} else {
 				this.dataC.graph.drawVertices(this.graphics.voronoi);
@@ -230,8 +237,9 @@ class DelaunayVoronoiSplitApp {
 		this.show.grid.addEventListener("change", () => this.refresh());
 		this.show.vertices.addEventListener("change", () => this.refresh());
 		this.show.delaunay.addEventListener("change", () => this.refresh());
+		this.show.delFaces.addEventListener("change", () => this.refresh());
 		this.show.voronoi.addEventListener("change", () => this.refresh());
-		this.show.faces.addEventListener("change", () => this.refresh());
+		this.show.vorFaces.addEventListener("change", () => this.refresh());
 	}
 	// buttons
 	setupButtonEvents() {

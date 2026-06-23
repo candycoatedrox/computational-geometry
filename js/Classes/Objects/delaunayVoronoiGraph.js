@@ -1,4 +1,4 @@
-class DelaunayVoronoiGraph extends GraphE {
+class DelaunayVoronoiGraph extends PlanarGraph {
 
     voronoi = null;
     voronoiPoints = null;
@@ -42,6 +42,8 @@ class DelaunayVoronoiGraph extends GraphE {
                 this.addEdge(t1, t3);
             }
         }
+
+        this.updateFaces();
     }
 
     // voronoi
