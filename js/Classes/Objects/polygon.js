@@ -43,8 +43,8 @@ class Polygon extends Points {
     }
     updateSelfIntersections() {
         this.selfIntersections.length = 0;
-        for (let i = 0; i < this.edges.length; i++) {
-            for (let j = i+2; j < this.edges.length; j++) {
+        for (let i = 0; i < this.nSides; i++) {
+            for (let j = i+2; j < this.nSides; j++) {
                 // exclude edge pairs that share one or more vertices
                 if (this.edges[i].includes(this.edges[j][0]) || this.edges[i].includes(this.edges[j][1])) continue;
 
@@ -53,7 +53,7 @@ class Polygon extends Points {
                 if (intersect !== null) {
                     let intersectCoords = intersect.X;
                     this.selfIntersections.push(new Point(intersectCoords.x, intersectCoords.y));
-                    console.log("intersection " + JSON.stringify(intersectCoords));
+                    console.log("intersection " + JSON.stringify(intersectCoords) + `, t = ${intersect.t}, u = ${intersect.u}`);
                 }
             }
         }
@@ -158,7 +158,9 @@ class Polygon extends Points {
 
     // conversion
     polygonSubdivision() {
-
+        let graph = new PolygonSubdivision();
+        graph.fromPolygon(this);
+        return graph;
     }
 
 }

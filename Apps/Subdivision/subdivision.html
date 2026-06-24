@@ -39,6 +39,7 @@
 		<script src="../../js/Classes/Objects/faceGraph.js"></script>
 		<script src="../../js/Classes/Objects/tree.js"></script>
 		<script src="../../js/Classes/Objects/planarGraph.js"></script>
+		<script src="../../js/Classes/Objects/polygonSubdivision.js"></script>
 		
 		
 		<!-- Code -->
@@ -158,9 +159,13 @@
 			<label><input type="checkbox" id="showAxes-polygonSubdivisionApp" checked> Axes</label>
 			<label><input type="checkbox" id="showGrid-polygonSubdivisionApp" checked> Grid</label>
 			<br>
-			<label><input type="checkbox" id="showVertices-polygonSubdivisionApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showPolygon-polygonSubdivisionApp" checked> Polygon Vertices</label>
+			<label><input type="checkbox" id="showIntersections-polygonSubdivisionApp" checked> Intersections</label>
+			<br>
 			<label><input type="checkbox" id="showEdges-polygonSubdivisionApp" checked> Edges</label>
 			<label><input type="checkbox" id="showFaces-polygonSubdivisionApp" checked> Faces</label>
+			<br>
+			<label><input type="checkbox" id="showTEST-polygonSubdivisionApp"> True Polygon Vertices (TEST)</label>
 		</div>
 		<div class="panel-section">
 			<h3>FACE COLORS</h3>
@@ -195,7 +200,6 @@
 			</div>
 			<div class="ctrl-row">
 				<button class="pill" id="buttonRandomVertex-polygonSubdivisionApp">Add Random Vertex</button>
-				<button class="pill" id="buttonRandomEdge-polygonSubdivisionApp">Add Random Edge</button>
 				<button class="pill" id="buttonGenerate-polygonSubdivisionApp">Generate Random</button>
 				<select id="nVertices-polygonSubdivisionApp" name="nVertices-polygonSubdivisionApp">
 					<option value="3">3</option>
@@ -209,11 +213,9 @@
 					<option value="15">15</option>
 					<option value="20">20</option>
 				</select>
-				<label><input type="checkbox" id="genEdges-polygonSubdivisionApp" checked> Create Edges</label>
 			</div>
 			<br>
 			<div class="ctrl-row">
-				<button class="pill danger" id="buttonClearEdges-polygonSubdivisionApp">Clear Edges</button>
 				<button class="pill danger" id="buttonClear-polygonSubdivisionApp">Clear Graph</button>
 				<button class="pill danger" id="buttonReset-polygonSubdivisionApp">Reset</button>
 			</div>

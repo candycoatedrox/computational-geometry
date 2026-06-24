@@ -42,4 +42,5 @@ function setColors() {
 	THEMEPURPLE = colorSet.themePurple;
 	THEMETEAL = colorSet.themeTeal;
 	THEMESCARLET = colorSet.themeScarlet;
+	THEMEINDIGO = colorSet.themeIndigo;
 }

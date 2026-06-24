@@ -34,10 +34,12 @@ const COLORS = {
 	limeGreen: '#C7EA46',
 	emeraldGreen: '#50C878',
 	seaGreen: '#2E8B57',
+
 	purple: '#7c6af7', 
 	teal: '#4ec9b0',
 	amber: '#f7c56a',
 	scarlet: '#e8482b',
+	indigo: '#4e75e9',
 	
 	
 	muted: '#3a3a45',

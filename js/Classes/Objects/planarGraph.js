@@ -5,14 +5,14 @@ class PlanarGraph extends FaceGraph {
     }
 
     // edges
-    addEdge(i,j) {
+    addEdge(i,j, updateFaces = true) {
         let tail = this.vertices[i];
         let head = this.vertices[j];
         if (this.intersectsAnyEdge(tail, head)) return false; // new edge would create a crossing
 
         if (!super.addEdge(i,j)) return false; // new edge would create a duplicate
 
-        this.updateFaces();
+        if (updateFaces) this.updateFaces();
 
         return true;
     }

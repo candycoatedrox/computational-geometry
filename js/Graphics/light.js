@@ -35,4 +35,5 @@ const LIGHT = {
     themePurple: COLORS.purple,
     themeTeal: COLORS.teal,
     themeScarlet: COLORS.scarlet,
+    themeIndigo: COLORS.indigo,
 }
