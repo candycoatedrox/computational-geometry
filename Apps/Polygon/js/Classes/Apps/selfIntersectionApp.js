@@ -47,11 +47,6 @@ class SelfIntersectionApp {
 		let axesC = new Axes(100,-100);
 
 		let polyC = new Polygon();
-        let labels = [];
-        let edges = [];
-
-        let intersectC = new Points();
-        let intersectLabs = [];
 
 		this.dataC = {
             box: boxC,
@@ -59,9 +54,7 @@ class SelfIntersectionApp {
             axes: axesC,
             range: rangeC,
 
-			polygon: polyC,
-            intersections: intersectC,
-            intersectLabels: intersectLabs
+			polygon: polyC
 		};
 
 		let boxPtsC = boxC.pts;	
@@ -92,7 +85,7 @@ class SelfIntersectionApp {
         this.createVertex(200,350);
         this.createVertex(600,175);
         this.createVertex(425,400);
-        this.dataC.polygon.updateLabels();
+        this.updatePolygonData();
 		
 		// gui: set up actions
 		this.setupShowEvents();
@@ -108,9 +101,6 @@ class SelfIntersectionApp {
     }
 	
 	// computations
-    get selfIntersects() {
-        return (this.dataC.intersections.length !== 0);
-    }
 
 	// view
 	// graphics
@@ -135,7 +125,7 @@ class SelfIntersectionApp {
 			this.dataC.origin.draw(this.graphics);
 		}
 
-        let polyColor = (this.selfIntersects) ? NEGATIVECOLOR : POSITIVECOLOR;
+        let polyColor = (this.dataC.polygon.selfIntersects) ? NEGATIVECOLOR : POSITIVECOLOR;
 
         if (this.show.fill.checked) {
 			this.dataC.polygon.drawFill(this.graphics, COLORS.setAlpha(polyColor));
@@ -150,15 +140,15 @@ class SelfIntersectionApp {
 		}
 
         if (this.show.intersections.checked) {
-			this.dataC.intersections.draw(this.graphics, this.dataC.intersectLabels, THEMETEAL, POINTSIZE-2);
+			this.dataC.polygon.drawIntersections(this.graphics, true, THEMETEAL, POINTSIZE-2);
         }
 	}
 
 	// info
 	updateInfo() {
-        const ptsC = this.dataC.polygon.concat(this.dataC.intersections);
+        const ptsC = this.dataC.polygon.concat(this.dataC.polygon.selfIntersections);
         const ptsW = this.dataW.polygon.concat(this.dataW.intersections);
-        const labs = this.dataC.polygon.labels.concat(this.dataC.intersectLabels);
+        const labs = this.dataC.polygon.labels.concat(this.dataC.polygon.selfIntersectionLabels);
 
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
@@ -179,19 +169,7 @@ class SelfIntersectionApp {
 		this.dataC.origin.fromCanvas(this.canvas);
 		this.dataC.range.fromCanvas(this.canvas);
 		this.dataC.polygon.snapToCanvas(this.canvas);
-
-        // find intersections
-		let intersects = this.dataC.polygon.selfIntersections();
-        this.dataC.intersections.length = 0;
-        this.dataW.intersections.length = 0;
-		for (let i = 0; i < intersects.length; i++) {
-			let ptW = ConvertPoint.canvasToWorldCoords(intersects[i], this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
-			this.dataC.intersections.push(new Point(intersects[i].x, intersects[i].y))
-			this.dataW.intersections.push(new Point(ptW.x, ptW.y));
-		}
-
-        this.dataC.intersectLabels = Utils.stdRange1(this.dataC.intersections.length);
-        this.dataC.intersectLabels = this.dataC.intersectLabels.map(n => { return 'i' + n; });
+        this.updatePolygonData();
         
 		let boxPtsC = this.dataC.box.pts;	
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
@@ -213,6 +191,16 @@ class SelfIntersectionApp {
 		this.dataC.polygon.length = 0;
 		this.dataW.polygon.length = 0;
         this.dataC.polygon.updateEdges();
+	}
+	updatePolygonData() {
+		this.dataC.polygon.updateData();
+
+		let intersects = this.dataC.polygon.selfIntersections;		
+        this.dataW.intersections.length = 0;
+		for (let i = 0; i < intersects.length; i++) {
+			let ptW = ConvertPoint.canvasToWorldCoords(intersects[i], this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+			this.dataW.intersections.push(new Point(ptW.x, ptW.y));
+		}
 	}
 	
 	// set up gui

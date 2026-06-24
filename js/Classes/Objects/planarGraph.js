@@ -48,30 +48,4 @@ class PlanarGraph extends FaceGraph {
         }
     }
 
-    // cycles
-    getAllCycles() {
-        // find all cycles using path search
-        let cycles = [];
-        let visited = this.vertices.map(() => false); // create array with a value of false for each vertex
-        for (let i = 0; i < this.nVertices; i++) {
-            if (!visited[i]) {
-                let cyclesInGroup = [];
-                this.pathSearchWithStart(i, false, (i, path, neighbors, c, cyclesInGroup, visited) => {
-                    visited[i] = true;
-
-                    for (let j = 0; j < neighbors.length; j++) {
-                        let n = neighbors[j];
-                        if (path.includes(n)) {
-                            let c = path.slice(path.indexOf(n));
-                            if (c.length >= 3) cyclesInGroup.push(c);
-                        }
-                    }
-                }, null, cyclesInGroup, visited);
-                cycles.push(...cyclesInGroup);
-            }
-        }
-        
-        return cycles;
-    }
-
 }
