@@ -33,12 +33,19 @@
 		<script src="../../js/Classes/Objects/triangle.js"></script>
 		<script src="../../js/Classes/Objects/face.js"></script>
 		<script src="../../js/Classes/Objects/polygon.js"></script>
+
+		<script src="../../js/Classes/Objects/graphE.js"></script>
+		<script src="../../js/Classes/Objects/graphA.js"></script>
+		<script src="../../js/Classes/Objects/faceGraph.js"></script>
+		<script src="../../js/Classes/Objects/tree.js"></script>
+		<script src="../../js/Classes/Objects/planarGraph.js"></script>
 		
 		
 		<!-- Code -->
 		<script src="../../js/Code/Auxiliary/utils.js"></script>
 		<script src="../../js/Code/Geometry/geometry.js"></script>
 		<script src="../../js/Code/Math/math.js"></script>
+		<script src="../../js/Code/Combinatorics/combinatorics.js"></script>
 		
 		<!-- Graphics -->
 		<script src="../../js/Graphics/colors.js"></script>
@@ -59,8 +66,7 @@
 	<script src="js/Gui/redrawActiveApp.js"></script>
 			
 	<!-- Mini-apps -->
-	<script src="js/Classes/Apps/selfIntersectionApp.js"></script>
-	<script src="js/Classes/Apps/pointInPolygonApp.js"></script>
+	<script src="js/Classes/Apps/polygonSubdivisionApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
 <div>
@@ -93,8 +99,8 @@
 		<span class="badge"><a href=../RefFrame/refFrame.html>Ref Frame</a></span>
 		<span class="badge"><a href=../Basics/basics.html>Basics</a></span>
 		<span class="badge"><a href=../Triangle/triangle.html>Triangle</a></span>
-		<span class="badge"><a href=polygon.html>POLYGON</a></span>
-		<span class="badge"><a href=../Subdivision/subdivision.html>Subdivision</a></span>
+		<span class="badge"><a href=../Polygon/polygon.html>Polygon</a></span>
+		<span class="badge"><a href=subdivision.html>SUBDIVISION</a></span>
 		<span class="badge"><a href=../Editor/editor.html>Editor</a></span>
 		<span class="badge"><a href=../Proximity/proximity.html>Proximity</a></span>
     </div>
@@ -107,8 +113,7 @@
 
 <!-- Navigation app - tabs  -->
 <nav> 
-	<button class="active" data-tab="selfIntersectionApp">Self Intersection</button>
-	<button data-tab="pointInPolygonApp">Point in Polygon</button>
+	<button class="active" data-tab="polygonSubdivisionApp">Polygon Subdivision</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -136,42 +141,63 @@
 
 
 <!-- >═══════════════════════════════════════════════════
-     TAB 1 — SELF INTERSECTION APP
+     TAB 1 — POLYGON SUBDIVISION APP
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container active" id="tab-selfIntersectionApp">
+<div class="demo-container active" id="tab-polygonSubdivisionApp">
 	<div class="canvas-wrap">
-		<canvas id="canvas-selfIntersectionApp" width="300" height="300"></canvas>
+		<canvas id="canvas-polygonSubdivisionApp" width="300" height="300"></canvas>
 		<div class="canvas-hint">
-			Visualize a polygon and its self-intersections
+			Visualize and edit a planar graph
 		</div>
 	</div>
 	<div class="side-panel">
 		<div class="panel-section">
 			<h3>SHOW</h3>
-			<label><input type="checkbox" id="showBox-selfIntersectionApp" checked> Box</label>
-			<label><input type="checkbox" id="showOrigin-selfIntersectionApp" checked> Origin</label>
-			<label><input type="checkbox" id="showAxes-selfIntersectionApp" checked> Axes</label>
-			<label><input type="checkbox" id="showGrid-selfIntersectionApp" checked> Grid</label>
+			<label><input type="checkbox" id="showBox-polygonSubdivisionApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-polygonSubdivisionApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-polygonSubdivisionApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-polygonSubdivisionApp" checked> Grid</label>
 			<br>
-			<label><input type="checkbox" id="showVertices-selfIntersectionApp" checked> Vertices</label>
-			<label><input type="checkbox" id="showSegments-selfIntersectionApp" checked> Line Segments</label>
-			<label><input type="checkbox" id="showFill-selfIntersectionApp" checked> Fill</label>
-			<br>
-			<label><input type="checkbox" id="showIntersections-selfIntersectionApp" checked> Intersections</label>
+			<label><input type="checkbox" id="showVertices-polygonSubdivisionApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showEdges-polygonSubdivisionApp" checked> Edges</label>
+			<label><input type="checkbox" id="showFaces-polygonSubdivisionApp" checked> Faces</label>
+		</div>
+		<div class="panel-section">
+			<h3>FACE COLORS</h3>
+			<label><input type="radio" id="colorMulti-polygonSubdivisionApp" name="color-polygonSubdivisionApp" checked> Multicolor</label>
+			<label><input type="radio" id="colorSingle-polygonSubdivisionApp" name="color-polygonSubdivisionApp"> Single Color</label>
 		</div>
 		<div class="panel-section">
 			<h3>Coordinates</h3>
-			<div class="selfIntersectionApp-list" id="selfIntersectionApp-points">
+			<div class="polygonSubdivisionApp-list" id="polygonSubdivisionApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<!-- edges & faces -->
+			<div class="column">
+				<h3>EDGES</h3>
+				<div class="polygonSubdivisionApp-list" id="polygonSubdivisionApp-edges">
+				</div>
+			</div>
+			<div class="column">
+				<h3>FACES</h3>
+				<div class="polygonSubdivisionApp-list" id="polygonSubdivisionApp-faces">
+				</div>
 			</div>
 		</div>
 		<div class="panel-section">
 			<h3>EXAMPLES</h3>
+			<div class="error-display" id="polygonSubdivisionApp-errors">
+			</div>
 			<div class="ctrl-row">
-				<button class="pill" id="buttonIntersect-selfIntersectionApp">Self-Intersecting</button>
-				<button class="pill" id="buttonSeparate-selfIntersectionApp">Non-Intersecting</button>
-				<button class="pill" id="buttonAddRandom-selfIntersectionApp">Add Random Point</button>
-				<button class="pill" id="buttonRandom-selfIntersectionApp">Generate Random</button>
-				<select id="nVertices-selfIntersectionApp" name="nVertices-selfIntersectionApp">
+				<button class="pill" id="buttonA-polygonSubdivisionApp">Example A</button>
+				<button class="pill" id="buttonB-polygonSubdivisionApp">Example B</button>
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonRandomVertex-polygonSubdivisionApp">Add Random Vertex</button>
+				<button class="pill" id="buttonRandomEdge-polygonSubdivisionApp">Add Random Edge</button>
+				<button class="pill" id="buttonGenerate-polygonSubdivisionApp">Generate Random</button>
+				<select id="nVertices-polygonSubdivisionApp" name="nVertices-polygonSubdivisionApp">
 					<option value="3">3</option>
 					<option value="4">4</option>
 					<option value="5" selected>5</option>
@@ -183,61 +209,13 @@
 					<option value="15">15</option>
 					<option value="20">20</option>
 				</select>
-				<button class="pill danger" id="buttonClear-selfIntersectionApp">Clear Vertices</button>
-				<button class="pill danger" id="buttonReset-selfIntersectionApp">Reset</button>
+				<label><input type="checkbox" id="genEdges-polygonSubdivisionApp" checked> Create Edges</label>
 			</div>
-		</div>
-	</div>
-</div>
-
-<!-- >═══════════════════════════════════════════════════
-     TAB 2 — POINT IN POLYGON APP
-═══════════════════════════════════════════════════ -->
-<div class="demo-container" id="tab-pointInPolygonApp">
-	<div class="canvas-wrap">
-		<canvas id="canvas-pointInPolygonApp" width="300" height="300"></canvas>
-		<div class="canvas-hint">
-			Visualize a point within a polygon
-		</div>
-	</div>
-	<div class="side-panel">
-		<div class="panel-section">
-			<h3>SHOW</h3>
-			<label><input type="checkbox" id="showBox-pointInPolygonApp" checked> Box</label>
-			<label><input type="checkbox" id="showOrigin-pointInPolygonApp" checked> Origin</label>
-			<label><input type="checkbox" id="showAxes-pointInPolygonApp" checked> Axes</label>
-			<label><input type="checkbox" id="showGrid-pointInPolygonApp" checked> Grid</label>
 			<br>
-			<label><input type="checkbox" id="showVertices-pointInPolygonApp" checked> Vertices</label>
-			<label><input type="checkbox" id="showSegments-pointInPolygonApp" checked> Line Segments</label>
-			<label><input type="checkbox" id="showFill-pointInPolygonApp" checked> Fill</label>
-			<br>
-			<label><input type="checkbox" id="showPoint-pointInPolygonApp" checked> Point</label>
-		</div>
-		<div class="panel-section">
-			<h3>Coordinates</h3>
-			<div class="pointInPolygonApp-list" id="pointInPolygonApp-points">
-			</div>
-		</div>
-		<div class="panel-section">
-			<h3>EXAMPLES</h3>
 			<div class="ctrl-row">
-				<button class="pill" id="buttonInside-pointInPolygonApp">Inside</button>
-				<button class="pill" id="buttonOutside-pointInPolygonApp">Outside</button>
-				<button class="pill" id="buttonRandom-pointInPolygonApp">Generate Random Polygon</button>
-				<select id="nVertices-pointInPolygonApp" name="nVertices-pointInPolygonApp">
-					<option value="3">3</option>
-					<option value="4">4</option>
-					<option value="5" selected>5</option>
-					<option value="6">6</option>
-					<option value="7">7</option>
-					<option value="8">8</option>
-					<option value="9">9</option>
-					<option value="10">10</option>
-					<option value="15">15</option>
-					<option value="20">20</option>
-				</select>
-				<button class="pill danger" id="buttonReset-pointInPolygonApp">Reset</button>
+				<button class="pill danger" id="buttonClearEdges-polygonSubdivisionApp">Clear Edges</button>
+				<button class="pill danger" id="buttonClear-polygonSubdivisionApp">Clear Graph</button>
+				<button class="pill danger" id="buttonReset-polygonSubdivisionApp">Reset</button>
 			</div>
 		</div>
 	</div>
@@ -250,8 +228,7 @@
 <!-- Initialize global variables for each mini-app object -->	
 <div>
 	<script>
-		var SELFINTERSECTIONAPP = new SelfIntersectionApp();
-		var POINTINPOLYGONAPP = new PointInPolygonApp();
+		var POLYGONSUBDIVISIONAPP = new PolygonSubdivisionApp();
 	</script>
 </div>	
 <!-- Draw active app -->	

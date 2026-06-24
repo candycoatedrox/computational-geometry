@@ -1,54 +1,47 @@
-class PlanarGraphEditorApp {
+class PolygonSubdivisionApp {
 	// constants: global names of i/o fields 
-	canvas = document.getElementById('canvas-planarGraphEditorApp');
-	infoField = document.getElementById('planarGraphEditorApp-points');
-    errorDisplay = document.getElementById('planarGraphEditorApp-errors');
-    edgeList = document.getElementById('planarGraphEditorApp-edges');
-    faceList = document.getElementById('planarGraphEditorApp-faces');
+	canvas = document.getElementById('canvas-polygonSubdivisionApp');
+	infoField = document.getElementById('polygonSubdivisionApp-points');
+    errorDisplay = document.getElementById('polygonSubdivisionApp-errors');
+    edgeList = document.getElementById('polygonSubdivisionApp-edges');
+    faceList = document.getElementById('polygonSubdivisionApp-faces');
 
     // gui
 	show = {
-		box: document.getElementById("showBox-planarGraphEditorApp"),
-		origin: document.getElementById("showOrigin-planarGraphEditorApp"),
-		axes: document.getElementById("showAxes-planarGraphEditorApp"),
-		grid: document.getElementById("showGrid-planarGraphEditorApp"),
+		box: document.getElementById("showBox-polygonSubdivisionApp"),
+		origin: document.getElementById("showOrigin-polygonSubdivisionApp"),
+		axes: document.getElementById("showAxes-polygonSubdivisionApp"),
+		grid: document.getElementById("showGrid-polygonSubdivisionApp"),
 
-		vertices: document.getElementById("showVertices-planarGraphEditorApp"),
-		edges: document.getElementById("showEdges-planarGraphEditorApp"),
-		faces: document.getElementById("showFaces-planarGraphEditorApp")
+		vertices: document.getElementById("showVertices-polygonSubdivisionApp"),
+		edges: document.getElementById("showEdges-polygonSubdivisionApp"),
+		faces: document.getElementById("showFaces-polygonSubdivisionApp")
 	};
 	
 	buttons = {
-		a: document.getElementById("buttonA-planarGraphEditorApp"),
-		b: document.getElementById("buttonB-planarGraphEditorApp"),
+		a: document.getElementById("buttonA-polygonSubdivisionApp"),
+		b: document.getElementById("buttonB-polygonSubdivisionApp"),
 
-		randomVertex: document.getElementById("buttonRandomVertex-planarGraphEditorApp"),
-		randomEdge: document.getElementById("buttonRandomEdge-planarGraphEditorApp"),
-		generate: document.getElementById("buttonGenerate-planarGraphEditorApp"),
+		randomVertex: document.getElementById("buttonRandomVertex-polygonSubdivisionApp"),
+		randomEdge: document.getElementById("buttonRandomEdge-polygonSubdivisionApp"),
+		generate: document.getElementById("buttonGenerate-polygonSubdivisionApp"),
 
-		clearEdges: document.getElementById("buttonClearEdges-planarGraphEditorApp"),
-		clear: document.getElementById("buttonClear-planarGraphEditorApp"),
-		reset: document.getElementById("buttonReset-planarGraphEditorApp")
+		clearEdges: document.getElementById("buttonClearEdges-polygonSubdivisionApp"),
+		clear: document.getElementById("buttonClear-polygonSubdivisionApp"),
+		reset: document.getElementById("buttonReset-polygonSubdivisionApp")
 	};
 
     generateParams = {
-        vertices: document.getElementById("nVertices-planarGraphEditorApp"),
-		edges: document.getElementById("genEdges-planarGraphEditorApp")
+        vertices: document.getElementById("nVertices-polygonSubdivisionApp"),
+		edges: document.getElementById("genEdges-polygonSubdivisionApp")
     };
 
     colors = {
-        single: document.getElementById("colorSingle-planarGraphEditorApp"),
-        multi: document.getElementById("colorMulti-planarGraphEditorApp")
+        single: document.getElementById("colorSingle-polygonSubdivisionApp"),
+        multi: document.getElementById("colorMulti-polygonSubdivisionApp")
     };
 
-	modes = {
-		vertex: document.getElementById("modeVertex-planarGraphEditorApp"),
-		edge: document.getElementById("modeEdge-planarGraphEditorApp"),
-		view: document.getElementById("modeView-planarGraphEditorApp")
-	};
-
     colorMode = "multi";
-	editState = "vertex";
 	
 	// data
 	dataC = null;
@@ -56,8 +49,6 @@ class PlanarGraphEditorApp {
 
     // mouse
 	locatorId = null;
-    creatingEdge = false;
-    edgesToDelete = [];
 	
 	// view
 	graphics = null;
@@ -74,17 +65,13 @@ class PlanarGraphEditorApp {
 
 		let graph = new PlanarGraph();
 
-        let mouse = new Point(0,0);
-
 		this.dataC = {
             box: boxC,
 			origin: originC,
             axes: axesC,
             range: rangeC,
 
-			graph: graph,
-
-            mouse: mouse
+			graph: graph
 		};
 
 		let boxPtsC = boxC.pts;	
@@ -168,16 +155,7 @@ class PlanarGraphEditorApp {
         }
 
         if (this.show.edges.checked) {
-            let deletedColor = COLORS.setAlpha(NEGATIVECOLOR);
-            for (let i = 0; i < this.dataC.graph.nEdges; i++) {
-                let color = (this.edgesToDelete[i]) ? deletedColor : EDGECOLOR;
-                this.dataC.graph.drawEdge(this.graphics, i, color);
-            }
-
-            if (this.creatingEdge) {
-                let color = (this.dataC.graph.intersectsAnyEdge(this.dataC.graph.vertices[this.locatorId], this.dataC.mouse)) ? NEGATIVECOLOR : THEMETEAL;
-                Draw.edge(this.graphics, this.dataC.graph.vertices[this.locatorId], this.dataC.mouse, color);
-            }
+            this.dataC.graph.drawEdges(this.graphics);
         }
 		
 		if (this.show.vertices.checked) {
@@ -400,30 +378,11 @@ class PlanarGraphEditorApp {
 			this.colorMode = "single";
 			this.refresh();
 		});
-
-
-        // edit states
-		this.modes.vertex.addEventListener("input", () => {
-			this.editState = "vertex";
-			this.refresh();
-		});
-
-		this.modes.edge.addEventListener("input", () => {
-			this.editState = "edge";
-			this.refresh();
-		});
-
-		this.modes.view.addEventListener("input", () => {
-			this.editState = "view";
-			this.refresh();
-		});
     }
 	// mouse
 	setupMouseEvents() {
 		// MOUSE DOWN
 		this.canvas.addEventListener('mousedown', e => {
-            if (this.editState == "view") return;
-
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
 			
@@ -431,48 +390,24 @@ class PlanarGraphEditorApp {
 			this.locatorId = null;
 			this.dataC.graph.vertices.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) this.locatorId = i; });
 
-            if (this.editState == "vertex") {
-                if (e.detail === 1) // it was a single click
+            if (e.detail === 1) // it was a single click
+            {
+                if (this.locatorId === null) // not near an existing point: insert a new point and label
                 {
-                    if (this.locatorId === null) // not near an existing point: insert a new point and label
-                    {
-                        this.locatorId = this.dataC.graph.nVertices;
-                        this.addVertex(mx, my, this.locatorId);
-                        //this.dataC.graph.updateLabels();
-                    } else {
-                        this.edgesToDelete = this.dataC.graph.edges.map(() => false); // create array with a value of false for each edge
-                    }
-                    // else, do nothing now - but check the mouse-move-event on the clicked-on point	
-                } 
-                else if (e.detail === 2) // it was a double click
-                {
-                    // if on an existing point, delete the point, else ignore the double click
-                    if (this.dataC.graph.nVertices >= 1) { 
-                        this.deleteVertex(this.locatorId);
-                        this.locatorId = null;
-                    }
-                };
-            } else { // edge
-                if (this.locatorId !== null) { // found a nearby point
-                    if (e.detail === 1) { // it was a single click
-                        this.creatingEdge = true; // start dragging to create edge
-                        this.dataC.mouse.set(mx,my);
-                    }
-                    // else, do nothing - can't delete vertices in this state
-                } else { // no nearby point
-                    if (e.detail === 2) { // it was a double click
-                        // check if near edge
-                        const m = {x:mx, y:my};
-                        this.dataC.graph.edges.forEach((e,i) => { if (this.dataC.graph.edgeDistanceToPoint(i,m) < 14) this.locatorId = i; });
-
-                        // if on an existing edge, delete the edge, else ignore the double click
-                        if (this.locatorId !== null) {
-                            this.dataC.graph.deleteEdge(this.locatorId); // delete the edge
-                            this.locatorId = null;
-                        }
-                    }
+                    this.locatorId = this.dataC.graph.nVertices;
+                    this.addVertex(mx, my, this.locatorId);
+                    //this.dataC.graph.updateLabels();
                 }
-            }
+                // else, do nothing now - but check the mouse-move-event on the clicked-on point	
+            } 
+            else if (e.detail === 2) // it was a double click
+            {
+                // if on an existing point, delete the point, else ignore the double click
+                if (this.dataC.graph.nVertices >= 1) { 
+                    this.deleteVertex(this.locatorId);
+                    this.locatorId = null;
+                }
+            };
 				
 			// visualize the effect
 			this.computeAndRefresh();
@@ -485,64 +420,13 @@ class PlanarGraphEditorApp {
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
             
-            if (this.creatingEdge) {
-                this.dataC.mouse.set(mx,my);
-            } else {
-                this.dataC.graph.setVertex(this.locatorId,mx,my);
-
-                // mark edges for deletion if they cross
-                this.edgesToDelete = this.dataC.graph.edges.map(() => false);
-                for (let i = 0; i < this.dataC.graph.nEdges; i++) {
-                    if (this.dataC.graph.edges[i].includes(this.locatorId)) {
-                        let crossingEdges = this.dataC.graph.getEdgesIntersectingEdge(i);
-                        if (crossingEdges.length !== 0) {
-                            this.edgesToDelete[i] = true;
-                            for (let j = 0; j < crossingEdges.length; j++) {
-                                this.edgesToDelete[crossingEdges[j]] = true;
-                            }
-                        }
-                    }
-                }
-            }
+            this.dataC.graph.setVertex(this.locatorId,mx,my);
 			
 			// visualize the effect
 			this.computeAndRefresh();
 		});
 		
 		// MOUSE UP
-		this.canvas.addEventListener('mouseup', e => {
-            if (this.creatingEdge) {
-                // check if near point, finish edge
-                const canvasBounds = this.canvas.getBoundingClientRect();
-                const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
-
-                let headId = null;
-                this.dataC.graph.vertices.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) headId = i; });
-
-                if (headId !== null && headId !== this.locatorId) { // user has dragged the edge to a separate point
-                    this.dataC.graph.addEdge(this.locatorId, headId); // attempt to create an edge between the points (does not allow duplicates or crossings)
-                }
-                // else, don't create an edge and cancel edge creation anyway
-
-                this.creatingEdge = false;
-                this.locatorId = null;
-
-                // visualize the effect
-                this.computeAndRefresh();
-            } else {
-                if (this.locatorId !== null) {
-                    for (let i = this.dataC.graph.nEdges - 1; i >= 0; i--) { // start from end of list
-                        if (this.edgesToDelete[i]) { // this edge is marked for deletion due to crossings
-                            this.dataC.graph.deleteEdge(i); // delete the edge
-                        }
-                    }
-                    this.edgesToDelete = [];
-                    this.locatorId = null;
-
-                    // visualize the effect
-                    this.computeAndRefresh();
-                }                
-            }
-        });
+		this.canvas.addEventListener('mouseup', e => { this.locatorId = null; });
 	}
 }
