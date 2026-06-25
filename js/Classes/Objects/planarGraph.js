@@ -38,8 +38,9 @@ class PlanarGraph extends FaceGraph {
 
         cycles = Utils.withoutDuplicateGroupsOrRepeatElements(cycles);
         let cyclesTrimTime = Date.now();
-        // now hitting lag spikes HERE (and less so in the adding faces stage) sometimes at around n = 10 (total ~25 pts), when cycles hits 40k-50k
+        // now polygon subdivision is hitting lag spikes HERE (and less so in the adding faces stage) sometimes at around n = 10 (total ~25 pts), when cycles hits 40k-50k
         // lowest # of cycles I've seen call stack size exceeded at is 184k
+        // 96k cycles didn't exceed call stack but did take 4 full seconds!
 
         // clear and add faces
         this.clearFaces();
@@ -59,12 +60,17 @@ class PlanarGraph extends FaceGraph {
         }
         let trimTime = Date.now();
 
+        // sort faces
+        this.faces = Utils.sortGroups(this.faces);
+        let sortTime = Date.now();
+
         console.log(`--- updateFaces(): Time taken by task ---
 Find cycles: ${cyclesTime - startTime}
 Trim duplicate cycles: ${cyclesTrimTime - cyclesTime} (for ${cyclesLength} cycles)
 Add faces: ${addFacesTime - cyclesTrimTime} (for ${cycles.length} faces)
 Trim faces: ${trimTime - addFacesTime}
-Total: ${trimTime - startTime}`);
+Sort faces: ${sortTime - trimTime}
+Total: ${sortTime - startTime}`);
     }
 
 }

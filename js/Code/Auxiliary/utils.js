@@ -167,6 +167,55 @@ const Utils = {
 
 	sumArray(arr) { return arr.reduce((a,c) => a + c, 0); },
 
+	insertionSort(arr) {
+		let sorted = [];
+		unsortedLoop: for (let i = 0; i < arr.length; i++) {
+			sortedLoop: for (let j = 0; j < sorted.length; j++) {
+				if (arr[i] < sorted[j]) {
+					sorted.splice(j,0,arr[i]);
+					continue unsortedLoop;
+				}
+			}
+			sorted.push(arr[i]);
+		}
+		return sorted;
+	},
+	sortGroups(groups) {
+		let sorted = [];
+		unsortedLoop: for (let i = 0; i < groups.length; i++) {
+			let group = groups[i];
+			sortedLoop: for (let j = 0; j < sorted.length; j++) {
+				let sortedGroup = sorted[j];
+				if (Utils.arraysAreEqual(group, sortedGroup)) {
+					sorted.splice(j,0,group);
+					continue unsortedLoop;
+				}
+
+				let lengthComparison = (group.length < sortedGroup.length) ? -1 : (group.length == sortedGroup.length) ? 0 : 1;
+				let sharedLength = (lengthComparison === -1) ? group.length : sortedGroup.length;
+
+				for (let n = 0; n < sharedLength; n++) {
+					if (group[n] < sortedGroup[n]) {
+						sorted.splice(j,0,group);
+						continue unsortedLoop;
+					} else if (group[n] > sortedGroup[n]) {
+						continue sortedLoop;
+					}
+				}
+
+				// all elements are equal up to their shared length
+				if (lengthComparison !== 1) { // sorted group is longer, therefore "larger"
+					sorted.splice(j,0,group);
+					continue unsortedLoop;
+				}
+			}
+
+			sorted.push(group);
+		}
+
+		return sorted;
+	},
+
 	// To String: for printing point coordinates
 	pointsToString(fieldId, pts){
 		const string = pts.map((p,i)=>
@@ -310,6 +359,11 @@ const Utils = {
 			s += "]";
 			return s;
 		}
+	},
+
+	getCheckboxHTML(thisId, appName, label, checked = true) {
+		let checkedHTML = checked ? " checked" : "";
+		return `<label><input type="checkbox" id="${thisId}-${appName}"${checkedHTML}> ${label}</label>`;
 	},
 
 	displayErrorMessage(message, element, duration = 3000) {

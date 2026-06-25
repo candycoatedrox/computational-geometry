@@ -82,8 +82,6 @@ class PolygonSubdivision extends PlanarGraph {
             let pts = poly.concat(intersectionPts);
             this.setAllVertices(pts);
 
-
-
             console.log(`--- fromPolygon(): Time taken by task ---
 Find intersections: ${intersectionTime - startTime}
 Split edges: ${splitEdgesTime - intersectionTime}
