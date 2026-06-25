@@ -105,18 +105,40 @@ const Utils = {
 
 	// Check if an array contains duplicates
 	includesDuplicates(arr) {
-		for (let i = 0; i < arr.length - 1; i++) {
-			for (let j = i+1; j < arr.length; j++) {
+		for (let i = 1; i < arr.length; i++) {
+			for (let j = 0; j < i; j++) {
 				if (arr[i] === arr[j]) return true;
 			}
 		}
-
 		return false;
 	},
 	withoutDuplicates(arr) {
-		output = [];
+		let output = [];
 		for (let i = 0; i < arr.length; i++) {
 			if (!output.includes(arr[i])) output.push(arr[i]);
+		}
+		return output;
+	},
+
+	includesDuplicateGroups(groups) {
+		for (let i = 1; i < groups.length; i++) {
+			for (let j = 0; j < i; j++) { // check if it matches any previous group
+				if (this.arraysElementsAreSame(groups[i], groups[j])) return true;
+			}
+		}
+		return false;
+	},
+	withoutDuplicateGroups(groups) {
+		let output = [];
+		for (let i = 0; i < groups.length; i++) {
+			if (!output.some(g => this.arraysElementsAreSame(groups[i], g))) output.push(groups[i]);
+		}
+		return output;
+	},
+	withoutDuplicateGroupsOrRepeatElements(groups) {
+		let output = [];
+		for (let i = 0; i < groups.length; i++) {
+			if (!this.includesDuplicates(groups[i]) && !output.some(g => this.arraysElementsAreSame(groups[i], g))) output.push(groups[i]);
 		}
 		return output;
 	},
@@ -126,6 +148,11 @@ const Utils = {
 	arrayIsSubsetOf(arr1,arr2) { return arr1.every(e => arr2.includes(e)); },
 	arraysElementsAreSame(arr1,arr2) { return this.arrayIsSubsetOf(arr1,arr2) && this.arrayIsSubsetOf(arr2,arr1); },
 	arraysAreEqual(arr1,arr2) { return arr1.every((e,i) => arr2[i] == e); },
+
+	groupsIncludesArray(groups,arr) { return groups.some(g => this.arraysElementsAreSame(g,arr)); },
+	groupsAreSubsetOf(g1,g2) { return g1.every(g => this.groupsIncludesArray(g2,g)); },
+	groupsElementsAreSame(g1,g2) { return this.groupsAreSubsetOf(g1,g2) && this.groupsAreSubsetOf(g2,g1); },
+	groupsAreEqual(g1,g2) { return g1.every((g,i) => this.arraysAreEqual(g,g2[i])); },
 	
 	arraysUnion(arr1,arr2) { return this.withoutDuplicates(arr1.concat(arr2)); },
 	arraysIntersection(arr1,arr2) { return arr1.filter(e => arr2.includes(e)); },

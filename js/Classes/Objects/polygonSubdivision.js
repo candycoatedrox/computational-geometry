@@ -1,6 +1,7 @@
 class PolygonSubdivision extends PlanarGraph {
 
     nPolygon = 0;
+    prevSplitEdges = [];
 
     constructor() {
         super();
@@ -20,20 +21,19 @@ class PolygonSubdivision extends PlanarGraph {
 
     // class is meant to be static and only updated via fromPolygon
     fromPolygon(poly) {
+        // how to prevent this entire thing (particularly faces) from running every single frame if 1. no new points have been added/deleted and 2. intersections have just been moved across the same segment
+
         // ensure polygon data is accurate
         poly.updateLabels();
         poly.updateEdges();
 
         let startTime = Date.now();
 
-        // add polygon vertices
         this.nPolygon = poly.length;
-        this.clearVertices();
-        this.vertices.push(...poly);
-        let polyVertexTime = Date.now();
 
         // find intersections
         let edgeIntersections = poly.edges.map(() => []);
+        let intersectionPts = [];
         for (let i = 0; i < poly.nSides; i++) {
             for (let j = i+2; j < poly.nSides; j++) {
                 // exclude edge pairs that share one or more vertices
@@ -43,13 +43,13 @@ class PolygonSubdivision extends PlanarGraph {
 
                 if (intersect !== null) {
                     let intersectCoords = intersect.X;
-                    let index = this.vertices.length;
+                    let index = this.nPolygon + intersectionPts.length;
                     
-                    this.vertices.push(new Point(intersectCoords.x, intersectCoords.y));
+                    intersectionPts.push(new Point(intersectCoords.x, intersectCoords.y));
                     edgeIntersections[i].push({i:index, t:intersect.t});
                     edgeIntersections[j].push({i:index, t:intersect.u});
 
-                    console.log("intersection " + JSON.stringify(intersectCoords));
+                    //console.log("intersection " + JSON.stringify(intersectCoords));
                 }
             }
         }
@@ -77,11 +77,34 @@ class PolygonSubdivision extends PlanarGraph {
         });
         let splitEdgesTime = Date.now();
 
+        if (Utils.groupsElementsAreSame(splitEdges, this.prevSplitEdges)) { // edges have not changed since last time this was run
+            console.log("edges have not changed, canceling fromPolygon");
+            let pts = poly.concat(intersectionPts);
+            this.setAllVertices(pts);
+
+
+
+            console.log(`--- fromPolygon(): Time taken by task ---
+Find intersections: ${intersectionTime - startTime}
+Split edges: ${splitEdgesTime - intersectionTime}
+Total: ${splitEdgesTime - startTime}`);
+            return;
+        } else {
+            this.prevSplitEdges = splitEdges;
+        }
+
         let debug = "split edges:";
         for (let i = 0; i < splitEdges.length; i++) {
             debug += " " + splitEdges[i];
         }
         console.log(debug);
+
+        // add polygon vertices
+        this.clearVertices();
+        this.vertices.push(...poly);
+        this.vertices.push(...intersectionPts);
+        console.log(this.vertices);
+        let polyVertexTime = Date.now();
 
         // add edges
         for (let i = 0; i < splitEdges.length; i++) {
@@ -97,11 +120,11 @@ class PolygonSubdivision extends PlanarGraph {
         this.updateFaces();
         let updateFacesTime = Date.now();
 
-        console.log(`--- Time taken by task ---
-Add polygon vertices: ${polyVertexTime - startTime}
-Find intersections: ${intersectionTime - polyVertexTime}
+        console.log(`--- fromPolygon(): Time taken by task ---
+Find intersections: ${intersectionTime - startTime}
 Split edges: ${splitEdgesTime - intersectionTime}
-Add edges: ${addEdgesTime - splitEdgesTime}
+Add polygon vertices: ${polyVertexTime - splitEdgesTime}
+Add edges: ${addEdgesTime - polyVertexTime}
 Update faces: ${updateFacesTime - addEdgesTime}
 Total: ${updateFacesTime - startTime}`);
 

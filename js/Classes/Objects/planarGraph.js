@@ -6,14 +6,15 @@ class PlanarGraph extends FaceGraph {
 
     // edges
     addEdge(i,j, updateFaces = true) {
-        let tail = this.vertices[i];
-        let head = this.vertices[j];
-        if (this.intersectsAnyEdge(tail, head)) return false; // new edge would create a crossing
-
         if (!super.addEdge(i,j)) return false; // new edge would create a duplicate
 
         if (updateFaces) this.updateFaces();
+        return true;
+    }
+    addNonCrossingEdge(i,j, updateFaces = true) {
+        if (!super.addNonCrossingEdge(i,j)) return false; // new edge would create a duplicate or crossing
 
+        if (updateFaces) this.updateFaces();
         return true;
     }
     deleteEdge(i) {
@@ -27,15 +28,25 @@ class PlanarGraph extends FaceGraph {
 
     // faces
     updateFaces() {
+        let startTime = Date.now();
+
         // find all cycles using path search
         let cycles = this.getAllCycles();
+        let cyclesTime = Date.now();
+        let cyclesLength = cycles.length;
         //console.log(cycles);
+
+        cycles = Utils.withoutDuplicateGroupsOrRepeatElements(cycles);
+        let cyclesTrimTime = Date.now();
+        // now hitting lag spikes HERE (and less so in the adding faces stage) sometimes at around n = 10 (total ~25 pts), when cycles hits 40k-50k
+        // lowest # of cycles I've seen call stack size exceeded at is 184k
 
         // clear and add faces
         this.clearFaces();
-        for (let i = 0; i < cycles.length; i++) { // TEMP!! testing cycle detection
+        for (let i = 0; i < cycles.length; i++) {
             this.addFace(...cycles[i]);
         }
+        let addFacesTime = Date.now();
         //console.log(this.faces);
 
         // cut out duplicates and superfaces
@@ -46,6 +57,14 @@ class PlanarGraph extends FaceGraph {
                 i--; // don't skip the next face!
             }
         }
+        let trimTime = Date.now();
+
+        console.log(`--- updateFaces(): Time taken by task ---
+Find cycles: ${cyclesTime - startTime}
+Trim duplicate cycles: ${cyclesTrimTime - cyclesTime} (for ${cyclesLength} cycles)
+Add faces: ${addFacesTime - cyclesTrimTime} (for ${cycles.length} faces)
+Trim faces: ${trimTime - addFacesTime}
+Total: ${trimTime - startTime}`);
     }
 
 }

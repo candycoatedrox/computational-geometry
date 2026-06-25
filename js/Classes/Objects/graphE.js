@@ -56,6 +56,11 @@ class GraphE {
     setVertexCoords(i, coords) {
         this.vertices[i].coords = coords;
     }
+    setAllVertices(pts) {
+		for (let i = 0; i < this.nVertices; i++) {
+			this.vertices[i].coords = pts[i];
+		}
+    }
     deleteVertex(i) {
         // delete any connected edges, update edges with new indices
         for (let j = 0; j < this.nEdges; j++) {
@@ -262,6 +267,7 @@ class GraphE {
                         }
                     }
                 }, null, cyclesInGroup, visited);
+                console.log(`pushing ${cyclesInGroup.length} cycles to cycles...`);
                 cycles.push(...cyclesInGroup);
             }
         }

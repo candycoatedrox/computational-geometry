@@ -149,7 +149,7 @@ class PolygonSubdivisionApp {
         }
 
         if (this.show.edges.checked) {
-            this.dataC.graph.drawEdges(this.graphics);
+            this.dataC.graph.drawEdges(this.graphics, EDGECOLOR, EDGETHICKNESS - 1);
         }
 		
 		if (this.show.intersections.checked) {
@@ -171,8 +171,6 @@ class PolygonSubdivisionApp {
         const ptsC = this.dataC.graph.vertices;
         const ptsW = this.dataW.vertices;
         const labs = this.dataC.graph.labels;
-        console.log(ptsC);
-        console.log(ptsW);
 
 		const res = Utils.pointsCoordsCWLabsToTableString(ptsC, ptsW, labs);
 		
@@ -351,13 +349,15 @@ class PolygonSubdivisionApp {
                 {
                     this.locatorId = this.dataC.polygon.length;
                     this.addVertex(mx, my, this.locatorId);
-                }
+                } else {
+					return;
+				}
                 // else, do nothing now - but check the mouse-move-event on the clicked-on point	
             } 
             else if (e.detail === 2) // it was a double click
             {
                 // if on an existing point, delete the point, else ignore the double click
-                if (this.dataC.polygon >= 1) { 
+                if (this.dataC.polygon.length >= 1) { 
                     this.deleteVertex(this.locatorId);
                     this.locatorId = null;
                 }

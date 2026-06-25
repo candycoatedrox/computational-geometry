@@ -115,13 +115,13 @@ class PlanarGraphEditorApp {
         this.addVertex(425,400);
         this.addVertex(400,255);
         this.addVertex(55,175);
-        this.dataC.graph.addEdge(0,1);
-        this.dataC.graph.addEdge(0,2);
-        this.dataC.graph.addEdge(0,4);
-        this.dataC.graph.addEdge(0,5);
-        this.dataC.graph.addEdge(1,3);
-        this.dataC.graph.addEdge(1,4);
-        this.dataC.graph.addEdge(2,3);
+        this.dataC.graph.addNonCrossingEdge(0,1);
+        this.dataC.graph.addNonCrossingEdge(0,2);
+        this.dataC.graph.addNonCrossingEdge(0,4);
+        this.dataC.graph.addNonCrossingEdge(0,5);
+        this.dataC.graph.addNonCrossingEdge(1,3);
+        this.dataC.graph.addNonCrossingEdge(1,4);
+        this.dataC.graph.addNonCrossingEdge(2,3);
         //this.dataC.graph.updateLabels();
 		
 		// gui: set up actions
@@ -269,15 +269,15 @@ class PlanarGraphEditorApp {
             this.addVertex(50,225);
             this.addVertex(550,475);
             this.addVertex(340,510);
-            this.dataC.graph.addEdge(0,1);
-            this.dataC.graph.addEdge(0,3);
-            this.dataC.graph.addEdge(0,6);
-            this.dataC.graph.addEdge(1,4);
-            this.dataC.graph.addEdge(2,3);
-            this.dataC.graph.addEdge(2,5);
-            this.dataC.graph.addEdge(3,4);
-            this.dataC.graph.addEdge(3,6);
-            this.dataC.graph.addEdge(5,6);
+            this.dataC.graph.addNonCrossingEdge(0,1);
+            this.dataC.graph.addNonCrossingEdge(0,3);
+            this.dataC.graph.addNonCrossingEdge(0,6);
+            this.dataC.graph.addNonCrossingEdge(1,4);
+            this.dataC.graph.addNonCrossingEdge(2,3);
+            this.dataC.graph.addNonCrossingEdge(2,5);
+            this.dataC.graph.addNonCrossingEdge(3,4);
+            this.dataC.graph.addNonCrossingEdge(3,6);
+            this.dataC.graph.addNonCrossingEdge(5,6);
             //this.dataC.graph.updateLabels();
 
 			this.computeAndRefresh();
@@ -289,18 +289,18 @@ class PlanarGraphEditorApp {
             this.addVertex(80,340);
             this.addVertex(450,390);
             this.addVertex(225,520);
-            this.dataC.graph.addEdge(0,1);
-            this.dataC.graph.addEdge(0,2);
-            this.dataC.graph.addEdge(2,1);
+            this.dataC.graph.addNonCrossingEdge(0,1);
+            this.dataC.graph.addNonCrossingEdge(0,2);
+            this.dataC.graph.addNonCrossingEdge(2,1);
             this.addVertex(280,110);
             this.addVertex(500,120);
             this.addVertex(210,260);
             this.addVertex(580,190);
-            this.dataC.graph.addEdge(3,4);
-            this.dataC.graph.addEdge(4,6);
-            this.dataC.graph.addEdge(6,5);
-            this.dataC.graph.addEdge(5,3);
-            this.dataC.graph.addEdge(4,5);
+            this.dataC.graph.addNonCrossingEdge(3,4);
+            this.dataC.graph.addNonCrossingEdge(4,6);
+            this.dataC.graph.addNonCrossingEdge(6,5);
+            this.dataC.graph.addNonCrossingEdge(5,3);
+            this.dataC.graph.addNonCrossingEdge(4,5);
             //this.dataC.graph.updateLabels();
 
 			this.computeAndRefresh();
@@ -319,7 +319,7 @@ class PlanarGraphEditorApp {
 
             let allEdges = this.dataC.graph.possibleEdges;
             let i = Math.floor(Utils.rand(0, allEdges.length));
-            if (!this.dataC.graph.addEdge(allEdges[i][0], allEdges[i][1])) { // failed to create duplicate or crossing
+            if (!this.dataC.graph.addNonCrossingEdge(allEdges[i][0], allEdges[i][1])) { // failed to create duplicate or crossing
                 Utils.displayErrorMessage("Failed to create edge due to a duplicate or crossing.", this.errorDisplay);
             }
 
@@ -341,13 +341,13 @@ class PlanarGraphEditorApp {
                 let allEdges = this.dataC.graph.possibleEdges;
                 if (nEdges === this.dataC.graph.maxEdges) {
                     for (let i = 0; i < nEdges; i++) {
-                        this.dataC.graph.addEdge(allEdges[i][0], allEdges[i][1]);
+                        this.dataC.graph.addNonCrossingEdge(allEdges[i][0], allEdges[i][1]);
                     }
                 } else {
                     // attempt to generate nEdges unique edges
                     for (let i = 0; i < nEdges; i++) {
                         let j = Math.floor(Utils.rand(0, allEdges.length));
-                        this.dataC.graph.addEdge(allEdges[j][0], allEdges[j][1]);
+                        this.dataC.graph.addNonCrossingEdge(allEdges[j][0], allEdges[j][1]);
                     }
                 }
             }
@@ -376,13 +376,13 @@ class PlanarGraphEditorApp {
             this.addVertex(425,400);
             this.addVertex(400,255);
             this.addVertex(55,175);
-            this.dataC.graph.addEdge(0,1);
-            this.dataC.graph.addEdge(0,2);
-            this.dataC.graph.addEdge(0,4);
-            this.dataC.graph.addEdge(0,5);
-            this.dataC.graph.addEdge(1,3);
-            this.dataC.graph.addEdge(1,4);
-            this.dataC.graph.addEdge(2,3);
+            this.dataC.graph.addNonCrossingEdge(0,1);
+            this.dataC.graph.addNonCrossingEdge(0,2);
+            this.dataC.graph.addNonCrossingEdge(0,4);
+            this.dataC.graph.addNonCrossingEdge(0,5);
+            this.dataC.graph.addNonCrossingEdge(1,3);
+            this.dataC.graph.addNonCrossingEdge(1,4);
+            this.dataC.graph.addNonCrossingEdge(2,3);
             //this.dataC.graph.updateLabels();
 
 			this.computeAndRefresh();
@@ -520,7 +520,7 @@ class PlanarGraphEditorApp {
                 this.dataC.graph.vertices.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) headId = i; });
 
                 if (headId !== null && headId !== this.locatorId) { // user has dragged the edge to a separate point
-                    this.dataC.graph.addEdge(this.locatorId, headId); // attempt to create an edge between the points (does not allow duplicates or crossings)
+                    this.dataC.graph.addNonCrossingEdge(this.locatorId, headId); // attempt to create an edge between the points (does not allow duplicates or crossings)
                 }
                 // else, don't create an edge and cancel edge creation anyway
 
