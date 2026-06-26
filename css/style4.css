@@ -213,6 +213,10 @@ canvas.dual {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.indented {
+  padding-left: 16px;
+}
+
 /* (very simple) column */
 .column {
   float: left;

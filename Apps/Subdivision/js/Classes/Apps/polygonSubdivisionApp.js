@@ -144,11 +144,16 @@ class PolygonSubdivisionApp {
 		}
 
         if (this.show.allFaces.checked) {
-            if (this.colorMode == "multi") {
-                this.dataC.graph.drawFaces(this.graphics);
-            } else {
-                this.dataC.graph.drawFaces(this.graphics, COLORS.setAlpha(THEMEPURPLE));
-            }
+			let singleColor = COLORS.setAlpha(THEMEPURPLE);
+			for (let i = 0; i < this.dataC.graph.nFaces; i++) {
+				if (this.show.faces[i].checked) {
+					if (this.colorMode == "multi") {
+						this.dataC.graph.drawFace(this.graphics, i, COLORS.setAlpha(FACECOLORS[i % FACECOLORS.length]));
+					} else {
+						this.dataC.graph.drawFace(this.graphics, i, singleColor);
+					}
+				}
+			}
         }
 
         if (this.show.edges.checked) {
@@ -207,6 +212,7 @@ class PolygonSubdivisionApp {
 		let boxPtsW = ConvertPoints.canvasToWorldCoords(boxPtsC, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
 		this.dataW.box.setPoints(boxPtsW);
 		this.dataW.range.set(this.canvas);
+		console.log(this.dataC.graph.vertices);
         this.dataW.vertices.setAll(ConvertPoints.canvasToWorldCoords(this.dataC.graph.vertices, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis));
 
 		this.scene();
@@ -226,34 +232,43 @@ class PolygonSubdivisionApp {
     }
 	clearVertices() {
         this.dataC.polygon.length = 0;
-		this.dataC.graph.clearVertices();
 		this.dataW.vertices.length = 0;
 		this.showFacesMenu.innerHTML = "";
 	}
     // graph
     updateGraph() {
-		let prevFaces = this.dataC.graph.faces.slice();
-        this.dataC.graph.fromPolygon(this.dataC.polygon);
-
-
 		
 		// X. have the appropriate number of show boxes for faces (set all to whatever faces is every time it updates)
-		// 2. have allFaces's event listener update all face checkboxes to match
-		// 3. setup event listeners for each checkbox
-		// 4. when all faces are unchecked, change allFaces to unchecked; when at least one is checked, change allFaces to checked
-		// 5. have the state of those checkboxes actually affect which faces are drawn
+		// X. have allFaces's event listener update all face checkboxes to match
+		// X. setup event listeners for each checkbox
+		// X. when all faces are unchecked, change allFaces to unchecked; when at least one is checked, change allFaces to checked
+		// X. have the state of those checkboxes actually affect which faces are drawn
 		// 6. carry over checked state *of the given face* when updated
 
-		let allChecked = this.show.allFaces.checked;
-		let prevFaceStates = this.show.faces.map(c => c.checked);
-		this.show.faces.length = 0;
-		this.showFacesMenu.innerHTML = "";
-		for (let i = 0; i < this.dataC.graph.nFaces; i++) {
-			if (i !== 0) this.showFacesMenu.innerHTML += " ";
-			this.showFacesMenu.innerHTML += Utils.getCheckboxHTML(`showFace${i}`, "polygonSubdivisionApp", i+1, allChecked);
-			this.show.faces.push(document.getElementById("showFace" + i + "-polygonSubdivisionApp"));
+		// somehow have it check if the number of faces hasn't changed and keep checkbox data if so (i.e. if a new point has been added and a face has gained a vertex, but nothing else has changed)
+		// but have this not apply if graph was just randomized/reset/set to an example. hmmmmm
+
+
+		let prevFaces = this.dataC.graph.faces.slice();
+        if (this.dataC.graph.fromPolygon(this.dataC.polygon)) { // faces were changed
+			let menu = "";
+			let allChecked = this.show.allFaces.checked;
+			let prevFaceStates = this.show.faces.map(c => c.checked);
+			this.show.faces.length = 0;
+			for (let i = 0; i < this.dataC.graph.nFaces; i++) {
+				if (i !== 0) menu += " ";
+				menu += Utils.getCheckboxHTML(`showFace${i}`, "polygonSubdivisionApp", i+1, allChecked);
+			}
+			this.showFacesMenu.innerHTML = menu;
+			for (let i = 0; i < this.dataC.graph.nFaces; i++) {
+				this.show.faces.push(document.getElementById("showFace" + i + "-polygonSubdivisionApp"));
+				this.show.faces[i].addEventListener("change", () => {
+					this.show.allFaces.checked = this.show.faces.some(f => f.checked);
+					this.refresh();
+				});
+			}
 		}
-		
+
 
 
 
@@ -278,13 +293,9 @@ class PolygonSubdivisionApp {
 		this.show.edges.addEventListener("change", () => this.refresh());
 
 		this.show.allFaces.addEventListener("change", () => {
-			this.refresh();
 			let isChecked = this.show.allFaces.checked;
-			console.log(this.show.faces);
-			this.show.faces[0].checked = isChecked; // doesn't work??
-			for (let i = 0; i < this.show.faces.length; i++) {
-				this.show.faces[i].checked = isChecked; // only setting the last one...???
-			}
+			this.show.faces.forEach(c => c.checked = isChecked);
+			this.refresh();
 		});
 
 		this.show.test.addEventListener("change", () => this.refresh());

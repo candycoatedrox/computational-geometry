@@ -21,8 +21,6 @@ class PolygonSubdivision extends PlanarGraph {
 
     // class is meant to be static and only updated via fromPolygon
     fromPolygon(poly) {
-        // how to prevent this entire thing (particularly faces) from running every single frame if 1. no new points have been added/deleted and 2. intersections have just been moved across the same segment
-
         // ensure polygon data is accurate
         poly.updateLabels();
         poly.updateEdges();
@@ -32,7 +30,8 @@ class PolygonSubdivision extends PlanarGraph {
         this.nPolygon = poly.length;
 
         // find intersections
-        let edgeIntersections = poly.edges.map(() => []);
+        let edgeIntersections = [];
+        poly.edges.forEach(() => edgeIntersections.push([]));
         let intersectionPts = [];
         for (let i = 0; i < poly.nSides; i++) {
             for (let j = i+2; j < poly.nSides; j++) {
@@ -77,54 +76,66 @@ class PolygonSubdivision extends PlanarGraph {
         });
         let splitEdgesTime = Date.now();
 
+        console.log(splitEdges),
+        console.log(this.prevSplitEdges);
         if (Utils.groupsElementsAreSame(splitEdges, this.prevSplitEdges)) { // edges have not changed since last time this was run
-            console.log("edges have not changed, canceling fromPolygon");
-            let pts = poly.concat(intersectionPts);
-            this.setAllVertices(pts);
+            if (poly.length === 0) {
+                this.clearVertices();
+            } else if (poly.length === 1) {
+                this.clearVertices();
+                this.addVertex(poly[0].x, poly[0].y);
+            } else {
+                console.log("edges have not changed, canceling fromPolygon");
+                let pts = poly.concat(intersectionPts);
+                this.setAllVertices(pts);
+            }
 
             console.log(`--- fromPolygon(): Time taken by task ---
 Find intersections: ${intersectionTime - startTime}
 Split edges: ${splitEdgesTime - intersectionTime}
 Total: ${splitEdgesTime - startTime}`);
-            return;
+
+            return false; // faces have not changed
         } else {
             this.prevSplitEdges = splitEdges;
-        }
 
-        let debug = "split edges:";
-        for (let i = 0; i < splitEdges.length; i++) {
-            debug += " " + splitEdges[i];
-        }
-        console.log(debug);
-
-        // add polygon vertices
-        this.clearVertices();
-        this.vertices.push(...poly);
-        this.vertices.push(...intersectionPts);
-        console.log(this.vertices);
-        let polyVertexTime = Date.now();
-
-        // add edges
-        for (let i = 0; i < splitEdges.length; i++) {
-            let edges = splitEdges[i];
-            for (let j = 0; j < edges.length - 1; j++) {
-                this.addEdge(edges[j], edges[j+1], false);
+            let debug = "split edges:";
+            for (let i = 0; i < splitEdges.length; i++) {
+                debug += " " + splitEdges[i];
             }
-        }
-        console.log(this.edges);
-        let addEdgesTime = Date.now();
+            console.log(debug);
 
-        this.updateLabels();
-        this.updateFaces();
-        let updateFacesTime = Date.now();
+            // add polygon vertices
+            this.clearVertices();
+            this.vertices.push(...poly);
+            this.vertices.push(...intersectionPts);
+            console.log(this.vertices);
+            let polyVertexTime = Date.now();
 
-        console.log(`--- fromPolygon(): Time taken by task ---
+            // add edges
+            for (let i = 0; i < splitEdges.length; i++) {
+                let edges = splitEdges[i];
+                for (let j = 0; j < edges.length - 1; j++) {
+                    this.addEdge(edges[j], edges[j+1], false);
+                }
+            }
+            console.log(this.edges);
+            let addEdgesTime = Date.now();
+
+            this.updateLabels();
+            this.updateFaces();
+            let updateFacesTime = Date.now();
+
+            console.log(`--- fromPolygon(): Time taken by task ---
 Find intersections: ${intersectionTime - startTime}
 Split edges: ${splitEdgesTime - intersectionTime}
 Add polygon vertices: ${polyVertexTime - splitEdgesTime}
 Add edges: ${addEdgesTime - polyVertexTime}
 Update faces: ${updateFacesTime - addEdgesTime}
 Total: ${updateFacesTime - startTime}`);
+
+            return true; // faces were changed
+        }
 
         // starts hitting significant lag spikes around 5 intersections!!
         // updateFaces() appears to be the worst offender in here but something OUTSIDE of this function is also causing it to spike??

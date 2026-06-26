@@ -363,7 +363,7 @@ const Utils = {
 
 	getCheckboxHTML(thisId, appName, label, checked = true) {
 		let checkedHTML = checked ? " checked" : "";
-		return `<label><input type="checkbox" id="${thisId}-${appName}"${checkedHTML}> ${label}</label>`;
+		return `<label><input type="checkbox" id="${thisId}-${appName}"${checkedHTML}>&nbsp;${label}</label>`;
 	},
 
 	displayErrorMessage(message, element, duration = 3000) {
