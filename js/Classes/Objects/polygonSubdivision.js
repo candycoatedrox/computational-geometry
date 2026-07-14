@@ -136,11 +136,6 @@ Total: ${updateFacesTime - startTime}`);
 
             return true; // faces were changed
         }
-
-        // starts hitting significant lag spikes around 5 intersections!!
-        // updateFaces() appears to be the worst offender in here but something OUTSIDE of this function is also causing it to spike??
-        // oh dear lord running generate random with 10 points took 1.6 seconds. running it with 15 points TIMED OUT THE PAGE
-        // trying to run it with 9 points this time exceeded the maximum call stack size on line 265 of graphE (cycles.push(...cyclesInGroup)) oh noooo
     }
     fromPoints(pts) {
         this.nPolygon = pts.length;

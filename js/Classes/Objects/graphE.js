@@ -263,7 +263,7 @@ class GraphE {
                         let n = neighbors[j];
                         if (path.includes(n)) {
                             let c = path.slice(path.indexOf(n));
-                            if (c.length >= 3) cyclesInGroup.push(c);
+                            if (c.length >= 3 && !Utils.includesGroup(cyclesInGroup, c)) cyclesInGroup.push(c);
                         }
                     }
                 }, null, cyclesInGroup, visited);

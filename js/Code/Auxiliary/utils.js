@@ -120,6 +120,9 @@ const Utils = {
 		return output;
 	},
 
+	includesGroup(groups, arr) {
+		return (groups.some(g => this.arraysElementsAreSame(g, arr)));
+	},
 	includesDuplicateGroups(groups) {
 		for (let i = 1; i < groups.length; i++) {
 			for (let j = 0; j < i; j++) { // check if it matches any previous group

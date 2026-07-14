@@ -33,22 +33,19 @@ class PlanarGraph extends FaceGraph {
         // find all cycles using path search
         let cycles = this.getAllCycles();
         let cyclesTime = Date.now();
-        let cyclesLength = cycles.length;
-        //console.log(cycles);
+        console.log(cycles);
 
-        cycles = Utils.withoutDuplicateGroupsOrRepeatElements(cycles);
-        let cyclesTrimTime = Date.now();
-        // now polygon subdivision is hitting lag spikes HERE (and less so in the adding faces stage) sometimes at around n = 10 (total ~25 pts), when cycles hits 40k-50k
-        // lowest # of cycles I've seen call stack size exceeded at is 184k
-        // 96k cycles didn't exceed call stack but did take 4 full seconds!
+        // getAllCycles is now the problem again. hitting lag spikes around n = 10 (total ~25 pts), find cycles time = 1384ms for 2858 cycles
+        // add faces & trim faces handle 4468 cycles just fine (2ms and 32ms respectively), don't need to worry about those (find cycles = 2812ms with n = 11 and 26 total points)
 
         // clear and add faces
         this.clearFaces();
         for (let i = 0; i < cycles.length; i++) {
-            this.addFace(...cycles[i]);
+            this.faces.push(Utils.withoutDuplicates(cycles[i])); // manually add faces, without having to check for duplicates *again* in addFace
         }
         let addFacesTime = Date.now();
-        //console.log(this.faces);
+        let untrimmedFaces = this.nFaces;
+        console.log(this.faces);
 
         // cut out duplicates and superfaces
         for (let i = 0; i < this.nFaces; i++) {
@@ -66,9 +63,8 @@ class PlanarGraph extends FaceGraph {
 
         console.log(`--- updateFaces(): Time taken by task ---
 Find cycles: ${cyclesTime - startTime}
-Trim duplicate cycles: ${cyclesTrimTime - cyclesTime} (for ${cyclesLength} cycles)
-Add faces: ${addFacesTime - cyclesTrimTime} (for ${cycles.length} faces)
-Trim faces: ${trimTime - addFacesTime}
+Add faces: ${addFacesTime - cyclesTime} (for ${cycles.length} cycles)
+Trim faces: ${trimTime - addFacesTime} (for ${untrimmedFaces} faces)
 Sort faces: ${sortTime - trimTime}
 Total: ${sortTime - startTime}`);
     }
