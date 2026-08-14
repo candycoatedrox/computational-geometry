@@ -9,7 +9,7 @@ class FaceGraph extends GraphE {
     get nFaces() {
         return this.faces.length;
     }
-    facesToString(i) {
+    faceToString(i) {
         return Utils.groupToString(this.faces[i], this.labels);
     }
     get facesToListString() {

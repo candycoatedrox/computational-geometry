@@ -32,23 +32,25 @@ class GraphE {
 
     // vertices
     addVertex(x,y, index = this.nVertices) {
+        let v = new Point(x,y);
         if (index === this.nVertices) {
-            this.vertices.push(new Point(x,y));
+            this.vertices.push(v);
         } else {
-            this.vertices.splice(index, 0, new Point(x,y));
+            this.vertices.splice(index, 0, v);
 
             // shift all edges
             for (let i = 0; i < this.nEdges; i++) {
-                let e = this.edges[j];
+                let e = this.edges[i];
                 if (e[0] >= index) e[0]++;
                 if (e[1] >= index) e[1]++;
             }
         }
         
         this.updateLabels();
+        return v;
     }
     addVertexCoords(coords, index = this.nVertices) {
-        this.addVertex(coords.x, coords.y, index);
+        return this.addVertex(coords.x, coords.y, index);
     }
     setVertex(i,x,y) {
         this.vertices[i].set(x,y);
@@ -96,9 +98,9 @@ class GraphE {
     addEdge(i,j) {
         if (i === j) {
             return false; // cannot add an edge between a vertex and itself
+        } else if (this.verticesAreConnected(i,j)) {
+            return false; // no duplicate edges
         } else {
-            if (this.verticesAreConnected(i,j)) return false; // no duplicate edges
-
             this.edges.push([i,j]);
             return true;
         }

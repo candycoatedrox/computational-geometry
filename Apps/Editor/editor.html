@@ -39,6 +39,10 @@
 		<script src="../../js/Classes/Objects/faceGraph.js"></script>
 		<script src="../../js/Classes/Objects/tree.js"></script>
 		<script src="../../js/Classes/Objects/planarGraph.js"></script>
+
+		<script src="../../js/Classes/Objects/quadEdge.js"></script>
+		<script src="../../js/Classes/Objects/graphQ.js"></script>
+		<script src="../../js/Classes/Objects/planarGraphQuad.js"></script>
 		
 		
 		<!-- Code -->
@@ -71,6 +75,7 @@
 	<script src="js/Classes/Apps/nonCrossingGraphEditorApp.js"></script>
 	<script src="js/Classes/Apps/treeEditorApp.js"></script>
 	<script src="js/Classes/Apps/planarGraphEditorApp.js"></script>
+	<script src="js/Classes/Apps/planarQuadGraphEditorApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
 <div>
@@ -122,6 +127,7 @@
 	<button data-tab="nonCrossingGraphEditorApp">Non-Crossing Graph</button>
 	<button data-tab="treeEditorApp">Tree</button>
 	<button data-tab="planarGraphEditorApp">Planar Graph</button>
+	<button data-tab="planarQuadGraphEditorApp">Quad-Edge Planar Graph</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -554,6 +560,107 @@
 	</div>
 </div>
 
+<!-- >═══════════════════════════════════════════════════
+     TAB 6 — QUAD-EDGE PLANAR GRAPH EDITOR APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container" id="tab-planarQuadGraphEditorApp">
+	<div class="canvas-wrap">
+		<canvas id="canvas-planarQuadGraphEditorApp" width="300" height="300"></canvas>
+		<div class="canvas-hint">
+			Visualize and edit a planar graph using a quad-edge data structure
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-planarQuadGraphEditorApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-planarQuadGraphEditorApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-planarQuadGraphEditorApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-planarQuadGraphEditorApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showVertices-planarQuadGraphEditorApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showEdges-planarQuadGraphEditorApp" checked> Edges</label>
+			<label><input type="checkbox" id="showFaces-planarQuadGraphEditorApp" checked> Faces</label>
+		</div>
+		<div class="panel-section">
+			<h3>FACE COLORS</h3>
+			<label><input type="radio" id="colorMulti-planarQuadGraphEditorApp" name="color-planarQuadGraphEditorApp" checked> Multicolor</label>
+			<label><input type="radio" id="colorSingle-planarQuadGraphEditorApp" name="color-planarQuadGraphEditorApp"> Single Color</label>
+		</div>
+		<div class="panel-section">
+			<h3>MODE</h3>
+			<label><input type="radio" id="modeVertex-planarQuadGraphEditorApp" name="mode-planarQuadGraphEditorApp" value="vertex" checked> Edit Vertices</label>
+			<label><input type="radio" id="modeEdge-planarQuadGraphEditorApp" name="mode-planarQuadGraphEditorApp" value="edge"> Edit Edges</label>
+			<br>
+			<label><input type="radio" id="modeSplit-planarQuadGraphEditorApp" name="mode-planarQuadGraphEditorApp" value="split"> Split Edges</label>
+			<label><input type="radio" id="modeView-planarQuadGraphEditorApp" name="mode-planarQuadGraphEditorApp" value="view"> View</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="planarQuadGraphEditorApp-list" id="planarQuadGraphEditorApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<!-- edges & faces -->
+			<div class="column">
+				<h3>EDGES</h3>
+				<div class="planarQuadGraphEditorApp-list" id="planarQuadGraphEditorApp-edges">
+				</div>
+			</div>
+			<div class="column">
+				<h3>FACES</h3>
+				<div class="planarQuadGraphEditorApp-list" id="planarQuadGraphEditorApp-faces">
+				</div>
+			</div>
+		</div>
+		<div class="panel-section">
+			<!-- quad-edge info display -->
+			<h3>CURRENTLY SELECTED EDGE</h3>
+			<div class="error-display" id="planarQuadGraphEditorApp-edgeInfoHeaderA">
+			</div>
+			<div class="planarQuadGraphEditorApp-list" id="planarQuadGraphEditorApp-edgeInfoA">
+			</div>
+			<div class="error-display" id="planarQuadGraphEditorApp-edgeInfoHeaderB">
+			</div>
+			<div class="planarQuadGraphEditorApp-list" id="planarQuadGraphEditorApp-edgeInfoB">
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="error-display" id="planarQuadGraphEditorApp-errors">
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonA-planarQuadGraphEditorApp">Example A</button>
+				<button class="pill" id="buttonB-planarQuadGraphEditorApp">Example B</button>
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonRandomVertex-planarQuadGraphEditorApp">Add Random Vertex</button>
+				<button class="pill" id="buttonRandomEdge-planarQuadGraphEditorApp">Add Random Edge</button>
+				<button class="pill" id="buttonGenerate-planarQuadGraphEditorApp">Generate Random</button>
+				<select id="nVertices-planarQuadGraphEditorApp" name="nVertices-planarQuadGraphEditorApp">
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5" selected>5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="15">15</option>
+					<option value="20">20</option>
+				</select>
+				<label><input type="checkbox" id="genEdges-planarQuadGraphEditorApp" checked> Create Edges</label>
+			</div>
+			<br>
+			<div class="ctrl-row">
+				<button class="pill danger" id="buttonClearEdges-planarQuadGraphEditorApp">Clear Edges</button>
+				<button class="pill danger" id="buttonClear-planarQuadGraphEditorApp">Clear Graph</button>
+				<button class="pill danger" id="buttonReset-planarQuadGraphEditorApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 	
 <!-- .................................................................................................
      JS: INITIALIZE and START EXECUTION of ACTIVE TAB-APP 
@@ -566,6 +673,7 @@
 		var NONCROSSINGGRAPHEDITORAPP = new NonCrossingGraphEditorApp();
 		var TREEEDITORAPP = new TreeEditorApp();
 		var PLANARGRAPHEDITORAPP = new PlanarGraphEditorApp();
+		var PLANARQUADGRAPHEDITORAPP = new PlanarQuadGraphEditorApp();
 	</script>
 </div>	
 <!-- Draw active app -->	
