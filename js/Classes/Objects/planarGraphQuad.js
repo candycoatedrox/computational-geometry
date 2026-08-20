@@ -8,6 +8,22 @@ class PlanarGraphQuad extends FaceGraph {
         this.quadEdge = new GraphQ();
     }
 
+    initDefaultGraphState() { // TESTING ONLY
+        // assumes 3 vertices have already been created
+        this.edges.push([0,1]);
+        this.edges.push([1,2]);
+        this.edges.push([2,0]);
+        this.faces.push([0,1,2]);
+
+        this.quadEdge.faces.push([0,1,2]);
+        this.quadEdge.edges.push(new QuadEdge(1, 0, 1, -1, 0, 4, 2, 2, 4));
+        this.quadEdge.edges.push(new QuadEdge(0, 1, 0, 0, -1, 3, 5, 5, 3));
+        this.quadEdge.edges.push(new QuadEdge(3, 1, 2, -1, 0, 0, 4, 4, 0));
+        this.quadEdge.edges.push(new QuadEdge(2, 2, 1, 0, -1, 5, 1, 1, 5));
+        this.quadEdge.edges.push(new QuadEdge(5, 2, 0, -1, 0, 2, 0, 0, 2));
+        this.quadEdge.edges.push(new QuadEdge(4, 0, 2, 0, -1, 1, 3, 3, 1));
+    }
+
     // getters
     quadEdgeInfo(i) {
         return this.quadEdge.quadEdgePairInfo(i*2, this.labels);

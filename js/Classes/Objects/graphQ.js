@@ -23,7 +23,7 @@ class GraphQ {
     quadEdgePairInfo(i, labs) {
         let thisHeader = `Edge ${i}: ${this.edgeToString(i, labs)}`;
         let thisInfo = this.quadEdgeInfoToString(i, labs);
-        let thisHeader = `Edge ${i+1}: ${this.edgeToString(i+1, labs)}`;
+        let twinHeader = `Edge ${i+1}: ${this.edgeToString(i+1, labs)}`;
         let twinInfo = this.quadEdgeInfoToString(i+1, labs);
 
         let info = {headerA: thisHeader, headerB: twinHeader, infoA: thisInfo, infoB: twinInfo};
@@ -195,8 +195,8 @@ class GraphQ {
 
         
 
-        this.edges.push(new QuadEdge(this.nEdges+1, i,j, left, right, headEdge, tailEdge, leftEdge, rightEdge))
-        this.edges.push(new QuadEdge(this.nEdges-1, j,i, left, right, headEdge, tailEdge, leftEdge, rightEdge))
+        this.edges.push(new QuadEdge(this.nEdges+1, i,j, left, right, headEdge, tailEdge, leftEdge, rightEdge));
+        this.edges.push(new QuadEdge(this.nEdges-1, j,i, left, right, headEdge, tailEdge, leftEdge, rightEdge));
 
         // TODO: update faces
 
@@ -208,7 +208,7 @@ class GraphQ {
     deleteEdge(i) {
         const t = this.edges[i].twin
         if (t < i) {
-            this.deleteEdge(t)
+            this.deleteEdge(t);
         } else {
             // should delete both this edge and its twin (i+1)
 

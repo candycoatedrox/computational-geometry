@@ -119,20 +119,7 @@ class PlanarQuadGraphEditorApp {
             vertices: vertW
 		};
 
-        this.addVertex(225,75);
-        this.addVertex(200,350);
-        this.addVertex(600,175);
-        this.addVertex(425,400);
-        this.addVertex(400,255);
-        this.addVertex(55,175);
-        this.dataC.graph.addNonCrossingEdge(0,1);
-        this.dataC.graph.addNonCrossingEdge(0,2);
-        this.dataC.graph.addNonCrossingEdge(0,4);
-        this.dataC.graph.addNonCrossingEdge(0,5);
-        this.dataC.graph.addNonCrossingEdge(1,3);
-        this.dataC.graph.addNonCrossingEdge(1,4);
-        this.dataC.graph.addNonCrossingEdge(2,3);
-        //this.dataC.graph.updateLabels();
+        this.initDefaultGraphState();
 		
 		// gui: set up actions
 		this.setupShowEvents();
@@ -268,6 +255,13 @@ class PlanarQuadGraphEditorApp {
 	}
 
     // manage vertices and edges
+    initDefaultGraphState() { // TESTING ONLY
+        this.clearVertices();
+        this.addVertex(185,135);
+        this.addVertex(530,125);
+        this.addVertex(340,420);
+        this.dataC.graph.initDefaultGraphState();
+    }
     // vertices
 	addVertex(xC, yC, index = this.dataC.graph.nVertices) {
 
@@ -285,9 +279,6 @@ class PlanarQuadGraphEditorApp {
         this.dataW.vertices.splice(i,1); 				// delete the point
     }
 	clearVertices() {
-
-        // NOT UPDATED !!
-        
 		this.dataC.graph.clearVertices();
 		this.dataW.vertices.length = 0;
 	}
@@ -417,23 +408,7 @@ class PlanarQuadGraphEditorApp {
 		});
 
 		this.buttons.reset.addEventListener("click", () => {
-            this.clearVertices();
-
-            this.addVertex(225,75);
-            this.addVertex(200,350);
-            this.addVertex(600,175);
-            this.addVertex(425,400);
-            this.addVertex(400,255);
-            this.addVertex(55,175);
-            this.dataC.graph.addNonCrossingEdge(0,1);
-            this.dataC.graph.addNonCrossingEdge(0,2);
-            this.dataC.graph.addNonCrossingEdge(0,4);
-            this.dataC.graph.addNonCrossingEdge(0,5);
-            this.dataC.graph.addNonCrossingEdge(1,3);
-            this.dataC.graph.addNonCrossingEdge(1,4);
-            this.dataC.graph.addNonCrossingEdge(2,3);
-            //this.dataC.graph.updateLabels();
-
+            this.initDefaultGraphState();
 			this.computeAndRefresh();
 		});
 	}
