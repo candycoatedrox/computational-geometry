@@ -6,14 +6,15 @@ class PlanarGraphQuad extends FaceGraph {
         super();
 
         this.quadEdge = new GraphQ();
+        this.faces = this.quadEdge.faces;
     }
 
-    initDefaultGraphState() { // TESTING ONLY
+    // default states
+    initDefaultGraphStateA() { // TESTING ONLY
         // assumes 3 vertices have already been created
         this.edges.push([0,1]);
         this.edges.push([1,2]);
         this.edges.push([2,0]);
-        this.faces.push([0,1,2]);
 
         this.quadEdge.faces.push([0,1,2]);
         this.quadEdge.edges.push(new QuadEdge(1, 0, 1, -1, 0, 4, 2, 2, 4));
@@ -22,6 +23,27 @@ class PlanarGraphQuad extends FaceGraph {
         this.quadEdge.edges.push(new QuadEdge(2, 2, 1, 0, -1, 5, 1, 1, 5));
         this.quadEdge.edges.push(new QuadEdge(5, 2, 0, -1, 0, 2, 0, 0, 2));
         this.quadEdge.edges.push(new QuadEdge(4, 0, 2, 0, -1, 1, 3, 3, 1));
+    }
+    initDefaultGraphStateB() { // TESTING ONLY
+        // assumes 4 vertices have already been created
+        this.edges.push([0,1]);
+        this.edges.push([1,2]);
+        this.edges.push([2,0]);
+        this.edges.push([0,3]);
+        this.edges.push([3,2]);
+
+        this.quadEdge.faces.push([0,1,2]);
+        this.quadEdge.faces.push([2,0,3]);
+        this.quadEdge.edges.push(new QuadEdge(1, 0, 1, -1, 0, 7, 2, 2, 4));
+        this.quadEdge.edges.push(new QuadEdge(0, 1, 0, 0, -1, 3, 6, 5, 3));
+        this.quadEdge.edges.push(new QuadEdge(3, 1, 2, -1, 0, 0, 4, 9, 0));
+        this.quadEdge.edges.push(new QuadEdge(2, 2, 1, 0, -1, 5, 1, 1, 8));
+        this.quadEdge.edges.push(new QuadEdge(5, 2, 0, 1, 0, 8, 0, 6, 2));
+        this.quadEdge.edges.push(new QuadEdge(4, 0, 2, 0, 1, 1, 9, 3, 7));
+        this.quadEdge.edges.push(new QuadEdge(7, 0, 3, 0, -1, 4, 8, 8, 1));
+        this.quadEdge.edges.push(new QuadEdge(6, 3, 0, -1, 0, 9, 5, 0, 9));
+        this.quadEdge.edges.push(new QuadEdge(9, 3, 2, 0, -1, 6, 3, 4, 6));
+        this.quadEdge.edges.push(new QuadEdge(8, 2, 3, -1, 0, 2, 7, 7, 5));
     }
 
     // getters
@@ -50,8 +72,7 @@ class PlanarGraphQuad extends FaceGraph {
         this.edges.splice(e+1, 0, [index, tail]);
         edge[1] = index;
 
-        this.quadEdge.splitEdgeWithVertex(v,e*2, index);
-        this.updateFaces();
+        this.quadEdge.splitEdgeWithVertex(v, e*2, index);
         return v;
     }
     splitEdgeWithVertexCoords(coords, e, index = this.nVertices) {
@@ -78,7 +99,6 @@ class PlanarGraphQuad extends FaceGraph {
 
 
 
-            this.updateFaces();
             return true;
         }
     }
@@ -93,8 +113,6 @@ class PlanarGraphQuad extends FaceGraph {
     addEdge(i,j) {
         if (!super.addEdge(i,j)) return false; // new edge would create a duplicate
         this.quadEdge.addEdge(i,j);
-
-        this.updateFaces();
         return true;
     }
     addNonCrossingEdge(i,j) {
@@ -106,7 +124,6 @@ class PlanarGraphQuad extends FaceGraph {
     deleteEdge(i) {
         this.edges.splice(i,1);
         this.quadEdge.deleteEdge(i*2);
-        this.updateFaces();
     }
     clearEdges() {
         super.clearEdges();
@@ -114,8 +131,8 @@ class PlanarGraphQuad extends FaceGraph {
     }
 
     // faces
-    updateFaces() {
-        this.faces = this.quadEdge.faces;
+    faceOrientation(i) {
+        return this.quadEdge.faceOrientation(i);
     }
 
 }

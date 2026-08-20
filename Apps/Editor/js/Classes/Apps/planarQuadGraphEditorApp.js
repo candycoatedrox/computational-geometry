@@ -119,7 +119,7 @@ class PlanarQuadGraphEditorApp {
             vertices: vertW
 		};
 
-        this.initDefaultGraphState();
+        this.initDefaultGraphStateA();
 		
 		// gui: set up actions
 		this.setupShowEvents();
@@ -196,7 +196,7 @@ class PlanarQuadGraphEditorApp {
 
         // edges & faces
         const eList = this.dataC.graph.edgesToListString;
-        const fList = this.dataC.graph.facesToListString;
+        const fList = this.dataC.graph.quadEdge.facesToListString(this.dataC.graph.labels);  //this.dataC.graph.facesToListString;
 
         this.edgeList.innerHTML = eList;
         this.faceList.innerHTML = fList;
@@ -255,22 +255,26 @@ class PlanarQuadGraphEditorApp {
 	}
 
     // manage vertices and edges
-    initDefaultGraphState() { // TESTING ONLY
+    initDefaultGraphStateA() { // TESTING ONLY
         this.clearVertices();
         this.addVertex(185,135);
         this.addVertex(530,125);
         this.addVertex(340,420);
-        this.dataC.graph.initDefaultGraphState();
+        this.dataC.graph.initDefaultGraphStateA();
     }
     // vertices
 	addVertex(xC, yC, index = this.dataC.graph.nVertices) {
-
-        // NOT UPDATED !!
-
 		const ptW = ConvertPoint.canvasToWorldCoords({x:xC, y:yC}, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
         this.dataC.graph.addVertex(xC,yC,index);
         this.dataW.vertices.splice(index, 0, new Point(ptW.x, ptW.y));
 	}
+    splitEdgeWithVertex(xC, yC, e, index = this.dataC.graph.nVertices) {
+		const ptW = ConvertPoint.canvasToWorldCoords({x:xC, y:yC}, this.dataC.origin, this.dataC.axes.xAxis, this.dataC.axes.yAxis);
+        this.dataC.graph.splitEdgeWithVertex(xC,yC,e,index);
+        this.dataW.vertices.splice(index, 0, new Point(ptW.x, ptW.y));
+
+        if (this.selectedEdge > e) this.selectedEdge++;
+    }
     deleteVertex(i) {
 
         // NOT UPDATED !!
@@ -281,6 +285,9 @@ class PlanarQuadGraphEditorApp {
 	clearVertices() {
 		this.dataC.graph.clearVertices();
 		this.dataW.vertices.length = 0;
+
+        this.locatorId = null;
+        this.selectedEdge = null;
 	}
 	
 	// set up gui
@@ -302,23 +309,11 @@ class PlanarQuadGraphEditorApp {
 		this.buttons.a.addEventListener("click", () => {
             this.clearVertices();
 
-            this.addVertex(300,380);
-            this.addVertex(250,275);
-            this.addVertex(340,600);
-            this.addVertex(90,580);
-            this.addVertex(50,225);
-            this.addVertex(550,475);
-            this.addVertex(340,510);
-            this.dataC.graph.addNonCrossingEdge(0,1);
-            this.dataC.graph.addNonCrossingEdge(0,3);
-            this.dataC.graph.addNonCrossingEdge(0,6);
-            this.dataC.graph.addNonCrossingEdge(1,4);
-            this.dataC.graph.addNonCrossingEdge(2,3);
-            this.dataC.graph.addNonCrossingEdge(2,5);
-            this.dataC.graph.addNonCrossingEdge(3,4);
-            this.dataC.graph.addNonCrossingEdge(3,6);
-            this.dataC.graph.addNonCrossingEdge(5,6);
-            //this.dataC.graph.updateLabels();
+            this.addVertex(200,290);
+            this.addVertex(375,70);
+            this.addVertex(540,300);
+            this.addVertex(400,535);
+            this.dataC.graph.initDefaultGraphStateB();
 
 			this.computeAndRefresh();
 		});
@@ -408,7 +403,7 @@ class PlanarQuadGraphEditorApp {
 		});
 
 		this.buttons.reset.addEventListener("click", () => {
-            this.initDefaultGraphState();
+            this.initDefaultGraphStateA();
 			this.computeAndRefresh();
 		});
 	}
@@ -458,10 +453,10 @@ class PlanarQuadGraphEditorApp {
 		this.canvas.addEventListener('mousedown', e => {
 			const canvasBounds = this.canvas.getBoundingClientRect();
 			const mx = e.clientX-canvasBounds.left, my = e.clientY-canvasBounds.top;
+            const m = {x:mx, y:my};
 
             if (this.editState == "edge" || this.editState == "view") {
                 let prevEdge = this.selectedEdge;
-                const m = {x:mx, y:my};
                 this.dataC.graph.edges.forEach((e,i) => { if (this.dataC.graph.edgeDistanceToPoint(i,m) < 14) this.selectedEdge = i; });
 
                 if (this.editState == "view") {
@@ -473,6 +468,9 @@ class PlanarQuadGraphEditorApp {
 			// find id of existing nearby point
 			this.locatorId = null;
 			this.dataC.graph.vertices.forEach((p,i) => { if (Math.hypot(p.x-mx,p.y-my)<14) this.locatorId = i; });
+            
+            let nearEdge = null;
+            this.dataC.graph.edges.forEach((e,i) => { if (this.dataC.graph.edgeDistanceToPoint(i,m) < 14) nearEdge = i; });
 
             if (this.editState == "vertex") {
                 if (e.detail === 1) // it was a single click
@@ -494,8 +492,33 @@ class PlanarQuadGraphEditorApp {
                         this.deleteVertex(this.locatorId);
                         this.locatorId = null;
                     }
-                };
+                }
             } else if (this.editState == "split") {
+                if (e.detail === 1) // it was a single click
+                {
+                    if (this.locatorId === null) // not near an existing point
+                    {
+                        if (nearEdge !== null) { // check for nearby edge, insert a new point and label
+                            this.locatorId = this.dataC.graph.nVertices;
+                            this.splitEdgeWithVertex(mx, my, nearEdge, this.locatorId);
+                        }
+                    } else {
+                        this.edgesToDelete = this.dataC.graph.edges.map(() => false); // create array with a value of false for each edge
+                    }
+                    // else, do nothing now - but check the mouse-move-event on the clicked-on point	
+                } 
+                else if (e.detail === 2) // it was a double click
+                {
+
+                    // NOT UPDATED !!!
+
+
+                    // if on an existing point, delete the point, else ignore the double click
+                    if (this.dataC.graph.nVertices >= 1) { 
+                        //this.deleteVertex(this.locatorId);
+                        //this.locatorId = null;
+                    }
+                }
 
             } else { // edge
                 if (this.locatorId !== null) { // found a nearby point
@@ -507,7 +530,6 @@ class PlanarQuadGraphEditorApp {
                 } else { // no nearby point
                     if (e.detail === 2) { // it was a double click
                         // check if near edge
-                        const m = {x:mx, y:my};
                         this.dataC.graph.edges.forEach((e,i) => { if (this.dataC.graph.edgeDistanceToPoint(i,m) < 14) this.locatorId = i; });
 
                         // if on an existing edge, delete the edge, else ignore the double click

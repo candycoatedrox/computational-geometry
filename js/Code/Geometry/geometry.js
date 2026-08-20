@@ -143,6 +143,10 @@ const Geometry1 = {
 		const dd = Math.sqrt(dxy);
 		return dd;
 	},
+
+  distanceToEdgeByMidpoint(p, a, b) {
+    return this.distance(p, this.midpoint(a, b));
+  },
 	
 	distanceSq(a, b) {
 		const dx = b.x - a.x;
@@ -249,9 +253,9 @@ const Geometry1 = {
 
   nearestEdgeByMidpoint(P, pts, edges) {
     let edge = edges[0];
-    let lowDist = this.distance(P, this.midpoint(pts[edges[0][0]], pts[edges[0][1]]));
+    let lowDist = this.distanceToEdgeByMidpoint(P, pts[edges[0][0]], pts[edges[0][1]]);
     for (let i = 1; i < edges.length; i++) {
-      let dxy = this.distance(P, this.midpoint(pts[edges[i][0]], pts[edges[i][1]]));
+      let dxy = this.distanceToEdgeByMidpoint(P, pts[edges[i][0]], pts[edges[i][1]]);
       if (dxy < lowDist) {
         edge = edges[i];
         lowDist = dxy;

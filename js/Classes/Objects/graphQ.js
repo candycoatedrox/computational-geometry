@@ -4,6 +4,8 @@ class GraphQ {
     edges = []; // contains QuadEdges
     faces = []; // index -1 is the outer face
 
+    // should I store the outer face as a list of vertices as well?
+
     constructor() {
         this.vertices = new Points();
     }
@@ -18,7 +20,16 @@ class GraphQ {
         return this.edges.length;
     }
     edgeToString(i, labs) {
-        return Utils.groupToString(this.edges[i], labs);
+        const edge = this.edges[i];
+        return `[${labs[edge.head]}, ${labs[edge.tail]}]`;
+    }
+    edgesToListString(labs) {
+		let str = "<ul>";
+		for (let i = 0; i < this.nEdges; i++) {
+			str += `<li>${this.edgeToString(i, labs)}</li>`;
+		}
+		str += "</ul>";
+		return str;
     }
     quadEdgePairInfo(i, labs) {
         let thisHeader = `Edge ${i}: ${this.edgeToString(i, labs)}`;
@@ -48,7 +59,20 @@ class GraphQ {
         return this.faces.length;
     }
     faceToString(i, labs) {
-        return Utils.groupToString(this.faces[i], labs);
+        if (i == -1) {
+            return "[OUTER]";
+        } else {
+            return Utils.groupToString(this.faces[i], labs);
+        }
+    }
+    facesToListString(labs) {
+        //return Utils.groupsToListString(this.faces, labs);
+		let str = "<ul>";
+		for (let i = -1; i < this.nFaces; i++) {
+			str += `<li>${this.faceToString(i, labs)}</li>`;
+		}
+		str += "</ul>";
+		return str;
     }
 
     // vertices
@@ -91,7 +115,7 @@ class GraphQ {
     }
     splitEdgeWithVertex(v,e, index = this.nVertices) {
         const t = this.edges[e].twin
-        if (t < i) {
+        if (t < e) {
             this.splitEdgeWithVertex(t);
         } else { // index is the first in a pair
             this.addVertex(v, index);
@@ -142,18 +166,24 @@ class GraphQ {
             // add new vertex to faces
             const head = edge.head;
             const tail = edge.tail;
-
-            const faceA = edge.left;
-            for (let i = 0; i < this.faces[faceA].length; i++) {
-                if (this.faces[faceA][i] === head || this.faces[faceA][i] === tail) {
-                    this.faces[faceA].splice(i+1, 0, index);
+            
+            const faceB = edge.right;
+            if (faceB !== -1) {
+                for (let i = 0; i < this.faces[faceB].length; i++) {
+                    if (this.faces[faceB][i] === head || this.faces[faceB][i] === tail) {
+                        this.faces[faceB].splice(i+1, 0, index);
+                        break;
+                    }
                 }
             }
 
-            const faceB = edge.right;
-            for (let i = 0; i < this.faces[faceB].length; i++) {
-                if (this.faces[faceB][i] === head || this.faces[faceB][i] === tail) {
-                    this.faces[faceB].splice(i+1, 0, index);
+            const faceA = edge.left;
+            if (faceA !== -1) {
+                for (let i = 0; i < this.faces[faceA].length; i++) {
+                    if (this.faces[faceA][i] === head || this.faces[faceA][i] === tail) {
+                        this.faces[faceA].splice(i+1, 0, index);
+                        break;
+                    }
                 }
             }
         }
@@ -263,6 +293,24 @@ class GraphQ {
     }
     deleteFace(i) {
         this.faces.splice(i,1);
+    }
+
+    faceOrientation(i) {
+        const v1 = this.faces[i][0], v2 = this.faces[i][1];
+
+        let firstEdge = -1;
+        for (let j = 0; j < this.nEdges; j++) {
+            const edge = this.edges[j];
+            if (edge.head === v1 && edge.tail === v2) {
+                if (edge.right === i) {
+                    return 1; // clockwise
+                } else {
+                    return -1; // counter-clockwise
+                }
+            }
+        }
+
+        return 0; // no edge found? invalid face
     }
 
     verticesAreConnected(i,j) {
