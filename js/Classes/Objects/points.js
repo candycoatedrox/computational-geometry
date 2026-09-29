@@ -26,7 +26,7 @@ class Points extends Array {
 	}
 	
 	draw(ctx, labels = [], color = POINTCOLOR, size = POINTSIZE){
-		const labeled = labels !== [];
+		const labeled = labels.length !== 0;
 		for (let i = 0; i < this.length; i++) {
 			let lab = labeled ? labels[i] : '';
 			this[i].draw(ctx,lab,color,size);

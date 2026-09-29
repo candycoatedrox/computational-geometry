@@ -118,17 +118,17 @@ class GraphE {
         this.edges.length = 0;
     }
 
-    getEdgeIndicesFromVertex(i) {
+    getIncidentEdgeIndices(i) {
         let e = [];
         for (let j = 0; j < this.nEdges; j++) {
             if (this.edges[j].includes(i)) e.push(j);
         }
         return e;
     }
-    getEdgesFromVertex(i) {
+    getIncidentEdges(i) {
         return this.edges.filter(e => e.includes(i));
     }
-    getVerticesConnectedTo(i) {
+    getNeighboringVertices(i) {
         let v = [];
         for (let j = 0; j < this.nEdges; j++) {
             if (this.edges[j][0] === i) {
@@ -138,6 +138,10 @@ class GraphE {
             }
         }
         return v;
+    }
+    getVertexDegree(i) {
+        let incidentEdges = this.getIncidentEdges(i);
+        return incidentEdges.length;
     }
 
     getVerticesFromEdge(i) {

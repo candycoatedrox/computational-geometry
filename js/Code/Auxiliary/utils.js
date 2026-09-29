@@ -160,6 +160,18 @@ const Utils = {
 	arraysUnion(arr1,arr2) { return this.withoutDuplicates(arr1.concat(arr2)); },
 	arraysIntersection(arr1,arr2) { return arr1.filter(e => arr2.includes(e)); },
 
+	swapElements(arr,i,j) {
+		let temp = arr[i];
+		arr[i] = arr[j];
+		arr[j] = temp;
+	},
+	reverseArray(arr) {
+		let half = Math.floor(arr.length / 2);
+		for (let i = 0; i < half; i++) {
+			this.swapElements(arr, i, arr.length-i-1);
+		}
+	},
+
 	includesArray(arr1,arr2) { return arr1.some(e => this.arraysAreEqual(e,arr2)); },
 	indexOfArray(arr1,arr2) {
 		for (let i = 0; i < arr1.length; i++) {

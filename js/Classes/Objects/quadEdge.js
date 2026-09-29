@@ -33,16 +33,26 @@ class QuadEdge {
         this.rightEdge = rightEdge;
     }
 
+    get vertices() {
+        return [this.head, this.tail];
+    }
     get isSecondTwin() {
         return twin % 2 === 0;
     }
 
 	includes(i) {
-		return (this.head == p) || (this.tail == p);
+		return (this.head === i) || (this.tail === i);
 	}
 	isBetween(i,j) {
 		return this.includes(i) && this.includes(j);
 	}
+    
+    bordersFace(i) {
+        return (this.left === i) || (this.tail === i);
+    }
+    isBetweenFaces(i,j) {
+        return this.bordersFace(i) && this.bordersFace(j);
+    }
 
     // shift indices
     shiftIndicesForInsertVertex(index) {
@@ -69,11 +79,11 @@ class QuadEdge {
             deletedIndex--; // use the first index in the pair instead
         }
         
-        if (this.twin > index) this.twin -= 2;
-        if (this.headEdge > index) this.headEdge -= 2;
-        if (this.tailEdge > index) this.tailEdge -= 2;
-        if (this.leftEdge > index) this.leftEdge -= 2;
-        if (this.rightEdge > index) this.rightEdge -= 2;
+        if (this.twin > deletedIndex) this.twin -= 2;
+        if (this.headEdge > deletedIndex) this.headEdge -= 2;
+        if (this.tailEdge > deletedIndex) this.tailEdge -= 2;
+        if (this.leftEdge > deletedIndex) this.leftEdge -= 2;
+        if (this.rightEdge > deletedIndex) this.rightEdge -= 2;
     }
 
 }

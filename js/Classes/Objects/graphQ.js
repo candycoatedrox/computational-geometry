@@ -1,12 +1,15 @@
 class GraphQ {
 
+    standardGraph = null;
+
     vertices = null;
     edges = []; // contains QuadEdges
     faces = []; // index -1 is the outer face
 
     // should I store the outer face as a list of vertices as well?
 
-    constructor() {
+    constructor(standardGraph) {
+        this.standardGraph = standardGraph;
         this.vertices = new Points();
     }
 
@@ -103,6 +106,7 @@ class GraphQ {
                 j -= 2; // don't skip the next edge pair!
             } else {
                 e.shiftIndicesForDeleteVertex(i);
+                console.log(`twin: ${e.twin}`);
                 this.edges[e.twin].shiftIndicesForDeleteVertex(i);
             }
         }
@@ -189,15 +193,93 @@ class GraphQ {
         }
 
     }
-    deleteVertexAsSplit(i) {
+    deleteVertexAsSplit(i, connectedVertices) {
         // TODO: only possible if number of connections is even
         // any edges that are connected to deleted vertex should be combined by rotating around vertex (see notes)
-        
-        // return pairs of edge indices (divided by 2, converted for PlanarGraphQuad) that should be combined
 
-        // TODO: handle faces
+        // only passed into this function if # of connected edges = 2
 
+        // get edges in order
+        let edgesInOrder = this.connectedEdgesInOrder(i, connectedVertices[0], connectedVertices[1]);
+        const v1 = edgesInOrder.v1, v2 = edgesInOrder.v2, e1 = edgesInOrder.e1, e2 = edgesInOrder.e2, t1 = edgesInOrder.t1, t2 = edgesInOrder.t2;
+        const edge1 = this.edges[e1], edge2 = this.edges[e2], twin1 = this.edges[t1], twin2 = this.edges[t2];
 
+        /*
+        // check if vertex can be deleted (beyond checks done in PlanarGraphQuad)
+        let oppositeFace = null;
+        if (edge1.left === -1) {
+            if (edge1.right !== -1) oppositeFace = edge1.right;
+        } else if (edge1.right === -1) {
+            oppositeFace = edge1.left;
+        }
+        if (oppositeFace !== null) { // vertex is on outer face
+            if (!this.standardGraph.faceContainsMidpoint(oppositeFace, v1, v2)) return null; // can't easily unsplit
+        }
+        */
+
+        // adjust head, tail, and respective edges of remaining edge
+        console.log(edge1.tail);
+        edge1.tail = edge2.tail;
+        console.log(edge1.tail);
+        edge1.tailEdge = edge2.tailEdge;
+        twin1.head = twin2.head;
+        twin1.headEdge = twin2.headEdge;
+
+        // adjust vertex edges of neighboring edges
+        const trueTailEdge = this.getTailEdgeOf(e2), trueHeadEdge = this.getHeadEdgeOf(t2);
+        trueTailEdge.headEdge = e1;
+        trueHeadEdge.tailEdge = t1;
+
+        // adjust face edges of neighboring edges; remove deleted vertex from faces
+        const leftFace = edge1.left, rightFace = edge1.right;
+
+        if (leftFace !== -1) {
+            // adjust face edges
+            let oppositeLeft = this.edges[edge2.leftEdge];
+            let left = this.edges[oppositeLeft.twin];
+            left.rightEdge = twin2.rightEdge;
+
+            let oppositeRight = this.edges[twin2.rightEdge];
+            let right = this.edges[oppositeRight.twin];
+            right.leftEdge = edge2.leftEdge;
+
+            // remove deleted vertex from face
+            let index = this.faces[leftFace].indexOf(i);
+            this.faces[leftFace].splice(index, 1);
+        }
+
+        if (rightFace !== -1) {
+            // adjust face edges
+            let oppositeLeft = this.edges[twin2.leftEdge];
+            let left = this.edges[oppositeLeft.twin];
+            left.rightEdge = edge2.rightEdge;
+
+            let oppositeRight = this.edges[edge2.rightEdge];
+            let right = this.edges[oppositeRight.twin];
+            right.leftEdge = twin2.leftEdge;
+
+            // remove deleted vertex from face
+            let index = this.faces[rightFace].indexOf(i);
+            this.faces[rightFace].splice(index, 1);
+        }
+
+        // delete edges
+        let smallerEdge = (e2 < t2) ? e2 : t2;
+        console.log(`smallerEdge = ${smallerEdge}`);
+        this.edges.splice(smallerEdge, 2);
+
+        for (let j = 0; j < this.nEdges; j += 2) {
+            let e = this.edges[j];
+            e.shiftIndicesForDeleteEdgePair(smallerEdge);
+            this.edges[e.twin].shiftIndicesForDeleteEdgePair(smallerEdge);
+        }
+        console.log(this.edges);
+
+        // delete vertex
+        this.deleteVertex(i);
+
+        // return pairs of edge indices (divided by 2, converted for PlanarGraphQuad) that should be combined, as well as the 2 vertices to create an edge between
+        return [[Math.floor(e1/2), Math.floor(e2/2), v1, v2]];
     }
     clearVertices() {
         this.vertices.length = 0;
@@ -250,6 +332,29 @@ class GraphQ {
         this.faces.length = 0;
     }
 
+    getIncidentEdgeIndices(i) {
+        let e = [];
+        for (let j = 0; j < this.nEdges; j++) {
+            if (this.edges[j].includes(i)) e.push(j);
+        }
+        return e;
+    }
+    getIncidentEdges(i) {
+        return this.edges.filter(e => e.includes(i));
+    }
+    getNeighboringVertices(i) {
+        let v = [];
+        for (let j = 0; j < this.nEdges; j++) {
+            let edge = this.edges[j];
+            if (edge.head === i) {
+                v.push(edge.tail);
+            } else if (edge.tail === i) {
+                v.push(edge.head);
+            }
+        }
+        return v;
+    }
+
     getTwinEdgeOf(i) {
         const e = this.edges[i];
         return this.edges[e.twin];
@@ -294,27 +399,152 @@ class GraphQ {
     deleteFace(i) {
         this.faces.splice(i,1);
     }
+    verifyFaceOrientation() {
+        if (this.nFaces > 1) {
+            let visited = this.faces.map(() => false);
+            this.verifyFaceOrientationRec(0, null, visited);
+        }
+    }
+    verifyFaceOrientationRec(i, adjacentEdge, visited) {
+        if (i === -1 || visited[i]) {
+            return;
+        } else {
+            visited[i] = true;
 
-    faceOrientation(i) {
-        const v1 = this.faces[i][0], v2 = this.faces[i][1];
+            const edges = this.getEdgesOfFace(i);
 
-        let firstEdge = -1;
-        for (let j = 0; j < this.nEdges; j++) {
-            const edge = this.edges[j];
-            if (edge.head === v1 && edge.tail === v2) {
-                if (edge.right === i) {
-                    return 1; // clockwise
-                } else {
-                    return -1; // counter-clockwise
+            if (adjacentEdge != null) {
+                const adjEdgeVertices = adjacentEdge.vertices;
+                const v1 = adjEdgeVertices[0], v2 = adjEdgeVertices[1];
+                let face = this.faces[i];
+
+                let flipOrientation = false;
+                for (let j = 0; j < face.length; j++) {
+                    let next = (j === face.length - 1) ? 0 : j+1;
+                    if (face[j] === v1 && face[next] === v2) {
+                        flipOrientation = true;
+                        break;
+                    } else if (face[j] === v2 && face[next] === v1) {
+                        break;
+                    }
+                }
+
+                if (flipOrientation) {
+                    Utils.reverseArray(this.faces[i]);
+                    adjacentEdge = this.edges[adjacentEdge.twin];
                 }
             }
+
+            for (let j = 0; j < edges.length; j++) {
+                let edge = this.edges[edges[j]];
+                let adjFace = (edge.left === i) ? edge.right : edge.left;
+
+                this.verifyFaceOrientationRec(adjFace, edge, visited);
+            }
+        }
+    }
+
+    getFirstEdgeOfFace(i) {
+        return this.getEdgeBetweenVertices(this.faces[i][0], this.faces[i][1]);
+    }
+    getEdgesOfFace(i) {
+        const firstEdge = this.getFirstEdgeOfFace(i); // index
+        const isClockwise = this.edges[firstEdge].right === i
+
+        let edges = [];
+        let e = firstEdge;
+        for (let j = 0; j < this.faces[i].length; j++) {
+            edges.push(e);
+            e = (isClockwise) ? this.edges[e].rightEdge : this.edges[e].leftEdge;
         }
 
-        return 0; // no edge found? invalid face
+        return edges;
+    }
+    faceOrientation(i) {
+        const firstEdge = this.getFirstEdgeOfFace(i);
+
+        if (firstEdge === null) return 0; // no edge found? invalid face
+
+        if (this.edges[firstEdge].right === i) {
+            return 1; // clockwise
+        } else {
+            return -1; // counter-clockwise
+        }
+    }
+    faceIsClockwise(i) {
+        return this.faceOrientation(i) === 1;
+    }
+    adjacentFacesToFace(i) {
+        const isCW = this.faceIsClockwise(i);
+
+        let currentEdge = this.getFirstEdgeOfFace(i);
+        let adjacentFaces = [];
+        for (let j = 0; j < this.faces[i].length; j++) {
+            const edge = this.edges[currentEdge];
+            let adjFace = isCW ? edge.left : edge.right;
+            if (!adjacentFaces.includes(adjFace)) adjacentFaces.push(adjFace);
+
+            currentEdge = isCW ? edge.rightEdge : edge.leftEdge;
+        }
+        
+        return adjacentFaces;
+    }
+    adjacentTrueFacesToFace(i) {
+        const isCW = this.faceIsClockwise(i);
+
+        let currentEdge = this.getFirstEdgeOfFace(i);
+        let adjacentFaces = [];
+        for (let j = 0; j < this.faces[i].length; j++) {
+            const edge = this.edges[currentEdge];
+            let adjFace = isCW ? edge.left : edge.right;
+            if (adjFace !== -1 && !adjacentFaces.includes(adjFace)) adjacentFaces.push(adjFace);
+
+            currentEdge = isCW ? edge.rightEdge : edge.leftEdge;
+        }
+        
+        return adjacentFaces;
     }
 
     verticesAreConnected(i,j) {
         return this.edges.some((e,n) => edge.isBetween(i,j));
+    }
+    getFirstEdgeBetweenVertices(i,j) {
+        for (let n = 0; n < this.nEdges; n++) {
+            if (this.edges[n].includes(i) && this.edges[n].includes(j)) return n;
+        }
+
+        return null;
+    }
+    getEdgeBetweenVertices(i,j) {
+        for (let n = 0; n < this.nEdges; n++) {
+            if (this.edges[n].head === i && this.edges[n].tail === j) return n;
+        }
+
+        return null;
+    }
+
+    connectedEdgesInOrder(center, i, j) {
+        let edgeIndexA = this.getFirstEdgeBetweenVertices(center, i), edgeIndexB = this.getFirstEdgeBetweenVertices(center, j);
+        let edgeA = this.edges[edgeIndexA];
+
+        let vertex1, vertex2, edge1, edge2, twin2;
+        if (edgeA.tail = center) {
+            vertex1 = i, vertex2 = j, edge1 = edgeIndexA;
+            if (edgeA.tailEdge = edgeIndexB) {
+                edge2 = edgeIndexB, twin2 = edgeIndexB + 1;
+            } else {
+                edge2 = edgeIndexB + 1, twin2 = edgeIndexB;
+            }
+        } else {
+            vertex1 = j, vertex2 = i, edge1 = edgeIndexB;
+            if (edgeA.headEdge = edgeIndexB) {
+                edge2 = edgeIndexA, twin2 = edgeIndexA + 1;
+            } else {
+                edge2 = edgeIndexA + 1, twin2 = edgeIndexA;
+            }
+        }
+
+        return { v1: vertex1, v2: vertex2, e1: edge1, e2: edge2, t1: edge1+1, t2: twin2 };
     }
 
 }

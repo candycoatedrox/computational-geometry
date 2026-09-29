@@ -139,6 +139,11 @@ class FaceGraph extends GraphE {
         let vertices = this.getVerticesFromFace(i);
         return Geometry1.pointInPolygon(p, vertices);
     }
+    faceContainsMidpoint(i,p,q) {
+        let midpoint = Geometry1.midpoint(p,q);
+        let vertices = this.getVerticesFromFace(i);
+        return Geometry1.pointInPolygon(midpoint, vertices);
+    }
 
     faceIncludesAll(i, ...indices) {
         return Utils.arrayIsSubsetOf(indices, this.faces[i]);

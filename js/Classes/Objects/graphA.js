@@ -31,14 +31,14 @@ class GraphA {
         this.drawVertices(ctx, vertexColor, vertexSize);
     }
 
-    getEdgesFromVertex(i) {
+    getIncidentEdges(i) {
         let e = [];
         for (let j = 0; j < this.adjacencyLists[i].length; j++) {
             e.push([i, this.adjacencyLists[i][j]]);
         }
         return e;
     }
-    getVerticesConnectedTo(i) {
+    getNeighboringVertices(i) {
         return this.adjacencyLists[i];
     }
 
@@ -48,7 +48,7 @@ class GraphA {
         graph.vertices.push(...this.vertices);
 
         for (let i = 0; i < this.nVertices; i++) {
-            let e = this.getVerticesConnectedTo(i);
+            let e = this.getNeighboringVertices(i);
             for (let j = 0; j < e.length; j++) {
                 graph.addEdge(i,e[j]);
             }
@@ -67,7 +67,7 @@ class GraphA {
             return currentValue;
         } else {
             visited[i] = true;
-            let neighbors = this.getVerticesConnectedTo(i);
+            let neighbors = this.getNeighboringVertices(i);
             let current = execute(i, visited, neighbors, currentValue, ...params);
             for (let j = 0; j < neighbors.length; j++) {
                 if (!visited[neighbors[j]]) {
@@ -100,7 +100,7 @@ class GraphA {
             return currentValue;
         } else {
             const path = prevPath.concat(i);
-            let neighbors = this.getVerticesConnectedTo(i);
+            let neighbors = this.getNeighboringVertices(i);
             let current = execute(i, path, neighbors, currentValue, ...params);
             for (let j = 0; j < neighbors.length; j++) {
                 if (!path.includes(neighbors[j])) {

@@ -27,6 +27,8 @@ class PlanarQuadGraphEditorApp {
 	buttons = {
 		a: document.getElementById("buttonA-planarQuadGraphEditorApp"),
 		b: document.getElementById("buttonB-planarQuadGraphEditorApp"),
+        
+		orientation: document.getElementById("orientation-planarQuadGraphEditorApp"),
 
 		randomVertex: document.getElementById("buttonRandomVertex-planarQuadGraphEditorApp"),
 		randomEdge: document.getElementById("buttonRandomEdge-planarQuadGraphEditorApp"),
@@ -82,7 +84,7 @@ class PlanarQuadGraphEditorApp {
 
         let q = new GraphQ(); // ???? what do you mean "GraphQ is not defined"
         // ^ the above is a placeholder line, it was throwing a ReferenceError to GraphQ in the initialization of PlanarGraphQuad, so I wanted to check if I could "force" it to initialize GraphQ before PlanarGraphQuad. it's doing whatever this is instead
-		let graph = new PlanarGraphQuad();
+		let graph = new PlanarGeomGraphQuad();
 
         let mouse = new Point(0,0);
 
@@ -119,7 +121,7 @@ class PlanarQuadGraphEditorApp {
             vertices: vertW
 		};
 
-        this.initDefaultGraphStateA();
+        this.initTriangle();
 		
 		// gui: set up actions
 		this.setupShowEvents();
@@ -255,12 +257,12 @@ class PlanarQuadGraphEditorApp {
 	}
 
     // manage vertices and edges
-    initDefaultGraphStateA() { // TESTING ONLY
+    initTriangle() { // TESTING ONLY
         this.clearVertices();
         this.addVertex(185,135);
         this.addVertex(530,125);
         this.addVertex(340,420);
-        this.dataC.graph.initDefaultGraphStateA();
+        this.dataC.graph.initTriangle();
     }
     // vertices
 	addVertex(xC, yC, index = this.dataC.graph.nVertices) {
@@ -281,6 +283,10 @@ class PlanarQuadGraphEditorApp {
         
         this.dataC.graph.deleteVertex(i);
         this.dataW.vertices.splice(i,1); 				// delete the point
+    }
+    deleteVertexAsSplit(i) {
+        this.dataC.graph.deleteVertexAsSplit(i);
+        this.dataW.vertices.splice(i,1);
     }
 	clearVertices() {
 		this.dataC.graph.clearVertices();
@@ -313,7 +319,7 @@ class PlanarQuadGraphEditorApp {
             this.addVertex(375,70);
             this.addVertex(540,300);
             this.addVertex(400,535);
-            this.dataC.graph.initDefaultGraphStateB();
+            this.dataC.graph.initDiamond();
 
 			this.computeAndRefresh();
 		});
@@ -340,6 +346,12 @@ class PlanarQuadGraphEditorApp {
 
 			this.computeAndRefresh();
 		});
+
+
+        this.buttons.orientation.addEventListener("click", () => {
+            this.dataC.graph.quadEdge.verifyFaceOrientation();
+            this.computeAndRefresh();
+        });
 
 		
 		this.buttons.randomVertex.addEventListener("click", () => {
@@ -403,7 +415,7 @@ class PlanarQuadGraphEditorApp {
 		});
 
 		this.buttons.reset.addEventListener("click", () => {
-            this.initDefaultGraphStateA();
+            this.initTriangle();
 			this.computeAndRefresh();
 		});
 	}
@@ -515,8 +527,8 @@ class PlanarQuadGraphEditorApp {
 
                     // if on an existing point, delete the point, else ignore the double click
                     if (this.dataC.graph.nVertices >= 1) { 
-                        //this.deleteVertex(this.locatorId);
-                        //this.locatorId = null;
+                        this.deleteVertexAsSplit(this.locatorId);
+                        this.locatorId = null;
                     }
                 }
 

@@ -5,12 +5,12 @@ class PlanarGraphQuad extends FaceGraph {
     constructor() {
         super();
 
-        this.quadEdge = new GraphQ();
+        this.quadEdge = new GraphQ(this);
         this.faces = this.quadEdge.faces;
     }
 
     // default states
-    initDefaultGraphStateA() { // TESTING ONLY
+    initTriangle() { // TESTING ONLY
         // assumes 3 vertices have already been created
         this.edges.push([0,1]);
         this.edges.push([1,2]);
@@ -24,7 +24,7 @@ class PlanarGraphQuad extends FaceGraph {
         this.quadEdge.edges.push(new QuadEdge(5, 2, 0, -1, 0, 2, 0, 0, 2));
         this.quadEdge.edges.push(new QuadEdge(4, 0, 2, 0, -1, 1, 3, 3, 1));
     }
-    initDefaultGraphStateB() { // TESTING ONLY
+    initDiamond() { // TESTING ONLY
         // assumes 4 vertices have already been created
         this.edges.push([0,1]);
         this.edges.push([1,2]);
@@ -80,24 +80,44 @@ class PlanarGraphQuad extends FaceGraph {
     }
     deleteVertexAsSplit(i) {
         // TODO: only possible if number of connections is even
-        // any edges that are connected to deleted vertex should be combined by rotating around vertex (see notes)
         
         // let GraphQ handle this one, then copy its work, i think lol
 
-        let nConnections = this.getEdgesFromVertex(i).length;
-        if (nConnections < 2) { // can't be unsplit, but can be deleted normally very easily
+        const neighbors = this.getNeighboringVertices(i);
+        const degree = neighbors.length;
+        if (degree < 2) { // can't be unsplit, but can be deleted normally very easily
             this.deleteVertex(i);
             return true;
-        } else if (nConnections % 2 === 1) { // odd number of connections; can't be unsplit
+        } else if (degree !== 2) { // not exactly 2 connections; can't be unsplit
             return false;
         } else {
-            combineEdges = this.quadEdge.deleteVertexAsSplit(i);
+            if (this.verticesAreConnected(neighbors[0], neighbors[1])) return false; // unsplit would create a duplicate edge
 
-            // TODO
-            // ...
+            const combineEdges = this.quadEdge.deleteVertexAsSplit(i, neighbors);
 
+            if (combineEdges === null) return false; // cannot be unsplit (failed a check in GraphQ)
 
+            for (let j = 0; j < combineEdges.length; j++) {
+                let data = combineEdges[j];
+                let e1 = data[0], e2 = data[1], v1 = data[2], v2 = data[3];
+                this.edges[e1] = [v1,v2];
+                this.edges.splice(e2,1); // delete extra edge
 
+                // delete any connected edges, update edges with new indices
+                for (let n = 0; n < this.nEdges; n++) {
+                    let e = this.edges[n];
+                    if (e.includes(i)) {
+                        this.deleteEdge(n); // delete the edge
+                        n--; // don't skip the next edge!
+                    } else {
+                        if (e[0] > i) e[0]--;
+                        if (e[1] > i) e[1]--;
+                    }
+                }
+            }
+
+            this.vertices.splice(i,1); // delete the vertex
+            this.updateLabels();
 
             return true;
         }
@@ -116,9 +136,6 @@ class PlanarGraphQuad extends FaceGraph {
         return true;
     }
     addNonCrossingEdge(i,j) {
-        let tail = this.vertices[i];
-        let head = this.vertices[j];
-        if (this.intersectsAnyEdge(tail, head)) return false; // new edge would create a crossing
         return this.addEdge(i,j);
     }
     deleteEdge(i) {
@@ -133,6 +150,15 @@ class PlanarGraphQuad extends FaceGraph {
     // faces
     faceOrientation(i) {
         return this.quadEdge.faceOrientation(i);
+    }
+    faceIsClockwise(i) {
+        return this.quadEdge.faceIsClockwise(i);
+    }
+    adjacentFacesToFace(i) {
+        return this.quadEdge.adjacentFacesToFace(i);
+    }
+    adjacentTrueFacesToFace(i) {
+        return this.quadEdge.adjacentTrueFacesToFace(i);
     }
 
 }
