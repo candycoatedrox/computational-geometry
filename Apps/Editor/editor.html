@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- <link rel="icon" type="image/x-icon" href="favicon.ico"> -->
 <title>Computational Geometry: Interactive Demos </title>
-<link rel="stylesheet" href="../../css/style4.css">
+<link rel="stylesheet" href="../../css/style5.css">
 
 <!-- .................................................................................................
      JS LIBRARIES: FUNCTION DEFS
@@ -123,12 +123,12 @@
 
 <!-- Navigation app - tabs  -->
 <nav> 
-	<button class="active" data-tab="graphEditorApp">Graph</button>
+	<button data-tab="graphEditorApp">Graph</button>
 	<button data-tab="faceGraphEditorApp">Face Graph</button>
 	<button data-tab="nonCrossingGraphEditorApp">Non-Crossing Graph</button>
 	<button data-tab="treeEditorApp">Tree</button>
 	<button data-tab="planarGraphEditorApp">Planar Graph</button>
-	<button data-tab="planarQuadGraphEditorApp">Quad-Edge Planar Graph</button>
+	<button class="active" data-tab="planarQuadGraphEditorApp">Quad-Edge Planar Graph</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -158,7 +158,7 @@
 <!-- >═══════════════════════════════════════════════════
      TAB 1 — GRAPH EDITOR APP
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container active" id="tab-graphEditorApp">
+<div class="demo-container" id="tab-graphEditorApp">
 	<div class="canvas-wrap">
 		<canvas id="canvas-graphEditorApp" width="300" height="300"></canvas>
 		<div class="canvas-hint">
@@ -564,11 +564,22 @@
 <!-- >═══════════════════════════════════════════════════
      TAB 6 — QUAD-EDGE PLANAR GRAPH EDITOR APP
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container" id="tab-planarQuadGraphEditorApp">
-	<div class="canvas-wrap">
-		<canvas id="canvas-planarQuadGraphEditorApp" width="300" height="300"></canvas>
-		<div class="canvas-hint">
-			Visualize and edit a planar graph using a quad-edge data structure
+<div class="demo-container top-bar-layout active" id="tab-planarQuadGraphEditorApp">
+	<div class="canvas-column">
+		<div class="edit-state-bar">
+			<h3>EDIT STATE:</h3>
+			<div class="setter-bar">
+				<button class="setter-active" id="modeVertex-planarQuadGraphEditorApp">Edit Vertices</button>
+				<button id="modeEdge-planarQuadGraphEditorApp"> Edit Edges</button>
+				<button id="modeSplit-planarQuadGraphEditorApp"> Split Edges</button>
+				<button id="modeView-planarQuadGraphEditorApp"> Select Edge</button>
+			</div>
+		</div>
+		<div class="canvas-wrap">
+			<canvas id="canvas-planarQuadGraphEditorApp" width="300" height="300"></canvas>
+			<div class="canvas-hint">
+				Visualize and edit a planar graph using a quad-edge data structure
+			</div>
 		</div>
 	</div>
 	<div class="side-panel">
@@ -587,14 +598,6 @@
 			<h3>FACE COLORS</h3>
 			<label><input type="radio" id="colorMulti-planarQuadGraphEditorApp" name="color-planarQuadGraphEditorApp" checked> Multicolor</label>
 			<label><input type="radio" id="colorSingle-planarQuadGraphEditorApp" name="color-planarQuadGraphEditorApp"> Single Color</label>
-		</div>
-		<div class="panel-section">
-			<h3>MODE</h3>
-			<label><input type="radio" id="modeVertex-planarQuadGraphEditorApp" name="mode-planarQuadGraphEditorApp" value="vertex" checked> Edit Vertices</label>
-			<label><input type="radio" id="modeEdge-planarQuadGraphEditorApp" name="mode-planarQuadGraphEditorApp" value="edge"> Edit Edges</label>
-			<br>
-			<label><input type="radio" id="modeSplit-planarQuadGraphEditorApp" name="mode-planarQuadGraphEditorApp" value="split"> Split Edges</label>
-			<label><input type="radio" id="modeView-planarQuadGraphEditorApp" name="mode-planarQuadGraphEditorApp" value="view"> View</label>
 		</div>
 		<div class="panel-section">
 			<h3>Coordinates</h3>

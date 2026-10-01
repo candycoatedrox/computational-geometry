@@ -434,22 +434,30 @@ class PlanarQuadGraphEditorApp {
 
 
         // edit states
-		this.modes.vertex.addEventListener("input", () => {
+		this.modes.vertex.addEventListener("click", () => {
+            document.querySelectorAll('.setter-bar button').forEach(b => b.classList.remove('setter-active'));
+            this.modes.vertex.classList.add('setter-active');
 			this.editState = "vertex";
 			this.refresh();
 		});
 
-		this.modes.edge.addEventListener("input", () => {
+		this.modes.edge.addEventListener("click", () => {
+            document.querySelectorAll('.setter-bar button').forEach(b => b.classList.remove('setter-active'));
+            this.modes.edge.classList.add('setter-active');
 			this.editState = "edge";
 			this.refresh();
 		});
 
-		this.modes.split.addEventListener("input", () => {
+		this.modes.split.addEventListener("click", () => {
+            document.querySelectorAll('.setter-bar button').forEach(b => b.classList.remove('setter-active'));
+            this.modes.split.classList.add('setter-active');
 			this.editState = "split";
 			this.refresh();
 		});
 
-		this.modes.view.addEventListener("input", () => {
+		this.modes.view.addEventListener("click", () => {
+            document.querySelectorAll('.setter-bar button').forEach(b => b.classList.remove('setter-active'));
+            this.modes.view.classList.add('setter-active');
 			this.editState = "view";
 			this.refresh();
 		});
