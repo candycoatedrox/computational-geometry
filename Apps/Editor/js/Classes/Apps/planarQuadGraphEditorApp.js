@@ -1,6 +1,7 @@
 class PlanarQuadGraphEditorApp {
 	// constants: global names of i/o fields 
 	canvas = document.getElementById('canvas-planarQuadGraphEditorApp');
+    canvasHint = document.getElementById('canvasHint-planarQuadGraphEditorApp');
 	infoField = document.getElementById('planarQuadGraphEditorApp-points');
     errorDisplay = document.getElementById('planarQuadGraphEditorApp-errors');
 
@@ -82,8 +83,6 @@ class PlanarQuadGraphEditorApp {
 		originC.fromCanvas(this.canvas);
 		let axesC = new Axes(100,-100);
 
-        let q = new GraphQ(); // ???? what do you mean "GraphQ is not defined"
-        // ^ the above is a placeholder line, it was throwing a ReferenceError to GraphQ in the initialization of PlanarGraphQuad, so I wanted to check if I could "force" it to initialize GraphQ before PlanarGraphQuad. it's doing whatever this is instead
 		let graph = new PlanarGeomGraphQuad();
 
         let mouse = new Point(0,0);
@@ -438,6 +437,7 @@ class PlanarQuadGraphEditorApp {
             document.querySelectorAll('.setter-bar button').forEach(b => b.classList.remove('setter-active'));
             this.modes.vertex.classList.add('setter-active');
 			this.editState = "vertex";
+            this.canvasHint.innerHTML = "Click to create a vertex, double click to delete, drag to move";
 			this.refresh();
 		});
 
@@ -445,6 +445,7 @@ class PlanarQuadGraphEditorApp {
             document.querySelectorAll('.setter-bar button').forEach(b => b.classList.remove('setter-active'));
             this.modes.edge.classList.add('setter-active');
 			this.editState = "edge";
+            this.canvasHint.innerHTML = "Click and drag to create an edge between two vertices, double click to delete an edge";
 			this.refresh();
 		});
 
@@ -452,6 +453,7 @@ class PlanarQuadGraphEditorApp {
             document.querySelectorAll('.setter-bar button').forEach(b => b.classList.remove('setter-active'));
             this.modes.split.classList.add('setter-active');
 			this.editState = "split";
+            this.canvasHint.innerHTML = "Click on an edge to split it in two, double click a vertex to merge the connected edges";
 			this.refresh();
 		});
 
@@ -459,6 +461,7 @@ class PlanarQuadGraphEditorApp {
             document.querySelectorAll('.setter-bar button').forEach(b => b.classList.remove('setter-active'));
             this.modes.view.classList.add('setter-active');
 			this.editState = "view";
+            this.canvasHint.innerHTML = "Click on an edge to view its details";
 			this.refresh();
 		});
     }
