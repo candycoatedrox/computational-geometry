@@ -326,6 +326,9 @@ button.theme-toggle:hover {
     color: #fff;
   }
 
+.quad-edge-div { display: none; }
+.quad-edge-div.active { display: block; }
+
   /* Algorithm explanation modal */
 .algo-modal {
     display: none;

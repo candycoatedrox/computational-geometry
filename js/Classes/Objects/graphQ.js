@@ -23,6 +23,7 @@ class GraphQ {
         return this.edges.length;
     }
     edgeToString(i, labs) {
+        if (i === -1) return "[N/A]";
         const edge = this.edges[i];
         return `[${labs[edge.head]}, ${labs[edge.tail]}]`;
     }

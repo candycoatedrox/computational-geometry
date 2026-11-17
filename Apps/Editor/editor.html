@@ -76,6 +76,7 @@
 	<script src="js/Classes/Apps/nonCrossingGraphEditorApp.js"></script>
 	<script src="js/Classes/Apps/treeEditorApp.js"></script>
 	<script src="js/Classes/Apps/planarGraphEditorApp.js"></script>
+	<script src="js/Classes/Apps/planarGraphConversionEditorApp.js"></script>
 	<script src="js/Classes/Apps/planarQuadGraphEditorApp.js"></script>
 </div>
 <!-- SET UP: WINDOW LISTENER ACTIONS: LOAD, RESIZE -->
@@ -128,7 +129,8 @@
 	<button data-tab="nonCrossingGraphEditorApp">Non-Crossing Graph</button>
 	<button data-tab="treeEditorApp">Tree</button>
 	<button data-tab="planarGraphEditorApp">Planar Graph</button>
-	<button class="active" data-tab="planarQuadGraphEditorApp">Quad-Edge Planar Graph</button>
+	<button class="active" data-tab="planarGraphConversionEditorApp">Planar Graph with Conversion</button>
+	<button data-tab="planarQuadGraphEditorApp">Quad-Edge Planar Graph</button>
 </nav>
 <!-- Associate actions to all Navigation tabs -->
 <div> 
@@ -562,9 +564,117 @@
 </div>
 
 <!-- >═══════════════════════════════════════════════════
-     TAB 6 — QUAD-EDGE PLANAR GRAPH EDITOR APP
+     TAB 6 — PLANAR GRAPH EDITOR WITH CONVERSION TO QUAD-EDGE APP
 ═══════════════════════════════════════════════════ -->
-<div class="demo-container top-bar-layout active" id="tab-planarQuadGraphEditorApp">
+<div class="demo-container top-bar-layout active" id="tab-planarGraphConversionEditorApp">
+	<div class="canvas-column">
+		<div class="edit-state-bar">
+			<h3>EDIT MODE:</h3>
+			<div class="setter-bar">
+				<button class="setter-active" id="modeVertex-planarGraphConversionEditorApp">Edit Vertices</button>
+				<button id="modeEdge-planarGraphConversionEditorApp"> Edit Edges</button>
+				<button id="modeView-planarGraphConversionEditorApp"> Select Edge</button>
+			</div>
+		</div>
+		<div class="canvas-wrap">
+			<canvas id="canvas-planarGraphConversionEditorApp" width="300" height="300"></canvas>
+			<div class="canvas-hint" id="canvasHint-planarGraphConversionEditorApp">
+				Click to create a vertex, double click to delete, drag to move
+			</div>
+		</div>
+	</div>
+	<div class="side-panel">
+		<div class="panel-section">
+			<h3>SHOW</h3>
+			<label><input type="checkbox" id="showBox-planarGraphConversionEditorApp" checked> Box</label>
+			<label><input type="checkbox" id="showOrigin-planarGraphConversionEditorApp" checked> Origin</label>
+			<label><input type="checkbox" id="showAxes-planarGraphConversionEditorApp" checked> Axes</label>
+			<label><input type="checkbox" id="showGrid-planarGraphConversionEditorApp" checked> Grid</label>
+			<br>
+			<label><input type="checkbox" id="showVertices-planarGraphConversionEditorApp" checked> Vertices</label>
+			<label><input type="checkbox" id="showEdges-planarGraphConversionEditorApp" checked> Edges</label>
+			<label><input type="checkbox" id="showFaces-planarGraphConversionEditorApp" checked> Faces</label>
+		</div>
+		<div class="panel-section">
+			<h3>STYLE</h3>
+			<label><input type="radio" id="colorMulti-planarGraphConversionEditorApp" name="color-planarGraphConversionEditorApp" checked> Multicolor</label>
+			<label><input type="radio" id="colorSingle-planarGraphConversionEditorApp" name="color-planarGraphConversionEditorApp"> Single Color</label>
+		</div>
+		<div class="panel-section">
+			<h3>Coordinates</h3>
+			<div class="planarGraphConversionEditorApp-list" id="planarGraphConversionEditorApp-points">
+			</div>
+		</div>
+		<div class="panel-section">
+			<!-- edges & faces -->
+			<div class="column">
+				<h3>EDGES</h3>
+				<div class="planarGraphConversionEditorApp-list" id="planarGraphConversionEditorApp-edges">
+				</div>
+			</div>
+			<div class="column">
+				<h3>FACES</h3>
+				<div class="planarGraphConversionEditorApp-list" id="planarGraphConversionEditorApp-faces">
+				</div>
+			</div>
+		</div>
+		<div class="panel-section">
+			<div class="ctrl-row quad-edge-div" id="convertDiv-planarGraphConversionEditorApp">
+				<button class="pill" id="convert-planarGraphConversionEditorApp">CONVERT TO QUAD-EDGE</button>
+			</div>
+			<!-- quad-edge info display -->
+			<div class="quad-edge-div" id="edgeInfoDiv-planarGraphConversionEditorApp">
+				<h3>CURRENTLY SELECTED EDGE</h3>
+				<div class="error-display" id="planarGraphConversionEditorApp-edgeInfoHeaderA">
+				</div>
+				<div class="planarGraphConversionEditorApp-list" id="planarGraphConversionEditorApp-edgeInfoA">
+				</div>
+				<div class="error-display" id="planarGraphConversionEditorApp-edgeInfoHeaderB">
+				</div>
+				<div class="planarGraphConversionEditorApp-list" id="planarGraphConversionEditorApp-edgeInfoB">
+				</div>
+			</div>
+		</div>
+		<div class="panel-section">
+			<h3>EXAMPLES</h3>
+			<div class="error-display" id="planarGraphConversionEditorApp-errors">
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonA-planarGraphConversionEditorApp">Example A</button>
+				<button class="pill" id="buttonB-planarGraphConversionEditorApp">Example B</button>
+			</div>
+			<div class="ctrl-row">
+				<button class="pill" id="buttonRandomVertex-planarGraphConversionEditorApp">Add Random Vertex</button>
+				<button class="pill" id="buttonRandomEdge-planarGraphConversionEditorApp">Add Random Edge</button>
+				<button class="pill" id="buttonGenerate-planarGraphConversionEditorApp">Generate Random</button>
+				<select id="nVertices-planarGraphConversionEditorApp" name="nVertices-planarGraphConversionEditorApp">
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5" selected>5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="15">15</option>
+					<option value="20">20</option>
+				</select>
+				<label><input type="checkbox" id="genEdges-planarGraphConversionEditorApp" checked> Create Edges</label>
+			</div>
+			<br>
+			<div class="ctrl-row">
+				<button class="pill danger" id="buttonClearEdges-planarGraphConversionEditorApp">Clear Edges</button>
+				<button class="pill danger" id="buttonClear-planarGraphConversionEditorApp">Clear Graph</button>
+				<button class="pill danger" id="buttonReset-planarGraphConversionEditorApp">Reset</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- >═══════════════════════════════════════════════════
+     TAB 7 — QUAD-EDGE PLANAR GRAPH EDITOR APP
+═══════════════════════════════════════════════════ -->
+<div class="demo-container top-bar-layout" id="tab-planarQuadGraphEditorApp">
 	<div class="canvas-column">
 		<div class="edit-state-bar">
 			<h3>EDIT MODE:</h3>
@@ -595,7 +705,7 @@
 			<label><input type="checkbox" id="showFaces-planarQuadGraphEditorApp" checked> Faces</label>
 		</div>
 		<div class="panel-section">
-			<h3>FACE COLORS</h3>
+			<h3>STYLE</h3>
 			<label><input type="radio" id="colorMulti-planarQuadGraphEditorApp" name="color-planarQuadGraphEditorApp" checked> Multicolor</label>
 			<label><input type="radio" id="colorSingle-planarQuadGraphEditorApp" name="color-planarQuadGraphEditorApp"> Single Color</label>
 		</div>
@@ -680,6 +790,7 @@
 		var NONCROSSINGGRAPHEDITORAPP = new NonCrossingGraphEditorApp();
 		var TREEEDITORAPP = new TreeEditorApp();
 		var PLANARGRAPHEDITORAPP = new PlanarGraphEditorApp();
+		var PLANARGRAPHCONVERSIONEDITORAPP = new PlanarGraphConversionEditorApp();
 		var PLANARQUADGRAPHEDITORAPP = new PlanarQuadGraphEditorApp();
 	</script>
 </div>	

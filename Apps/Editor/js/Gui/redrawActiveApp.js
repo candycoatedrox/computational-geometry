@@ -8,6 +8,7 @@ function redrawActiveApp(){
 		if (activeTab === 'nonCrossingGraphEditorApp') NONCROSSINGGRAPHEDITORAPP.computeAndRefresh();
 		if (activeTab === 'treeEditorApp') TREEEDITORAPP.computeAndRefresh();
 		if (activeTab === 'planarGraphEditorApp') PLANARGRAPHEDITORAPP.computeAndRefresh();
+		if (activeTab === 'planarGraphConversionEditorApp') PLANARGRAPHCONVERSIONEDITORAPP.computeAndRefresh();
 		if (activeTab === 'planarQuadGraphEditorApp') PLANARQUADGRAPHEDITORAPP.computeAndRefresh();
   }, 100);
 }

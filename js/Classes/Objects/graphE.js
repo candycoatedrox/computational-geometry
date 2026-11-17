@@ -144,6 +144,12 @@ class GraphE {
         return incidentEdges.length;
     }
 
+    getEdgeBetween(i,j) {
+        for (let n = 0; n < this.nEdges; n++) {
+            if (this.edgeIsBetween(n,i,j)) return n;
+        }
+        return -1;
+    }
     getVerticesFromEdge(i) {
         const e = this.edges[i];
         const tailV = this.vertices[e[0]];
